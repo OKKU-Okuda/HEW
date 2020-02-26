@@ -129,6 +129,7 @@
     <ClCompile Include="Core\input.cpp" />
     <ClCompile Include="Core\light.cpp" />
     <ClCompile Include="Core\main.cpp" />
+    <ClCompile Include="Core\MyList.cpp" />
     <ClCompile Include="Phase\Phase_Title.cpp" />
     <ClCompile Include="Core\sound.cpp" />
   </ItemGroup>
@@ -138,6 +139,7 @@
     <ClInclude Include="Core\input.h" />
     <ClInclude Include="Core\light.h" />
     <ClInclude Include="Core\main.h" />
+    <ClInclude Include="Core\MyList.h" />
     <ClInclude Include="Phase\Phase_Title.h" />
     <ClInclude Include="Core\sound.h" />
   </ItemGroup>

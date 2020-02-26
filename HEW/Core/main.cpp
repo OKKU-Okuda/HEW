@@ -56,6 +56,7 @@ static int					g_nCountFPS;			// FPSカウンタ
 //=============================================================================
 void InitGameResource()
 {
+	InitTitle(true);
 
 	// 最初のフェーズを指定
 	g_Phase = *GetPhaseTitleFunc();
@@ -66,6 +67,7 @@ void InitGameResource()
 //=============================================================================
 void UninitGameResource()
 {
+	UninitTitle(true);
 
 }
 
@@ -81,6 +83,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	DWORD dwFPSLastTime;
 	DWORD dwCurrentTime;
 	DWORD dwFrameCount;
+	bool mode;
 
 	WNDCLASSEX wcex =
 	{
@@ -116,7 +119,23 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 						NULL);
 
 	// 初期化処理(ウィンドウを作成してから行う)
-	if(FAILED(Init(hInstance, g_hWnd, true)))
+	int id = MessageBox(NULL, "Windowモードでプレイしますか？", "起動モード", MB_YESNOCANCEL | MB_ICONQUESTION);
+
+	switch (id)
+	{
+	case IDYES:		// YesならWindowモードで起動
+		mode = true;
+		break;
+	case IDNO:		// Noならフルスクリーンモードで起動
+		mode = false;
+		break;
+	case IDCANCEL:	// CANCELなら終了
+	default:
+		return -1;
+		break;
+	}
+
+	if(FAILED(Init(hInstance, g_hWnd, mode)))
 	{
 		return -1;
 	}
@@ -229,32 +248,34 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	// 現在のディスプレイモードを取得
-    if(FAILED(g_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm)))
+	if (FAILED(g_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm)))
 	{
 		return E_FAIL;
 	}
 
 	// デバイスのプレゼンテーションパラメータの設定
-	ZeroMemory( &d3dpp, sizeof(d3dpp) );						// ワークをゼロクリア
-	d3dpp.BackBufferCount			= 1;
-	d3dpp.BackBufferWidth			= SCREEN_WIDTH;				// ゲーム画面サイズ(幅)
-	d3dpp.BackBufferHeight			= SCREEN_HEIGHT;			// ゲーム画面サイズ(高さ)
-	d3dpp.BackBufferFormat			= d3ddm.Format;				// カラーモードの指定
-	d3dpp.SwapEffect				= D3DSWAPEFFECT_DISCARD;	// 映像信号に同期してフリップする
-	d3dpp.Windowed					= bWindow;					// ウィンドウモード
-	d3dpp.EnableAutoDepthStencil	= TRUE;						// デプスバッファ（Ｚバッファ）とステンシルバッファを作成
-	d3dpp.AutoDepthStencilFormat	= D3DFMT_D16;				// デプスバッファとして16bitを使う
+	ZeroMemory(&d3dpp, sizeof(d3dpp));							// ワークをゼロクリア
+	d3dpp.BackBufferCount = 1;						// バックバッファの数
+	d3dpp.BackBufferWidth = SCREEN_WIDTH;				// ゲーム画面サイズ(幅)
+	d3dpp.BackBufferHeight = SCREEN_HEIGHT;			// ゲーム画面サイズ(高さ)
+	d3dpp.BackBufferFormat = d3ddm.Format;				// バックバッファフォーマットはディスプレイモードに合わせて使う
+	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;	// 映像信号に同期してフリップする
+	d3dpp.Windowed = bWindow;					// ウィンドウモード
+	d3dpp.EnableAutoDepthStencil = TRUE;						// デプスバッファ（Ｚバッファ）とステンシルバッファを作成
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;				// デプスバッファとして16bitを使う
 
-	if(bWindow)
+	if (bWindow)
 	{// ウィンドウモード
 		d3dpp.FullScreen_RefreshRateInHz = 0;								// リフレッシュレート
-		d3dpp.PresentationInterval       = D3DPRESENT_INTERVAL_IMMEDIATE;	// インターバル
+		d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;	// インターバル
 	}
 	else
 	{// フルスクリーンモード
+		d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;					// バックバッファ
 		d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;			// リフレッシュレート
-		d3dpp.PresentationInterval       = D3DPRESENT_INTERVAL_DEFAULT;		// インターバル
+		d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;		// インターバル
 	}
+
 
 	// デバイスの生成
 	// ディスプレイアダプタを表すためのデバイスを作成
@@ -317,7 +338,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	InitFade();
 
 	// サウンドの初期化
-	InitSound(hWnd);
+	InitSound();
 
 	// ゲーム素材の読み込み系
 	InitGameResource();
