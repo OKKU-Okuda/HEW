@@ -5,15 +5,11 @@
 //
 //=============================================================================
 #include "sound.h"
+#include <tchar.h>
 
 //*****************************************************************************
 // パラメータ構造体定義
 //*****************************************************************************
-typedef struct
-{
-	char *pFilename;	// ファイル名
-	bool bLoop;			// ループするかどうか
-} PARAM;
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -24,154 +20,62 @@ HRESULT ReadChunkData(HANDLE hFile, void *pBuffer, DWORD dwBuffersize, DWORD dwB
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-IXAudio2 *g_pXAudio2 = NULL;								// XAudio2オブジェクトへのインターフェイス
-IXAudio2MasteringVoice *g_pMasteringVoice = NULL;			// マスターボイス
-IXAudio2SourceVoice *g_apSourceVoice[SOUND_LABEL_MAX] = {};	// ソースボイス
-BYTE *g_apDataAudio[SOUND_LABEL_MAX] = {};					// オーディオデータ
-DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイズ
+static IXAudio2*				g_pXAudio2 = NULL;				// XAudio2オブジェクトへのインターフェイス
+static IXAudio2MasteringVoice*	g_pMasteringVoice = NULL;		// マスターボイス
 
-// 各音素材のパラメータ
-PARAM g_aParam[SOUND_LABEL_MAX] =
+//IXAudio2SourceVoice *g_apSourceVoice[SOUND_LABEL_MAX] = {};	// ソースボイス
+//BYTE *g_apDataAudio[SOUND_LABEL_MAX] = {};					// オーディオデータ
+//DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイズ
+
+
+/*=====================================================================
+初期化サウンド関数
+	戻り値；HRESULT
+	引数：void
+=====================================================================*/
+HRESULT InitSound(void)
 {
-	{"data/BGM/bgm000.wav", true},		// BGM0
-	{"data/BGM/bgm001.wav", true},		// BGM1
-	{"data/SE/shot000.wav", false},			// 弾発射音
-	{"data/SE/explosion000.wav", false},	// 爆発音
-	{"data/SE/coin000.wav", false},			// コイン音
-};
+	//==============================================================================
+	//エラーの終了化はどちらにしろmain.cppのUninitに飛ぶので全部UninitSoundに任せる
+	//==============================================================================
 
-//=============================================================================
-// 初期化
-//=============================================================================
-HRESULT InitSound(HWND hWnd)
-{
-	HRESULT hr;
-
-	// COMライブラリの初期化
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-
-	// XAudio2オブジェクトの作成
-	hr = XAudio2Create(&g_pXAudio2, 0);
-	if(FAILED(hr))
+	// comシステムを使用可能に
+	if (FAILED(CoInitializeEx(NULL, COINIT_MULTITHREADED)))
 	{
-		MessageBox(hWnd, "XAudio2オブジェクトの作成に失敗！", "警告！", MB_ICONWARNING);
-
-		// COMライブラリの終了処理
-		CoUninitialize();
-		return E_FAIL;
-	}
-	
-	// マスターボイスの生成
-	hr = g_pXAudio2->CreateMasteringVoice(&g_pMasteringVoice);
-	if(FAILED(hr))
-	{
-		MessageBox(hWnd, "マスターボイスの生成に失敗！", "警告！", MB_ICONWARNING);
-
-		if(g_pXAudio2)
-		{
-			// XAudio2オブジェクトの開放
-			g_pXAudio2->Release();
-			g_pXAudio2 = NULL;
-		}
-
-		// COMライブラリの終了処理
-		CoUninitialize();
-
+		//失敗したらエラーメッセージで終了
+		MessageBox(GetHandle(), _T("Xaudio2:COMシステムの使用が不可です"), _T("エラー"), MB_ICONERROR);
 		return E_FAIL;
 	}
 
-	// サウンドデータの初期化
-	for(int nCntSound = 0; nCntSound < SOUND_LABEL_MAX; nCntSound++)
+	g_pXAudio2 = NULL;
+
+	// XAudio2のシステムを作成
+	if (XAudio2Create(&g_pXAudio2, 0))
 	{
-		HANDLE hFile;
-		DWORD dwChunkSize = 0;
-		DWORD dwChunkPosition = 0;
-		DWORD dwFiletype;
-		WAVEFORMATEXTENSIBLE wfx;
-		XAUDIO2_BUFFER buffer;
-
-		// バッファのクリア
-		memset(&wfx, 0, sizeof(WAVEFORMATEXTENSIBLE));
-		memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
-
-		// サウンドデータファイルの生成
-		hFile = CreateFile(g_aParam[nCntSound].pFilename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-		if(hFile == INVALID_HANDLE_VALUE)
-		{
-			MessageBox(hWnd, "サウンドデータファイルの生成に失敗！(1)", "警告！", MB_ICONWARNING);
-			return HRESULT_FROM_WIN32(GetLastError());
-		}
-		if(SetFilePointer(hFile, 0, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
-		{// ファイルポインタを先頭に移動
-			MessageBox(hWnd, "サウンドデータファイルの生成に失敗！(2)", "警告！", MB_ICONWARNING);
-			return HRESULT_FROM_WIN32(GetLastError());
-		}
-	
-		// WAVEファイルのチェック
-		hr = CheckChunk(hFile, 'FFIR', &dwChunkSize, &dwChunkPosition);
-		if(FAILED(hr))
-		{
-			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(1)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-		hr = ReadChunkData(hFile, &dwFiletype, sizeof(DWORD), dwChunkPosition);
-		if(FAILED(hr))
-		{
-			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(2)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-		if(dwFiletype != 'EVAW')
-		{
-			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(3)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-	
-		// フォーマットチェック
-		hr = CheckChunk(hFile, ' tmf', &dwChunkSize, &dwChunkPosition);
-		if(FAILED(hr))
-		{
-			MessageBox(hWnd, "フォーマットチェックに失敗！(1)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-		hr = ReadChunkData(hFile, &wfx, dwChunkSize, dwChunkPosition);
-		if(FAILED(hr))
-		{
-			MessageBox(hWnd, "フォーマットチェックに失敗！(2)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-
-		// オーディオデータ読み込み
-		hr = CheckChunk(hFile, 'atad', &g_aSizeAudio[nCntSound], &dwChunkPosition);
-		if(FAILED(hr))
-		{
-			MessageBox(hWnd, "オーディオデータ読み込みに失敗！(1)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-		g_apDataAudio[nCntSound] = (BYTE*)malloc(g_aSizeAudio[nCntSound]);
-		hr = ReadChunkData(hFile, g_apDataAudio[nCntSound], g_aSizeAudio[nCntSound], dwChunkPosition);
-		if(FAILED(hr))
-		{
-			MessageBox(hWnd, "オーディオデータ読み込みに失敗！(2)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-	
-		// ソースボイスの生成
-		hr = g_pXAudio2->CreateSourceVoice(&g_apSourceVoice[nCntSound], &(wfx.Format));
-		if(FAILED(hr))
-		{
-			MessageBox(hWnd, "ソースボイスの生成に失敗！", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-
-		memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
-		buffer.AudioBytes = g_aSizeAudio[nCntSound];
-		buffer.pAudioData = g_apDataAudio[nCntSound];
-		buffer.Flags      = XAUDIO2_END_OF_STREAM;
-		buffer.LoopCount  = 0;
-
-		// オーディオバッファの登録
-		g_apSourceVoice[nCntSound]->SubmitSourceBuffer(&buffer);
+		//失敗したらエラーメッセージで終了
+		MessageBox(GetHandle(), _T("Xaudio2:オーディオシステムの作成に失敗しました"), _T("エラー"), MB_ICONERROR);
+		g_pXAudio2 = NULL;
+		return E_FAIL;
 	}
+
+
+	// マスターボイスの作成
+	if (FAILED(g_pXAudio2->CreateMasteringVoice(&g_pMasteringVoice)))
+	{
+		//失敗したらエラーメッセージで終了
+		MessageBox(GetHandle(), _T("Xaudio2:マスターボイスの作成に失敗しました（多分）"), _T("エラー"), MB_ICONERROR);
+		return E_FAIL;
+	}
+
+	// お任せで作ってもらってからのチャンネル数を取得
+	//g_OutChannel = OUTPUT_CHANNEL;
+
+	g_pMasteringVoice->SetVolume(0.8f);
+	//	g_pMasteringVoice->SetVolume(0.0f);
+
+
+		// 各識別IDの初期化
+	g_NextDataID = g_NextSourceID = 1;
 
 	return S_OK;
 }

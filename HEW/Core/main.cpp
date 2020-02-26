@@ -42,12 +42,13 @@ void DrawFPS(void);
 //*****************************************************************************
 // グローバル変数:
 //*****************************************************************************
-LPDIRECT3D9			g_pD3D = NULL;			// Direct3D オブジェクト
-LPDIRECT3DDEVICE9	g_pD3DDevice = NULL;	// Deviceオブジェクト(描画に必要)
-PHASE_FUNC			g_Phase;				// メイン画面遷移データ
+static LPDIRECT3D9			g_pD3D = NULL;			// Direct3D オブジェクト
+static LPDIRECT3DDEVICE9	g_pD3DDevice = NULL;	// Deviceオブジェクト(描画に必要)
+static PHASE_FUNC			g_Phase;				// メイン画面遷移データ
+static HWND					g_hWnd;					// ウィンドウハンドル
 #ifdef _DEBUG
-LPD3DXFONT			g_pD3DXFont = NULL;		// フォントへのポインタ
-int					g_nCountFPS;			// FPSカウンタ
+static LPD3DXFONT			g_pD3DXFont = NULL;		// フォントへのポインタ
+static int					g_nCountFPS;			// FPSカウンタ
 #endif
 
 //=============================================================================
@@ -96,14 +97,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		CLASS_NAME,
 		NULL
 	};
-	HWND hWnd;
 	MSG msg;
 	
 	// ウィンドウクラスの登録
 	RegisterClassEx(&wcex);
 
 	// ウィンドウの作成
-	hWnd = CreateWindow(CLASS_NAME,
+	g_hWnd = CreateWindow(CLASS_NAME,
 						WINDOW_NAME,
 						WS_OVERLAPPEDWINDOW,
 						CW_USEDEFAULT,
@@ -116,7 +116,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 						NULL);
 
 	// 初期化処理(ウィンドウを作成してから行う)
-	if(FAILED(Init(hInstance, hWnd, true)))
+	if(FAILED(Init(hInstance, g_hWnd, true)))
 	{
 		return -1;
 	}
@@ -129,8 +129,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	dwFrameCount = 0;
 
 	// ウインドウの表示(初期化処理の後に呼ばないと駄目)
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
+	ShowWindow(g_hWnd, nCmdShow);
+	UpdateWindow(g_hWnd);
 	
 	// メッセージループ
 	while(1)
@@ -443,6 +443,14 @@ LPDIRECT3DDEVICE9 GetDevice(void)
 PHASE_FUNC *GetPhase()
 {
 	return &g_Phase;
+}
+
+//=============================================================================
+// ウィンドウハンドルの取得
+//=============================================================================
+HWND GetHandle()
+{
+	return g_hWnd;
 }
 
 #ifdef _DEBUG
