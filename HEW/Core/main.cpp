@@ -1,7 +1,7 @@
 //=============================================================================
 //
 // メイン処理 [main.cpp]
-// Author : 
+// Author : 奥田 真規　
 //
 //=============================================================================
 #include "main.h"
@@ -10,9 +10,15 @@
 #include "sound.h"
 #include "camera.h"
 #include "light.h"
+#include "debugproc.h"
 
-// 最初に読み込むフェーズのヘッダ
+// フェーズ一覧
 #include "../Phase/Phase_Title.h"
+#include "../Phase/Phase_Result.h"
+#include "../Phase/Phase_GameKick.h"
+#include "../Phase/Phase_GameTackle1.h"
+#include "../Phase/Phase_GameTackle2.h"
+#include "../Phase/Phase_GameTackle3.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -47,7 +53,7 @@ static LPDIRECT3DDEVICE9	g_pD3DDevice = NULL;	// Deviceオブジェクト(描画に必要)
 static PHASE_FUNC			g_Phase;				// メイン画面遷移データ
 static HWND					g_hWnd;					// ウィンドウハンドル
 #ifdef _DEBUG
-static LPD3DXFONT			g_pD3DXFont = NULL;		// フォントへのポインタ
+//static LPD3DXFONT			g_pD3DXFont = NULL;		// フォントへのポインタ
 static int					g_nCountFPS;			// FPSカウンタ
 #endif
 
@@ -56,7 +62,13 @@ static int					g_nCountFPS;			// FPSカウンタ
 //=============================================================================
 void InitGameResource()
 {
+	// フェーズのリソース読み込み
 	InitTitle(true);
+	InitGameTackle1(true);
+	InitGameTackle2(true);
+	InitGameTackle3(true);
+	InitGameKick(true);
+	InitResult(true);
 
 	// 最初のフェーズを指定
 	g_Phase = *GetPhaseTitleFunc();
@@ -67,6 +79,12 @@ void InitGameResource()
 //=============================================================================
 void UninitGameResource()
 {
+	// フェーズのリソース開放
+	UninitResult(true);
+	UninitGameKick(true);
+	UninitGameTackle3(true);
+	UninitGameTackle2(true);
+	UninitGameTackle1(true);
 	UninitTitle(true);
 
 }
@@ -327,9 +345,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);		// ２番目のアルファ引数
 
 #ifdef _DEBUG
-	// 情報表示用フォントを設定
-	D3DXCreateFont(g_pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
-					OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &g_pD3DXFont);
+//	// 情報表示用フォントを設定
+//	D3DXCreateFont(g_pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
+//					OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &g_pD3DXFont);
 #endif
 	// 入力処理の初期化
 	InitInput(hInstance, hWnd);
@@ -339,6 +357,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// サウンドの初期化
 	InitSound();
+
+	// デバッグの初期化
+	InitDebugProc();
 
 	// ゲーム素材の読み込み系
 	InitGameResource();
@@ -371,12 +392,15 @@ void Uninit(void)
 	// ゲーム内リソースの開放
 	UninitGameResource();
 
+	// デバッグの終了化
+	UninitDebugProc();
+
 #ifdef _DEBUG
-	if(g_pD3DXFont != NULL)
-	{// 情報表示用フォントの開放
-		g_pD3DXFont->Release();
-		g_pD3DXFont = NULL;
-	}
+	//if(g_pD3DXFont != NULL)
+	//{// 情報表示用フォントの開放
+	//	g_pD3DXFont->Release();
+	//	g_pD3DXFont = NULL;
+	//}
 #endif
 
 	if(g_pD3DDevice != NULL)
@@ -406,6 +430,8 @@ void Uninit(void)
 //=============================================================================
 void Update(void)
 {
+	PrintDebugProc("FPS:%d", g_nCountFPS);
+
 	// 入力更新
 	UpdateInput();
 
@@ -414,6 +440,9 @@ void Update(void)
 
 	// フェード処理の更新
 	UpdateFade();
+
+	// デバッグの更新
+	UpdateDebugProc();
 }
 
 //=============================================================================
@@ -430,16 +459,16 @@ void Draw(void)
 	// Direct3Dによる描画の開始
 	if(SUCCEEDED(g_pD3DDevice->BeginScene()))
 	{
-
 		// フェード描画
 		DrawFade();
 
 		// フェーズ描画
-		g_Phase.Update();
+		g_Phase.Draw();
 
 #ifdef _DEBUG
 		// デバッグ表示
-		DrawFPS();
+		//DrawFPS();
+		DrawDebugProc();
 #endif
 
 		// Direct3Dによる描画の終了
@@ -474,7 +503,7 @@ HWND GetHandle()
 	return g_hWnd;
 }
 
-#ifdef _DEBUG
+#ifdef PPAP// _DEBUG
 //=============================================================================
 // デバッグ表示
 //=============================================================================

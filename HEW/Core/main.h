@@ -64,6 +64,7 @@ typedef D3DXMATRIX				Matrix;
 typedef LPDIRECT3DTEXTURE9		Texture;
 typedef LPDIRECT3DVERTEXBUFFER9 VtxBuff;
 typedef LPDIRECT3DINDEXBUFFER9	IdxBuff;
+typedef void(*NormalFunc)(void);
 
 // 上記２Ｄポリゴン頂点フォーマットに合わせた構造体を定義
 typedef struct

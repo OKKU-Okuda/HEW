@@ -1,8 +1,8 @@
 /**********************************************************************
-[[フェーズ:Titleプログラム(Phase_Title.cpp)]]
+[[フェーズ:GameTackle3プログラム(Phase_GameTackle3.cpp)]]
 	作者：奥田　真規
 
-	フェーズ：Phase_Titleに関するプログラム
+	フェーズ：GameTackle3に関するプログラム
 ***********************************************************************/
 #include"../Core/main.h"	
 #include "../Core/fade.h"
@@ -11,8 +11,8 @@
 #include "../Core/camera.h"
 #include "../Core/debugproc.h"
 
-#include "Phase_Title.h"	
-#include "Phase_GameTackle1.h"
+#include "Phase_GameTackle3.h"	
+#include "Phase_GameKick.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -30,59 +30,33 @@
 //---------------------------------------------------------------------
 
 // 画面遷移基本関数群をまとめておく
-static PHASE_FUNC g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
-static MySound		g_Sound;
+static PHASE_FUNC g_PhaseFunc = { InitGameTackle3,UninitGameTackle3,UpdateGameTackle3,DrawGameTackle3 };
+
 /*=====================================================================
-Title更新関数
+GameTackle3更新関数
 =====================================================================*/
-void UpdateTitle()
+void UpdateGameTackle3()
 {
+	PrintDebugProc("タックル3フェーズ");
+
 	// 次のフェーズに行く
 	if (GetKeyboardTrigger(DIK_RETURN))
-	{	// タックル１
-		GoNextPhase(GetPhaseGameTackle1Func());
+	{	// キック
+		GoNextPhase(GetPhaseGameKickFunc());
 	}
 
-	// 1を押すたびに音が増える
-	if (GetKeyboardTrigger(DIK_1))
-	{
-		MySound newsound = MySoundClone(g_Sound);
-		MySoundPlayEternal(newsound);
-	}
-
-	// ピッチ変更
-	if (GetKeyboardPress(DIK_UP))
-	{
-		float vol = MySoundGetPitch(g_Sound);
-
-		vol += 0.01f;
-		MySoundSetPitchAuto(g_Sound, vol);
-	}
-	if (GetKeyboardPress(DIK_DOWN))
-	{
-		float vol = MySoundGetPitch(g_Sound);
-
-		vol -= 0.01f;
-		MySoundSetPitchAuto(g_Sound, vol);
-	}
-	// 次のフェーズに行く（いまはタイトル）
-	if (GetKeyboardTrigger(DIK_0))
-		GoNextPhase(GetPhaseTitleFunc());
-
-
-	PrintDebugProc("タイトルフェーズ");
 }
 
 /*=====================================================================
-Title描画関数
+GameTackle3描画関数
 =====================================================================*/
-void DrawTitle()
+void DrawGameTackle3()
 {
 
 }
 
 /*=====================================================================
-Title初期化関数
+GameTackle3初期化関数
 	戻り値 : void
 	引数 :
 	bool isFirst		true:リソース読み込み系を含めた初期化処理を行う
@@ -91,14 +65,13 @@ Title初期化関数
 
 						false;リソース開放系以外の初期化処理を行う
 =====================================================================*/
-void InitTitle(bool isFirst)
+void InitGameTackle3(bool isFirst)
 {
 	if (isFirst == true)
 	{
 		//---------------------------------------------------------------------
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
-		g_Sound = MySoundCreate("data/BGM/bgm000.wav");
 
 	}
 
@@ -106,11 +79,11 @@ void InitTitle(bool isFirst)
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
 
-	MySoundPlayEternal(g_Sound);	// 永遠再生
+
 }
 
 /*=====================================================================
-Title終了化関数
+GameTackle3終了化関数
 	戻り値 : void
 	引数 :
 	bool isEnd			true:リソース開放系を含めた終了化処理を行う
@@ -119,14 +92,13 @@ Title終了化関数
 
 						false;リソース開放系以外の終了化処理を行う	
 =====================================================================*/
-void UninitTitle(bool isEnd)
+void UninitGameTackle3(bool isEnd)
 {
+	//---------------------------------------------------------------------
+	//	その他の終了処理
+	//---------------------------------------------------------------------
 
-//---------------------------------------------------------------------
-//	その他の終了処理
-//---------------------------------------------------------------------
 
-	MySoundStop(g_Sound);	// 停止
 
 
 	if (isEnd == true)
@@ -134,15 +106,15 @@ void UninitTitle(bool isEnd)
 		//---------------------------------------------------------------------
 		//	リソース開放処理
 		//---------------------------------------------------------------------
-		MySoundDeleteAuto(&g_Sound);// 増やしたものも一気に開放
+
 	}
 
 }
 
 /*=====================================================================
-Title基本関数群取得関数
+GameTackle3基本関数群取得関数
 =====================================================================*/
-PHASE_FUNC* GetPhaseTitleFunc()
+PHASE_FUNC* GetPhaseGameTackle3Func()
 {
 	return &g_PhaseFunc;
 }
