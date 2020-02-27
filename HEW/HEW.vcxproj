@@ -125,21 +125,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\camera.cpp" />
+    <ClCompile Include="Core\debugproc.cpp" />
     <ClCompile Include="Core\fade.cpp" />
     <ClCompile Include="Core\input.cpp" />
     <ClCompile Include="Core\light.cpp" />
     <ClCompile Include="Core\main.cpp" />
     <ClCompile Include="Core\MyList.cpp" />
+    <ClCompile Include="Phase\Phase_GameKick.cpp" />
+    <ClCompile Include="Phase\Phase_GameTackle1.cpp" />
+    <ClCompile Include="Phase\Phase_GameTackle2.cpp" />
+    <ClCompile Include="Phase\Phase_GameTackle3.cpp" />
+    <ClCompile Include="Phase\Phase_Result.cpp" />
     <ClCompile Include="Phase\Phase_Title.cpp" />
     <ClCompile Include="Core\sound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
+    <ClInclude Include="Core\debugproc.h" />
     <ClInclude Include="Core\fade.h" />
     <ClInclude Include="Core\input.h" />
     <ClInclude Include="Core\light.h" />
     <ClInclude Include="Core\main.h" />
     <ClInclude Include="Core\MyList.h" />
+    <ClInclude Include="Phase\Phase_GameKick.h" />
+    <ClInclude Include="Phase\Phase_GameTackle1.h" />
+    <ClInclude Include="Phase\Phase_GameTackle2.h" />
+    <ClInclude Include="Phase\Phase_GameTackle3.h" />
+    <ClInclude Include="Phase\Phase_Result.h" />
     <ClInclude Include="Phase\Phase_Title.h" />
     <ClInclude Include="Core\sound.h" />
   </ItemGroup>
