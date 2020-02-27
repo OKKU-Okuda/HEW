@@ -27,6 +27,7 @@ typedef struct {
 	SOUND_DATA				*pTargetSound;	// 対象にしたサウンドデータへのアドレス
 	FLOAT					Volume;			// 音量
 	FLOAT					Pitch;			// ピッチ
+	bool					isPlay;			// 再生中かどうか
 }SOURCE_SOUND;
 
 //*****************************************************************************
@@ -48,9 +49,38 @@ static MyList					g_DataList;						// サウンドデータを管理するリスト
 static float					g_MainVolume;					// 総サウンド音量の設定
 
 /*=====================================================================
+ サウンド情報取得関数
+		MySoundGetVolume	:任意のサウンド一つの音量を取得する
+		MySoundGetPitch		:任意のサウンド一つの速度を取得する
+		MySoundGetPlaying	:任氏のサウンド一つの再生状況を取得する
+	戻り値；void
+	引数：MySound:サウンド機能
+		　float	:???
+===================================================================== */
+float MySoundGetVolume(MySound sound)
+{
+	SOURCE_SOUND* sound_pt = (SOURCE_SOUND*)sound;
+	return 		sound_pt->Volume;
+}
+
+float MySoundGetPitch(MySound sound)
+{
+	SOURCE_SOUND* sound_pt = (SOURCE_SOUND*)sound;
+	return 		sound_pt->Pitch;
+}
+
+bool MySoundGetPlaying(MySound sound)
+{
+	SOURCE_SOUND* sound_pt = (SOURCE_SOUND*)sound;
+	return 		sound_pt->isPlay;
+}
+
+/*=====================================================================
  サウンド設定関数
 		MySoundSetVolume	:任意のサウンド一つの音量を調整する
+		MySoundSetVolumeAuto:同系統サウンドの音量を調整する
 		MySoundSetPitch		:任意のサウンド一つの速度を調整する
+		MySoundSetPitchAuto	:同系統サウンドの音量を調整する
 	戻り値；void
 	引数：MySound:サウンド機能
 		　float	:???
@@ -68,6 +98,24 @@ void MySoundSetVolume(MySound sound, float Volume)
 	}
 }
 
+void MySoundSetVolumeAuto(MySound sound, float Volume)
+{
+	SOUND_DATA*				Sound_pt;
+	SOURCE_SOUND*			source_pt;
+
+	if (sound == NULL)return;
+	source_pt = (SOURCE_SOUND*)sound;
+
+	Sound_pt = source_pt->pTargetSound;								// ターゲットの取得
+
+	// 所属ソースボイスを巡回して開放
+	MyListResetIterator(Sound_pt->SourceList, true);
+	while (MyListLoop(Sound_pt->SourceList, (void**)&source_pt))
+	{
+		MySoundSetVolume(source_pt, Volume);
+	}
+}
+
 void MySoundSetPitch(MySound sound,float Pitch)
 {
 	SOURCE_SOUND* sound_pt = (SOURCE_SOUND*)sound;
@@ -80,6 +128,25 @@ void MySoundSetPitch(MySound sound,float Pitch)
 		sound_pt->pSourceVoice->SetFrequencyRatio(Pitch);
 	}
 }
+
+void MySoundSetPitchAuto(MySound sound, float Pitch)
+{
+	SOUND_DATA*				Sound_pt;
+	SOURCE_SOUND*			source_pt;
+
+	if (sound == NULL)return;
+	source_pt = (SOURCE_SOUND*)sound;
+
+	Sound_pt = source_pt->pTargetSound;								// ターゲットの取得
+
+	// 所属ソースボイスを巡回して開放
+	MyListResetIterator(Sound_pt->SourceList, true);
+	while (MyListLoop(Sound_pt->SourceList, (void**)&source_pt))
+	{
+		MySoundSetPitch(source_pt, Pitch);
+	}
+}
+
 
 /*=====================================================================
  サウンド停止関数
@@ -168,6 +235,7 @@ void MySoundPlayTemporary(MySound sound)
 	if (xa2state.pCurrentBufferContext != NULL)
 	{// キューにバッファが存在する場合
 		sound_pt->pSourceVoice->Start(0);
+		sound_pt->isPlay = true;
 	}
 	else
 	{// 存在しない場合
@@ -435,6 +503,8 @@ void SourceStopSound(SOURCE_SOUND* pt)
 	{// 再生中
 		// 一時停止
 		pt->pSourceVoice->Stop(0);
+		pt->isPlay = false;
+
 	}
 }
 
@@ -462,6 +532,8 @@ void SourcePlaySound(SOURCE_SOUND* pt, DWORD cntLoop)
 	
 	// 再生
 	pt->pSourceVoice->Start(0);
+
+	pt->isPlay = true;
 }
 
 //=============================================================================
@@ -478,7 +550,7 @@ SOURCE_SOUND* CreateSourceVoice(SOUND_DATA* Sound_Data)
 	Source_pt->Pitch = 1.0f;
 	Source_pt->Volume = 1.0f;
 	Source_pt->pTargetSound = Sound_Data;
-
+	Source_pt->isPlay = false;
 	return Source_pt;
 }
 
