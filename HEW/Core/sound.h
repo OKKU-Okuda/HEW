@@ -79,15 +79,32 @@ void MySoundStop(MySound sound);
 void MySoundStopAll();
 
 /*=====================================================================
+ サウンド情報取得関数
+		MySoundGetVolume	:任意のサウンド一つの音量を取得する
+		MySoundGetPitch		:任意のサウンド一つの速度を取得する
+		MySoundGetPlaying	:任氏のサウンド一つの再生状況を取得する
+	戻り値；void
+	引数：MySound:サウンド機能
+		　float	:???
+===================================================================== */
+float MySoundGetVolume(MySound sound);
+float MySoundGetPitch(MySound sound);
+bool MySoundGetPlaying(MySound sound);
+
+/*=====================================================================
  サウンド設定関数
 		MySoundSetVolume	:任意のサウンド一つの音量を調整する
+		MySoundSetVolumeAuto:同系統サウンドの音量を調整する
 		MySoundSetPitch		:任意のサウンド一つの速度を調整する
+		MySoundSetPitchAuto	:同系統サウンドの音量を調整する
 	戻り値；void
 	引数：MySound:サウンド機能
 		　float	:???
 ===================================================================== */
 void MySoundSetVolume(MySound sound, float Volume);
+void MySoundSetVolumeAuto(MySound sound, float Volume);
 void MySoundSetPitch(MySound sound, float Pitch);
+void MySoundSetPitchAuto(MySound sound, float Pitch);
 
 // サウンド基本関数群
 HRESULT InitSound();

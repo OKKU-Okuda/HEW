@@ -43,6 +43,23 @@ void UpdateTitle()
 		MySoundPlayEternal(newsound);
 	}
 
+	// 1を押すたびに音が増える
+	if (GetKeyboardPress(DIK_UP))
+	{
+		float vol = MySoundGetPitch(g_Sound);
+
+		vol += 0.01f;
+		MySoundSetPitchAuto(g_Sound, vol);
+	}
+	if (GetKeyboardPress(DIK_DOWN))
+	{
+		float vol = MySoundGetPitch(g_Sound);
+
+		vol -= 0.01f;
+		MySoundSetPitchAuto(g_Sound, vol);
+	}
+
+
 	// 次のフェーズに行く（いまはタイトル）
 	if (GetKeyboardTrigger(DIK_0))
 		GoNextPhase(GetPhaseTitleFunc());
