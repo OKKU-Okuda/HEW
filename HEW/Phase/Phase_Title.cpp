@@ -43,7 +43,7 @@ void UpdateTitle()
 		MySoundPlayEternal(newsound);
 	}
 
-	// 1を押すたびに音が増える
+	// ピッチ変更
 	if (GetKeyboardPress(DIK_UP))
 	{
 		float vol = MySoundGetPitch(g_Sound);

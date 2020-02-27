@@ -83,6 +83,7 @@ void MySoundStopAll();
 		MySoundGetVolume	:任意のサウンド一つの音量を取得する
 		MySoundGetPitch		:任意のサウンド一つの速度を取得する
 		MySoundGetPlaying	:任氏のサウンド一つの再生状況を取得する
+		MySoundGetNumGroup	:所属しているサウンドデータの配下数を取得する
 	戻り値；void
 	引数：MySound:サウンド機能
 		　float	:???
@@ -90,6 +91,7 @@ void MySoundStopAll();
 float MySoundGetVolume(MySound sound);
 float MySoundGetPitch(MySound sound);
 bool MySoundGetPlaying(MySound sound);
+DWORD MySoundGetNumGroup(MySound sound);
 
 /*=====================================================================
  サウンド設定関数
