@@ -53,6 +53,7 @@ static float					g_MainVolume;					// 総サウンド音量の設定
 		MySoundGetVolume	:任意のサウンド一つの音量を取得する
 		MySoundGetPitch		:任意のサウンド一つの速度を取得する
 		MySoundGetPlaying	:任氏のサウンド一つの再生状況を取得する
+		MySoundGetNumGroup	:所属しているサウンドデータの配下数を取得する
 	戻り値；void
 	引数：MySound:サウンド機能
 		　float	:???
@@ -73,6 +74,12 @@ bool MySoundGetPlaying(MySound sound)
 {
 	SOURCE_SOUND* sound_pt = (SOURCE_SOUND*)sound;
 	return 		sound_pt->isPlay;
+}
+
+DWORD MySoundGetNumGroup(MySound sound)
+{
+	SOURCE_SOUND* sound_pt = (SOURCE_SOUND*)sound;
+	return 		sound_pt->pTargetSound->SourceList->numObj;
 }
 
 /*=====================================================================
