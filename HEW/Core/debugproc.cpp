@@ -150,6 +150,8 @@ void PrintDebugProc(char *fmt,...)
 	char aBuf[256]={"\0"};
 	char aWk[64];
 
+	if (g_isShow == false)return;	// 表示しない場合はこの処理を飛ばす
+
 	// 可変引数にアクセスする前の初期処理
 	va_start(list, fmt);
 
