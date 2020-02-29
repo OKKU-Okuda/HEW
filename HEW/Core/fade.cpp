@@ -67,6 +67,11 @@ static struct {
 //=============================================================================
 void GoNextPhase(PHASE_FUNC* NextPhaseFunc,FADE_ANIM AnimType)
 {
+	if (g_fade != FADE_NONE)
+	{	// 他のフェード起動中の場合は無視
+		return;
+	}
+
 	// パラメータの初期化
 	g_NextFunc = *NextPhaseFunc;
 	g_fade = FADE_OUT;
@@ -92,43 +97,50 @@ void GoNextPhase(PHASE_FUNC* NextPhaseFunc,FADE_ANIM AnimType)
 void UpdateAnimDefault()
 {
 	Vec3 pos[MAX_DEFAULTOBJECT];
-	Color	col = Color(1, 1, 1, 1);
-
+	Color	col = Color(1, 1, 1, 1);		// 通常オブジェクトの色
+	//Color	col_imp = Color(1, 1, 1, 1);	// 重要オブジェクトの色
 	if (g_fade == FADE_OUT)
 	{
 		float rate = cosf(D3DX_PI / 2.0f - (g_Time * (D3DX_PI / 2.0f)));
-		g_Time += 0.02f;
+		g_Time += 0.01f;
 		
+		pos[DEFAULT_PLAYER] = Vec3(200.0f *rate + 100, SCREEN_CENTER_Y + 100, 0);
+	//	pos[DEFAULT_GREEN] = Vec3(200.0f *rate + 100, SCREEN_HEIGHT - 150, 0);
+		pos[DEFAULT_CITY] = Vec3(-100.0f*rate + SCREEN_CENTER_X + 150, 250, 0);
+		pos[DEFAULT_CITY1] = Vec3(-70.0f*rate + SCREEN_CENTER_X + 100, 250, 0);
+		pos[DEFAULT_SKY] = Vec3(-20.0f*rate + SCREEN_CENTER_X + 100, SCREEN_CENTER_Y, 0);
 
-		pos[DEFAULT_PLAYER] = Vec3(400.0f *rate + 100, SCREEN_CENTER_Y, 0);
 	}
 	else if (g_fade == FADE_IN)
 	{
 		float rate = sinf(D3DX_PI / 2.0f + (g_Time * (D3DX_PI / 2.0f)));
-		g_Time -= 0.02f;
+		g_Time -= 0.01f;
 
-		pos[DEFAULT_GREEN] =
-			pos[DEFAULT_PLAYER] = Vec3(400.0f *rate + 500, SCREEN_CENTER_Y, 0);
+		pos[DEFAULT_PLAYER] = Vec3(200.0f *rate + 300, SCREEN_CENTER_Y + 100, 0);
+	//	pos[DEFAULT_GREEN] = Vec3(200.0f *rate + 300, SCREEN_HEIGHT - 150, 0);
+		pos[DEFAULT_CITY] = Vec3(-100.0f*rate + SCREEN_CENTER_X+ 50, 250, 0);
+		pos[DEFAULT_CITY1] = Vec3(-70.0f*rate + SCREEN_CENTER_X + 30, 250, 0);
+		pos[DEFAULT_SKY] = Vec3(-20.0f*rate + SCREEN_CENTER_X + 80, SCREEN_CENTER_Y, 0);
+
 	}
 
+
+	pos[DEFAULT_GREEN] = Vec3(SCREEN_CENTER_X, SCREEN_HEIGHT-150, 0.0f);
 	col.a = g_Time / 0.5f;
-	if (col.a > 1.0f)
-	{
-		col.a = 1.0f;
-	}
+	//col_imp.a = col.a*0.5f;
 
 	// 頂点設置
-	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_PLAYER],	&pos[DEFAULT_PLAYER],	&Vec2(150,300));
-	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_CITY],	&pos[DEFAULT_CITY],		&Vec2(SCREEN_CENTER_X,100));		// 前面都市
-	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_CITY1],	&pos[DEFAULT_CITY1],	&Vec2(SCREEN_CENTER_X,100));		// 背面都市
-	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_GREEN],	&pos[DEFAULT_GREEN],	&Vec2(SCREEN_CENTER_X,100));
-	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_SKY],		&pos[DEFAULT_SKY],		&Vec2(100,100));
+	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_PLAYER],	&pos[DEFAULT_PLAYER],	&Vec2(275,240));
+	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_CITY],	&pos[DEFAULT_CITY],		&Vec2(SCREEN_CENTER_X+150,225));	// 前面都市
+	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_CITY1],	&pos[DEFAULT_CITY1],	&Vec2(SCREEN_CENTER_X+100,225));	// 背面都市
+	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_GREEN],	&pos[DEFAULT_GREEN],	&Vec2(SCREEN_CENTER_X,150));
+	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_SKY],		&pos[DEFAULT_SKY],		&Vec2(SCREEN_CENTER_X+100,SCREEN_CENTER_Y));
 
 	SetFadeVertexColor(g_DefaultWk.Vtx[DEFAULT_PLAYER], col);
-	SetFadeVertexColor(g_DefaultWk.Vtx[DEFAULT_CITY], col);
-	SetFadeVertexColor(g_DefaultWk.Vtx[DEFAULT_CITY1], col);
+	SetFadeVertexColor(g_DefaultWk.Vtx[DEFAULT_CITY], col);//
+	SetFadeVertexColor(g_DefaultWk.Vtx[DEFAULT_CITY1], col);//
 	SetFadeVertexColor(g_DefaultWk.Vtx[DEFAULT_GREEN], col);
-	SetFadeVertexColor(g_DefaultWk.Vtx[DEFAULT_SKY], col);
+	SetFadeVertexColor(g_DefaultWk.Vtx[DEFAULT_SKY], col);// 
 }
 
 void DrawAnimDefault()
@@ -136,6 +148,8 @@ void DrawAnimDefault()
 	D3DDEVICE;
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
+	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, 0);	// テクスチャアドレッシング方法(U値)を設定
+	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, 0);	// テクスチャアドレッシング方法(V値)を設定
 	pDevice->SetTexture(0, g_DefaultWk.Tex[DEFAULT_SKY]);
 	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_DefaultWk.Vtx[DEFAULT_SKY], sizeof(VERTEX_2D));
 
@@ -150,6 +164,10 @@ void DrawAnimDefault()
 
 	pDevice->SetTexture(0, g_DefaultWk.Tex[DEFAULT_PLAYER]);
 	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_DefaultWk.Vtx[DEFAULT_PLAYER], sizeof(VERTEX_2D));
+
+	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);	// テクスチャアドレッシング方法(U値)を設定
+	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);	// テクスチャアドレッシング方法(V値)を設定
+
 }
 
 //=============================================================================
@@ -275,10 +293,10 @@ void MakeFadeVertex(int num, VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size)
 	if (num == 0)
 	{
 		// テクスチャ座標
-		(vtx_data)->tex = D3DXVECTOR2(0.0f, 0.0f);
-		(vtx_data + 1)->tex = D3DXVECTOR2(1.0f, 0.0f);
-		(vtx_data + 2)->tex = D3DXVECTOR2(0.0f, 1.0f);
-		(vtx_data + 3)->tex = D3DXVECTOR2(1.0f, 1.0f);
+		(vtx_data)->tex = D3DXVECTOR2(0.01f, 0.01f);
+		(vtx_data + 1)->tex = D3DXVECTOR2(0.99f, 0.01f);
+		(vtx_data + 2)->tex = D3DXVECTOR2(0.01f, 0.99f);
+		(vtx_data + 3)->tex = D3DXVECTOR2(0.99f, 0.99f);
 	}
 
 	return;

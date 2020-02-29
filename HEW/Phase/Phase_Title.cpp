@@ -11,6 +11,7 @@
 #include "../Core/camera.h"
 #include "../Core/debugproc.h"
 
+#include "../Core/directx_Helper3D.h"
 #include "Phase_Title.h"	
 #include "Phase_GameTackle1.h"
 //---------------------------------------------------------------------
@@ -30,47 +31,48 @@
 //---------------------------------------------------------------------
 
 // 画面遷移基本関数群をまとめておく
-static PHASE_FUNC g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
+static PHASE_FUNC	g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
 static MySound		g_Sound;
+static Model		g_Player;
+static Model		g_Enemy;
+
 /*=====================================================================
 Title更新関数
 =====================================================================*/
 void UpdateTitle()
 {
+	PrintDebugProc("タイトルフェーズ");
+
 	// 次のフェーズに行く
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{	// タックル１
 		GoNextPhase(GetPhaseGameTackle1Func());
 	}
 
-	// 1を押すたびに音が増える
-	if (GetKeyboardTrigger(DIK_1))
-	{
-		MySound newsound = MySoundClone(g_Sound);
-		MySoundPlayEternal(newsound);
-	}
 
-	// ピッチ変更
 	if (GetKeyboardPress(DIK_UP))
 	{
-		float vol = MySoundGetPitch(g_Sound);
-
-		vol += 0.01f;
-		MySoundSetPitchAuto(g_Sound, vol);
+		g_Player->WldMtx._43 += 1.0f;
 	}
 	if (GetKeyboardPress(DIK_DOWN))
 	{
-		float vol = MySoundGetPitch(g_Sound);
-
-		vol -= 0.01f;
-		MySoundSetPitchAuto(g_Sound, vol);
+		g_Player->WldMtx._43 -= 1.0f;
 	}
-	// 次のフェーズに行く（いまはタイトル）
-	if (GetKeyboardTrigger(DIK_0))
-		GoNextPhase(GetPhaseTitleFunc());
+	if (GetKeyboardPress(DIK_LEFT))
+	{
+		g_Player->WldMtx._41 -= 1.0f;
+	}
 
+	if (GetKeyboardPress(DIK_RIGHT))
+	{
+		g_Player->WldMtx._41 += 1.0f;
+	}
 
-	PrintDebugProc("タイトルフェーズ");
+	Vec4 vc(g_Player->WldMtx.m[3]);
+	PrintDebugProc("プレイヤー位置:%vec4", vc);
+
+	PrintDebugProc("オフセット座標変更↑↓←→");
+
 }
 
 /*=====================================================================
@@ -78,7 +80,8 @@ Title描画関数
 =====================================================================*/
 void DrawTitle()
 {
-
+	DrawModel(g_Player);
+	DrawModel(g_Enemy);
 }
 
 /*=====================================================================
@@ -100,6 +103,9 @@ void InitTitle(bool isFirst)
 		//---------------------------------------------------------------------
 		g_Sound = MySoundCreate("data/BGM/bgm000.wav");
 
+		g_Player = CreateModel("data/MODEL/Player.x");
+		g_Enemy = CreateModel("data/MODEL/enemy.x");
+
 	}
 
 	//---------------------------------------------------------------------
@@ -107,6 +113,10 @@ void InitTitle(bool isFirst)
 	//---------------------------------------------------------------------
 
 	MySoundPlayEternal(g_Sound);	// 永遠再生
+
+	GetMatrix(&g_Player->WldMtx);
+	GetMatrix(&g_Enemy->WldMtx,&Vec3(0,0,0),&Vec3(0,0,0),&Vec3(10.0f,10.0f,10.0f));
+
 }
 
 /*=====================================================================
@@ -134,6 +144,8 @@ void UninitTitle(bool isEnd)
 		//---------------------------------------------------------------------
 		//	リソース開放処理
 		//---------------------------------------------------------------------
+		DeleteModel(&g_Player);
+		DeleteModel(&g_Enemy);
 		MySoundDeleteAuto(&g_Sound);// 増やしたものも一気に開放
 	}
 
