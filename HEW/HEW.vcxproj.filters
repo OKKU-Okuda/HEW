@@ -57,6 +57,9 @@
     <ClCompile Include="Core\debugproc.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="player.cpp">
+    <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="Core\directx_Helper3D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -102,6 +105,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Core\debugproc.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Core\directx_Helper3D.h">
