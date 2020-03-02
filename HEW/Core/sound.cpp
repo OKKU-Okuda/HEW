@@ -154,6 +154,10 @@ void MySoundSetPitchAuto(MySound sound, float Pitch)
 	}
 }
 
+void MySoundFadeOut(MySound *sound, DWORD cntFadeOut, bool isDelete)
+{
+
+}
 
 /*=====================================================================
  ÉTÉEÉìÉhí‚é~ä÷êî
