@@ -5,6 +5,7 @@
 //
 //=============================================================================
 #include "fade.h"
+#include "sound.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -54,8 +55,9 @@ static float		g_Time;						// アニメーション現在時間
 												
 
 static struct {
-	Texture Tex[MAX_DEFAULTOBJECT];
-	VERTEX_2D Vtx[MAX_DEFAULTOBJECT][NUM_VERTEX];
+	Texture		Tex[MAX_DEFAULTOBJECT];
+	VERTEX_2D	Vtx[MAX_DEFAULTOBJECT][NUM_VERTEX];
+	MySound		SE;
 }g_DefaultWk;									// デフォルトアニメーションワーク
 
 //=============================================================================
@@ -84,6 +86,7 @@ void GoNextPhase(PHASE_FUNC* NextPhaseFunc,FADE_ANIM AnimType)
 	// デフォルト処理
 	case FADEANIM_DEFAULT:
 	default:
+		MySoundPlayOnce(g_DefaultWk.SE);
 		g_UpdateAnimFunc = UpdateAnimDefault;
 		g_DrawAnimFunc = DrawAnimDefault;
 		break;
@@ -127,7 +130,6 @@ void UpdateAnimDefault()
 
 	pos[DEFAULT_GREEN] = Vec3(SCREEN_CENTER_X, SCREEN_HEIGHT-150, 0.0f);
 	col.a = g_Time / 0.5f;
-	//col_imp.a = col.a*0.5f;
 
 	// 頂点設置
 	SetFadeVertex(g_DefaultWk.Vtx[DEFAULT_PLAYER],	&pos[DEFAULT_PLAYER],	&Vec2(275,240));
@@ -179,6 +181,9 @@ HRESULT InitFade(void)
 
 	// デフォルトアニメの初期化
 	{
+		// サウンド
+		g_DefaultWk.SE = MySoundCreate("data/SE/laugh.wav");
+
 		// テクスチャの読み込み
 		D3DXCreateTextureFromFile(pDevice,	
 			FADE_TEXPLAYER, &g_DefaultWk.Tex[DEFAULT_PLAYER]);
@@ -211,6 +216,8 @@ void UninitFade(void)
 	{
 		SAFE_RELEASE(g_DefaultWk.Tex[i]);
 	}
+
+	MySoundDelete(&g_DefaultWk.SE);
 
 }
 

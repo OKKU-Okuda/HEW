@@ -352,11 +352,11 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// 入力処理の初期化
 	InitInput(hInstance, hWnd);
 
-	// フェードの初期化
-	InitFade();
-
 	// サウンドの初期化
 	InitSound();
+
+	// フェードの初期化
+	InitFade();
 
 	// デバッグの初期化
 	InitDebugProc();
