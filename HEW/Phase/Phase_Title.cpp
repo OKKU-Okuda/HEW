@@ -22,6 +22,7 @@
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
 
+
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
@@ -33,8 +34,14 @@
 // 画面遷移基本関数群をまとめておく
 static PHASE_FUNC	g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
 static MySound		g_Sound;
-static Model		g_Player;
-static Model		g_Enemy;
+static Model		g_mdlPlayer;
+
+
+static struct {
+	VtxBuff		pVtx;	// 頂点バッファ
+	Texture		pTex;	// 地面テクスチャ
+	Matrix		Mat;	// 回転行列
+}g_Field;							// フィールドワーク
 
 /*=====================================================================
 Title更新関数
@@ -48,31 +55,31 @@ void UpdateTitle()
 	{	// タックル１
 		GoNextPhase(GetPhaseGameTackle1Func());
 	}
-
+	
 
 	if (GetKeyboardPress(DIK_UP))
 	{
-		g_Player->WldMtx._43 += 1.0f;
+		g_mdlPlayer->WldMtx._43 += 1.0f;
 	}
 	if (GetKeyboardPress(DIK_DOWN))
 	{
-		g_Player->WldMtx._43 -= 1.0f;
+		g_mdlPlayer->WldMtx._43 -= 1.0f;
 	}
 	if (GetKeyboardPress(DIK_LEFT))
 	{
-		g_Player->WldMtx._41 -= 1.0f;
+		g_mdlPlayer->WldMtx._41 -= 1.0f;
 	}
 
 	if (GetKeyboardPress(DIK_RIGHT))
 	{
-		g_Player->WldMtx._41 += 1.0f;
+		g_mdlPlayer->WldMtx._41 += 1.0f;
 	}
-
-	Vec4 vc(g_Player->WldMtx.m[3]);
+	g_mdlPlayer->WldMtx._44 -= 0.01f;
+	Vec4 vc(g_mdlPlayer->WldMtx.m[3]);
 	PrintDebugProc("プレイヤー位置:%vec4", vc);
 
 	PrintDebugProc("オフセット座標変更↑↓←→");
-
+	//g_modelCity->WldMtx = g_mdlPlayer->WldMtx;
 }
 
 /*=====================================================================
@@ -80,8 +87,7 @@ Title描画関数
 =====================================================================*/
 void DrawTitle()
 {
-	DrawModel(g_Player);
-	DrawModel(g_Enemy);
+	DrawModel(g_mdlPlayer);
 }
 
 /*=====================================================================
@@ -103,8 +109,7 @@ void InitTitle(bool isFirst)
 		//---------------------------------------------------------------------
 		g_Sound = MySoundCreate("data/BGM/bgm000.wav");
 
-		g_Player = CreateModel("data/MODEL/Player.x");
-		g_Enemy = CreateModel("data/MODEL/enemy.x");
+		g_mdlPlayer = CreateModel("data/MODEL/Player.x");
 
 	}
 
@@ -114,8 +119,7 @@ void InitTitle(bool isFirst)
 
 	MySoundPlayEternal(g_Sound);	// 永遠再生
 
-	GetMatrix(&g_Player->WldMtx);
-	GetMatrix(&g_Enemy->WldMtx,&Vec3(0,0,0),&Vec3(0,0,0),&Vec3(10.0f,10.0f,10.0f));
+	GetMatrix(&g_mdlPlayer->WldMtx);
 
 }
 
@@ -144,8 +148,7 @@ void UninitTitle(bool isEnd)
 		//---------------------------------------------------------------------
 		//	リソース開放処理
 		//---------------------------------------------------------------------
-		DeleteModel(&g_Player);
-		DeleteModel(&g_Enemy);
+		DeleteModel(&g_mdlPlayer);
 		MySoundDeleteAuto(&g_Sound);// 増やしたものも一気に開放
 	}
 

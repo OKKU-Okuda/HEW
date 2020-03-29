@@ -371,7 +371,7 @@ void DeleteModel(Xmodel** ppModel)
 	{
 		if ((*ppModel)->pMaterial[adr].pTextureFilename)
 		{
-			/*int a=*/((Texture)(*ppModel)->pMaterial[adr].pTextureFilename)->Release();
+			((Texture)(*ppModel)->pMaterial[adr].pTextureFilename)->Release();
 		}
 	}
 
