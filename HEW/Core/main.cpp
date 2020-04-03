@@ -41,7 +41,7 @@ void Draw(void);
 void InitGameResource();
 void UninitGameResource();
 
-#ifdef _DEBUG
+#ifdef ppap//_DEBUG
 void DrawFPS(void);
 #endif
 

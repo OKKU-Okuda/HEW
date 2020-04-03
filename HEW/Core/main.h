@@ -51,7 +51,7 @@
 #define	NUM_VERTEX		(4)		// 頂点数
 #define	NUM_POLYGON		(2)		// ポリゴン数
 
-#define SAFE_RELEASE(ptr)		{ if(ptr) { (ptr)->Release(); (ptr) = NULL; } }		// Resource開放ヘルパーマクロ
+#define SAFE_RELEASE(ptr)		{ if((ptr)) { (ptr)->Release(); (ptr) = NULL; } }		// Resource開放ヘルパーマクロ
 #define SAFE_NUMBER(x,mi,ma)	{ x = max(min(x,ma),mi); }							// ナンバーチェック(数字が範囲外の場合上限か下限が代入される)
 #define D3DDEVICE				LPDIRECT3DDEVICE9 pDevice = GetDevice();			// ゲットデバイス簡略化ﾏｸﾛ
 
