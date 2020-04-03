@@ -14,6 +14,17 @@
 #include "../Core/directx_Helper3D.h"
 #include "Phase_Title.h"	
 #include "Phase_GameTackle1.h"
+
+// タイトル仕様
+// タイトルに進めるボタンを3つほど用意
+// 設定、退出、結果、ゲーム開始
+// 背景は動かしたい
+// カーソルをモンハンワールドっぽく
+// タイトルロゴをダイナミックに動かしてしゅつげんさせたい
+// 後ろはビルボードで動かす
+// 
+
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -22,10 +33,24 @@
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
 
+// タイトルランキングオブジェクト
+enum TITLE_BOTTON {
+	BOTTON_STRAT,		// 開始ボタン
+	BOTTON_RANKING,		// ランキングボタン
+	BOTTON_CONFIG,		// 設定ボタン
+	BOTTON_EXIT,		// 退出ボタン
+
+	MAX_TITLEBOTTOM		/*ボタン数*/
+};
+
 
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
+
+static void SetTitleVertexColor(VERTEX_2D *vtx_data, Color nColor);
+static void MakeTitleVertex(int num, VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size);
+static void SetTitleVertex(VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size);
 
 //---------------------------------------------------------------------
 //	グローバル変数
@@ -36,6 +61,10 @@ static PHASE_FUNC	g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
 static MySound		g_Sound;
 static Model		g_mdlPlayer;
 
+static struct {
+	VERTEX_2D	vtx[NUM_VERTEX];
+	Texture		tex;
+}g_Botton[MAX_TITLEBOTTOM];			// ボタンワーク
 
 static struct {
 	VtxBuff		pVtx;	// 頂点バッファ
@@ -74,7 +103,7 @@ void UpdateTitle()
 	{
 		g_mdlPlayer->WldMtx._41 += 1.0f;
 	}
-	g_mdlPlayer->WldMtx._44 -= 0.01f;
+	//g_mdlPlayer->WldMtx._44 -= 0.01f;
 	Vec4 vc(g_mdlPlayer->WldMtx.m[3]);
 	PrintDebugProc("プレイヤー位置:%vec4", vc);
 
@@ -87,7 +116,22 @@ Title描画関数
 =====================================================================*/
 void DrawTitle()
 {
+	D3DDEVICE;
+
 	DrawModel(g_mdlPlayer);
+
+
+	pDevice->SetFVF(FVF_VERTEX_2D);
+	for (int i = 0; i < MAX_TITLEBOTTOM; i++)
+	{	// タイトルボタンの描画
+		pDevice->SetTexture(0, g_Botton[i].tex);
+		pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Botton[i].vtx, sizeof(VERTEX_2D));
+	}
+
+
+
+
+
 }
 
 /*=====================================================================
@@ -107,6 +151,13 @@ void InitTitle(bool isFirst)
 		//---------------------------------------------------------------------
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
+		D3DDEVICE;
+
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Start.png",		&g_Botton[BOTTON_STRAT].tex);
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Ranking.png",	&g_Botton[BOTTON_RANKING].tex);
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Config.png",		&g_Botton[BOTTON_CONFIG].tex);
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Exit.png",		&g_Botton[BOTTON_EXIT].tex);
+
 		g_Sound = MySoundCreate("data/BGM/bgm000.wav");
 
 		g_mdlPlayer = CreateModel("data/MODEL/Player.x");
@@ -120,6 +171,12 @@ void InitTitle(bool isFirst)
 	MySoundPlayEternal(g_Sound);	// 永遠再生
 
 	GetMatrix(&g_mdlPlayer->WldMtx);
+
+	// ボタンの頂点の設置
+	MakeTitleVertex(0, g_Botton[BOTTON_STRAT].vtx,		&Vec3(SCREEN_CENTER_X, 100, 0), &Vec2(200, 45));
+	MakeTitleVertex(0, g_Botton[BOTTON_RANKING].vtx,	&Vec3(SCREEN_CENTER_X, 200, 0), &Vec2(200, 45));
+	MakeTitleVertex(0, g_Botton[BOTTON_CONFIG].vtx,		&Vec3(SCREEN_CENTER_X, 300, 0), &Vec2(200, 45));
+	MakeTitleVertex(0, g_Botton[BOTTON_EXIT].vtx,		&Vec3(SCREEN_CENTER_X, 400, 0), &Vec2(200, 45));
 
 }
 
@@ -150,6 +207,12 @@ void UninitTitle(bool isEnd)
 		//---------------------------------------------------------------------
 		DeleteModel(&g_mdlPlayer);
 		MySoundDeleteAuto(&g_Sound);// 増やしたものも一気に開放
+
+		// ボタンテスクチャの開放
+		for (int i = 0; i < MAX_TITLEBOTTOM; i++)
+		{
+			SAFE_RELEASE(g_Botton[i].tex)
+		}
 	}
 
 }
@@ -161,3 +224,83 @@ PHASE_FUNC* GetPhaseTitleFunc()
 {
 	return &g_PhaseFunc;
 }
+
+/*=====================================================================
+普遍的に頂点設置関数(ノーマル)(cpp_func)
+	戻り値：void
+	引数：
+	int num					=0:obj全体にテクスチャを張るように座標を設定する
+							=1:しない
+	VERTEX_2D *vtx_data		:頂点でーた（４つの限定）
+	 D3DXVECTOR3 *Pos,		:中心座標
+	 D3DXVECTOR2 *Size		:中心からのサイズ
+=====================================================================*/
+void MakeTitleVertex(int num, VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size)
+{
+	// 反射職の設定
+	SetTitleVertexColor(vtx_data, D3DCOLOR_RGBA(0xff, 0xff, 0xff, 0xff));
+
+	// パースペクティブコレクト
+	(vtx_data)->rhw =
+		(vtx_data + 1)->rhw =
+		(vtx_data + 2)->rhw =
+		(vtx_data + 3)->rhw = 1.0f;
+
+	// 頂点座標
+	(vtx_data)->vtx = D3DXVECTOR3(Pos->x - Size->x, Pos->y - Size->y, 0.0f);
+	(vtx_data + 1)->vtx = D3DXVECTOR3(Pos->x + Size->x, Pos->y - Size->y, 0.0f);
+	(vtx_data + 2)->vtx = D3DXVECTOR3(Pos->x - Size->x, Pos->y + Size->y, 0.0f);
+	(vtx_data + 3)->vtx = D3DXVECTOR3(Pos->x + Size->x, Pos->y + Size->y, 0.0f);
+
+	// 第一引数で０指定があれば
+	if (num == 0)
+	{
+		// テクスチャ座標
+		(vtx_data)->tex = D3DXVECTOR2(0.01f, 0.01f);
+		(vtx_data + 1)->tex = D3DXVECTOR2(0.99f, 0.01f);
+		(vtx_data + 2)->tex = D3DXVECTOR2(0.01f, 0.99f);
+		(vtx_data + 3)->tex = D3DXVECTOR2(0.99f, 0.99f);
+	}
+
+	return;
+}
+
+/*=====================================================================
+カラー設置関数(ノーマル) (cpp_func)
+	戻り値：void
+	引数：
+	VERTEX_2D *vtx_data		:頂点でーた（４つの限定）
+ Color nColor			: 新しいカラー
+=====================================================================*/
+void SetTitleVertexColor(VERTEX_2D *vtx_data, Color nColor)
+{
+	// 反射職の設定
+	(vtx_data)->diffuse =
+		(vtx_data + 1)->diffuse =
+		(vtx_data + 2)->diffuse =
+		(vtx_data + 3)->diffuse = nColor;
+
+}
+
+/*=====================================================================
+頂点の設置を行う関数(cpp_func)
+	戻り値：void
+	引数：VERTEX_2D *vtx_data:頂点(4つの頂点限定)
+	Vec3 *Pos,	:中心座標
+	Vec2 *Size	:中心からのサイズ
+=====================================================================*/
+void SetTitleVertex(VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size)
+{
+	vtx_data->vtx.x = Pos->x - Size->x;
+	vtx_data->vtx.y = Pos->y - Size->y;
+
+	(vtx_data + 1)->vtx.x = Pos->x + Size->x;
+	(vtx_data + 1)->vtx.y = Pos->y - Size->y;
+
+	(vtx_data + 2)->vtx.x = Pos->x - Size->x;
+	(vtx_data + 2)->vtx.y = Pos->y + Size->y;
+
+	(vtx_data + 3)->vtx.x = Pos->x + Size->x;
+	(vtx_data + 3)->vtx.y = Pos->y + Size->y;
+}
+
