@@ -15,6 +15,7 @@
 #include "Phase_Title.h"	
 #include "Phase_GameTackle1.h"
 
+
 // タイトル仕様
 // タイトルに進めるボタンを3つほど用意
 // 設定、退出、結果、ゲーム開始
@@ -28,6 +29,10 @@
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
+
+// プレイヤーの基本立ち位置
+#define PLAYER_POS	(&Vec3(40.0f, 0.0f, -125.0f))
+#define PLAYER_ROT	(&Vec3(0, 0.5f, 0))
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -59,7 +64,11 @@ static void SetTitleVertex(VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size);
 // 画面遷移基本関数群をまとめておく
 static PHASE_FUNC	g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
 static MySound		g_Sound;
-static Model		g_mdlPlayer;
+
+static struct {
+	Model		model;		// プレイヤーモデル
+	float		sclYrot;	// 大きくする演出の際の絶対値サイン関数
+}g_Player;							// プレイヤーワーク
 
 static struct {
 	VERTEX_2D	vtx[NUM_VERTEX];
@@ -67,8 +76,8 @@ static struct {
 }g_Botton[MAX_TITLEBOTTOM];			// ボタンワーク
 
 static struct {
-	VtxBuff		pVtx;	// 頂点バッファ
-	Texture		pTex;	// 地面テクスチャ
+	VtxBuff		pvtx;	// 頂点バッファ
+	Texture		tex;	// 地面テクスチャ
 	Matrix		Mat;	// 回転行列
 }g_Field;							// フィールドワーク
 
@@ -85,26 +94,19 @@ void UpdateTitle()
 		GoNextPhase(GetPhaseGameTackle1Func());
 	}
 	
+	// プレイヤーの縦に大きくなる演出
+	{
+		float sclY = 1.0f;
 
-	if (GetKeyboardPress(DIK_UP))
-	{
-		g_mdlPlayer->WldMtx._43 += 1.0f;
-	}
-	if (GetKeyboardPress(DIK_DOWN))
-	{
-		g_mdlPlayer->WldMtx._43 -= 1.0f;
-	}
-	if (GetKeyboardPress(DIK_LEFT))
-	{
-		g_mdlPlayer->WldMtx._41 -= 1.0f;
-	}
+		g_Player.sclYrot += 0.079f;
+		sclY += fabsf(sinf(g_Player.sclYrot)) * 0.07f;
 
-	if (GetKeyboardPress(DIK_RIGHT))
-	{
-		g_mdlPlayer->WldMtx._41 += 1.0f;
+		GetMatrix(&g_Player.model->WldMtx, PLAYER_POS, PLAYER_ROT, &Vec3(1.0f, sclY, 1.0f));// プレイヤー立ち位置
+
+		
 	}
 	//g_mdlPlayer->WldMtx._44 -= 0.01f;
-	Vec4 vc(g_mdlPlayer->WldMtx.m[3]);
+	Vec4 vc(g_Player.model->WldMtx.m[3]);
 	PrintDebugProc("プレイヤー位置:%vec4", vc);
 
 	PrintDebugProc("オフセット座標変更↑↓←→");
@@ -118,7 +120,9 @@ void DrawTitle()
 {
 	D3DDEVICE;
 
-	DrawModel(g_mdlPlayer);
+	Draw3DVertexBuffer(g_Field.tex, g_Field.pvtx, &g_Field.Mat);
+
+	DrawModel(g_Player.model);
 
 
 	pDevice->SetFVF(FVF_VERTEX_2D);
@@ -153,30 +157,41 @@ void InitTitle(bool isFirst)
 		//---------------------------------------------------------------------
 		D3DDEVICE;
 
+		// ボタンテクスチャの読み込み
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Start.png",		&g_Botton[BOTTON_STRAT].tex);
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Ranking.png",	&g_Botton[BOTTON_RANKING].tex);
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Config.png",		&g_Botton[BOTTON_CONFIG].tex);
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Exit.png",		&g_Botton[BOTTON_EXIT].tex);
 
-		g_Sound = MySoundCreate("data/BGM/bgm000.wav");
+		g_Sound = MySoundCreate("data/BGM/Title.wav");
 
-		g_mdlPlayer = CreateModel("data/MODEL/Player.x");
+		g_Player.model = CreateModel("data/MODEL/Player.x");
+
+		// 地面関係
+		g_Field.pvtx = Create3DPolygon(&Vec2(400.0f, 400.0f));
+		GetMatrix(&g_Field.Mat, &Vec3(0, 0, -200.0f), &Vec3(D3DX_PI/2, 0, 0));
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/grass.png", &g_Field.tex);
 
 	}
-
+	MySoundSetMasterVolume(0.4f);
 	//---------------------------------------------------------------------
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
 
+	// カメラ
+	GetCamera()->pos = Vec3(0.0f, 50.0f, -200.0f);	
+	GetCamera()->at = Vec3(0, 0.0f, 0);
+
+	g_Player.sclYrot = 0.0f;
+
 	MySoundPlayEternal(g_Sound);	// 永遠再生
 
-	GetMatrix(&g_mdlPlayer->WldMtx);
 
 	// ボタンの頂点の設置
-	MakeTitleVertex(0, g_Botton[BOTTON_STRAT].vtx,		&Vec3(SCREEN_CENTER_X, 100, 0), &Vec2(200, 45));
-	MakeTitleVertex(0, g_Botton[BOTTON_RANKING].vtx,	&Vec3(SCREEN_CENTER_X, 200, 0), &Vec2(200, 45));
-	MakeTitleVertex(0, g_Botton[BOTTON_CONFIG].vtx,		&Vec3(SCREEN_CENTER_X, 300, 0), &Vec2(200, 45));
-	MakeTitleVertex(0, g_Botton[BOTTON_EXIT].vtx,		&Vec3(SCREEN_CENTER_X, 400, 0), &Vec2(200, 45));
+	MakeTitleVertex(0, g_Botton[BOTTON_STRAT].vtx,		&Vec3(SCREEN_CENTER_X/2, 300, 0), &Vec2(200, 45));
+	MakeTitleVertex(0, g_Botton[BOTTON_RANKING].vtx,	&Vec3(SCREEN_CENTER_X/2, 400, 0), &Vec2(200, 45));
+	MakeTitleVertex(0, g_Botton[BOTTON_CONFIG].vtx,		&Vec3(SCREEN_CENTER_X/2, 500, 0), &Vec2(175, 45));
+	MakeTitleVertex(0, g_Botton[BOTTON_EXIT].vtx,		&Vec3(SCREEN_CENTER_X/2, 600, 0), &Vec2(150, 45));
 
 }
 
@@ -205,7 +220,7 @@ void UninitTitle(bool isEnd)
 		//---------------------------------------------------------------------
 		//	リソース開放処理
 		//---------------------------------------------------------------------
-		DeleteModel(&g_mdlPlayer);
+		DeleteModel(&g_Player.model);
 		MySoundDeleteAuto(&g_Sound);// 増やしたものも一気に開放
 
 		// ボタンテスクチャの開放

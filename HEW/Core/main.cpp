@@ -26,6 +26,9 @@
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
 #define WINDOW_NAME		"(/・ω・)/"		// ウインドウのキャプション名
 
+#define PASS_WINDOWMODE		(true)			// 起動時に表示方法選択をパスするか(パス時、ウィンドウモードになる）
+#define USE_TIMESTOPMODE	(true)			// 更新をパスして時間停止を行える機工を追加する(F2)
+
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
@@ -41,10 +44,6 @@ void Draw(void);
 void InitGameResource();
 void UninitGameResource();
 
-#ifdef ppap//_DEBUG
-void DrawFPS(void);
-#endif
-
 //*****************************************************************************
 // グローバル変数:
 //*****************************************************************************
@@ -52,9 +51,10 @@ static LPDIRECT3D9			g_pD3D = NULL;			// Direct3D オブジェクト
 static LPDIRECT3DDEVICE9	g_pD3DDevice = NULL;	// Deviceオブジェクト(描画に必要)
 static PHASE_FUNC			g_Phase;				// メイン画面遷移データ
 static HWND					g_hWnd;					// ウィンドウハンドル
-#ifdef _DEBUG
-//static LPD3DXFONT			g_pD3DXFont = NULL;		// フォントへのポインタ
 static int					g_nCountFPS;			// FPSカウンタ
+
+#if USE_TIMESTOPMODE
+static bool					g_isTimeStop;			// 時間停止flag(更新関数をパスする)
 #endif
 
 //=============================================================================
@@ -136,6 +136,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 						hInstance,
 						NULL);
 
+#if !PASS_WINDOWMODE // 表示方法を行うか否か
+
 	// 初期化処理(ウィンドウを作成してから行う)
 	int id = MessageBox(NULL, "Windowモードでプレイしますか？", "起動モード", MB_YESNOCANCEL | MB_ICONQUESTION);
 
@@ -152,6 +154,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return -1;
 		break;
 	}
+
+#else
+	mode = true;
+#endif
 
 	if(FAILED(Init(hInstance, g_hWnd, mode)))
 	{
@@ -344,11 +350,6 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);		// 最初のアルファ引数
 	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);		// ２番目のアルファ引数
 
-#ifdef _DEBUG
-//	// 情報表示用フォントを設定
-//	D3DXCreateFont(g_pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
-//					OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &g_pD3DXFont);
-#endif
 	// 入力処理の初期化
 	InitInput(hInstance, hWnd);
 
@@ -372,6 +373,11 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// 一番最初のフェーズはmainで初期化
 	g_Phase.Init(false);	
+
+#if USE_TIMESTOPMODE
+	// 時間の停止初期化
+	g_isTimeStop = false;	
+#endif
 	return S_OK;
 }
 
@@ -394,14 +400,6 @@ void Uninit(void)
 
 	// デバッグの終了化
 	UninitDebugProc();
-
-#ifdef _DEBUG
-	//if(g_pD3DXFont != NULL)
-	//{// 情報表示用フォントの開放
-	//	g_pD3DXFont->Release();
-	//	g_pD3DXFont = NULL;
-	//}
-#endif
 
 	if(g_pD3DDevice != NULL)
 	{// デバイスの開放
@@ -430,10 +428,23 @@ void Uninit(void)
 //=============================================================================
 void Update(void)
 {
-	PrintDebugProc("FPS:%d", g_nCountFPS);
-
 	// 入力更新
 	UpdateInput();
+
+
+#if USE_TIMESTOPMODE
+	if (GetKeyboardTrigger(DIK_F2))
+	{	// F2で反転
+		g_isTimeStop = !g_isTimeStop;
+	}
+
+	if (g_isTimeStop == true)
+	{	// 時間停止なら更新系スキップ
+		return;
+	}
+#endif
+
+	PrintDebugProc("FPS:%d", g_nCountFPS);
 
 	// フェーズ更新処理
 	g_Phase.Update();
@@ -450,26 +461,27 @@ void Update(void)
 //=============================================================================
 void Draw(void)
 {
+#if 0
 	// バックバッファ＆Ｚバッファのクリア
 	g_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(100, 100, 200, 100), 1.0f, 0);
-
+#else
+	g_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 100), 1.0f, 0);
+#endif
 	// カメラ情報からマトリクス算出
 	SetCamera();	
 
 	// Direct3Dによる描画の開始
 	if(SUCCEEDED(g_pD3DDevice->BeginScene()))
 	{
-		// フェード描画
-		DrawFade();
 
 		// フェーズ描画
 		g_Phase.Draw();
 
-#ifdef _DEBUG
-		// デバッグ表示
-		//DrawFPS();
+		// フェード描画
+		DrawFade();
+
+		// デバッグ文字列描画
 		DrawDebugProc();
-#endif
 
 		// Direct3Dによる描画の終了
 		g_pD3DDevice->EndScene();
@@ -503,18 +515,3 @@ HWND GetHandle()
 	return g_hWnd;
 }
 
-#ifdef PPAP// _DEBUG
-//=============================================================================
-// デバッグ表示
-//=============================================================================
-void DrawFPS(void)
-{
-	RECT rect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-	char str[256];
-
-	wsprintf(str, "FPS:%d\n", g_nCountFPS);
-
-	// テキスト描画
-	g_pD3DXFont->DrawText(NULL, str, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
-}
-#endif
