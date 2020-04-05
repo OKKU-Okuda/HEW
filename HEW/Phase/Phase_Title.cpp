@@ -11,10 +11,10 @@
 #include "../Core/camera.h"
 #include "../Core/debugproc.h"
 
-#include "../Core/directx_Helper3D.h"
-#include "Phase_Title.h"	
-#include "Phase_GameTackle1.h"
-
+#include "../Core/directx_Helper3D.h"	// 描画援助関数
+#include "Phase_Title.h"				
+#include "Phase_GameTackle1.h"			// 次のフェーズ
+#include "../Title_effect.h"			// タイトルエフェクト
 
 // タイトル仕様
 // タイトルに進めるボタンを3つほど用意
@@ -31,8 +31,11 @@
 //---------------------------------------------------------------------
 
 // プレイヤーの基本立ち位置
-#define PLAYER_POS	(&Vec3(40.0f, 0.0f, -125.0f))
-#define PLAYER_ROT	(&Vec3(0, 0.5f, 0))
+#define PLAYER_POSFROMZ	(600.0f)
+#define PLAYER_POSTOZ	(-125.0f)
+#define PLAYER_DISZ		(PLAYER_POSFROMZ - PLAYER_POSTOZ)
+#define PLAYER_POSRATE	(0.05f)
+#define PLAYER_ROT		(&Vec3(0, 0.5f, 0))
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -68,6 +71,7 @@ static MySound		g_Sound;
 static struct {
 	Model		model;		// プレイヤーモデル
 	float		sclYrot;	// 大きくする演出の際の絶対値サイン関数
+	float		posZadd;	// 基本値から加算したZ位置		
 }g_Player;							// プレイヤーワーク
 
 static struct {
@@ -75,11 +79,6 @@ static struct {
 	Texture		tex;
 }g_Botton[MAX_TITLEBOTTOM];			// ボタンワーク
 
-static struct {
-	VtxBuff		pvtx;	// 頂点バッファ
-	Texture		tex;	// 地面テクスチャ
-	Matrix		Mat;	// 回転行列
-}g_Field;							// フィールドワーク
 
 /*=====================================================================
 Title更新関数
@@ -88,29 +87,50 @@ void UpdateTitle()
 {
 	PrintDebugProc("タイトルフェーズ");
 
+	if (GetFade() != FADE_NONE)
+	{	// フェードが終了していない場合はこの更新をスキップ
+		return;
+	}
+
 	// 次のフェーズに行く
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{	// タックル１
-		GoNextPhase(GetPhaseGameTackle1Func());
+		//GoNextPhase(GetPhaseGameTackle1Func());
+		//GoNextPhase(GetPhaseTitleFunc());
+		SetTitle3DEffect();
+
 	}
 	
+	UpdateTitleEffect();
+
 	// プレイヤーの縦に大きくなる演出
+	float sclY = 1.0f;
+
+	g_Player.sclYrot += 0.079f;
+	sclY += fabsf(sinf(g_Player.sclYrot)) * 0.07f;
+
+	g_Player.posZadd = (PLAYER_DISZ - g_Player.posZadd) * PLAYER_POSRATE + g_Player.posZadd;
+	GetMatrix(&g_Player.model->WldMtx, &Vec3(35.0f, -30.0f, PLAYER_POSFROMZ - g_Player.posZadd), PLAYER_ROT, &Vec3(1.0f, sclY, 1.0f));// プレイヤー立ち位置
+	
+
+	// プレイヤーがある程度近い場合はボタンのα値を上げる
+	if (PLAYER_DISZ - g_Player.posZadd <= 1.0f)
 	{
-		float sclY = 1.0f;
+		for (int i = 0; i < MAX_TITLEBOTTOM; i++)
+		{
+			Color col = g_Botton[i].vtx[0].diffuse;
+			col.a += 0.01f;
 
-		g_Player.sclYrot += 0.079f;
-		sclY += fabsf(sinf(g_Player.sclYrot)) * 0.07f;
-
-		GetMatrix(&g_Player.model->WldMtx, PLAYER_POS, PLAYER_ROT, &Vec3(1.0f, sclY, 1.0f));// プレイヤー立ち位置
-
-		
+			g_Botton[i].vtx[0].diffuse =
+				g_Botton[i].vtx[1].diffuse =
+				g_Botton[i].vtx[2].diffuse =
+				g_Botton[i].vtx[3].diffuse = col;
+		}
 	}
-	//g_mdlPlayer->WldMtx._44 -= 0.01f;
+
+	// プレイヤー位置の表示
 	Vec4 vc(g_Player.model->WldMtx.m[3]);
 	PrintDebugProc("プレイヤー位置:%vec4", vc);
-
-	PrintDebugProc("オフセット座標変更↑↓←→");
-	//g_modelCity->WldMtx = g_mdlPlayer->WldMtx;
 }
 
 /*=====================================================================
@@ -118,11 +138,20 @@ Title描画関数
 =====================================================================*/
 void DrawTitle()
 {
+	DWORD	d3drslightning;
 	D3DDEVICE;
 
-	Draw3DVertexBuffer(g_Field.tex, g_Field.pvtx, &g_Field.Mat);
+	// ライティングの設定
+	pDevice->GetRenderState(D3DRS_LIGHTING, &d3drslightning);	
+	pDevice->SetRenderState(D3DRS_LIGHTING, true);
 
+	//pDevice->SetRenderState(D3DRS_AMBIENT, 0xff00ffff);
 	DrawModel(g_Player.model);
+
+	DrawTitleEffect();				// 周囲に舞っているエフェクトの描画
+
+	// 元のライティング状態に戻す
+	pDevice->SetRenderState(D3DRS_LIGHTING, d3drslightning);
 
 
 	pDevice->SetFVF(FVF_VERTEX_2D);
@@ -167,22 +196,25 @@ void InitTitle(bool isFirst)
 
 		g_Player.model = CreateModel("data/MODEL/Player.x");
 
-		// 地面関係
-		g_Field.pvtx = Create3DPolygon(&Vec2(400.0f, 400.0f));
-		GetMatrix(&g_Field.Mat, &Vec3(0, 0, -200.0f), &Vec3(D3DX_PI/2, 0, 0));
-		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/grass.png", &g_Field.tex);
-
+		InitTitleEffect(true);
 	}
-	MySoundSetMasterVolume(0.4f);
+	else
+	{
+		InitTitleEffect(false);
+	}
+
+	MySoundSetMasterVolume(0.2f);
 	//---------------------------------------------------------------------
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
 
 	// カメラ
-	GetCamera()->pos = Vec3(0.0f, 50.0f, -200.0f);	
-	GetCamera()->at = Vec3(0, 0.0f, 0);
+	GetCamera()->pos = Vec3(0.0f, 0.0f, -200.0f);	
+	GetCamera()->at = Vec3(0.0f, 0.0f, 0);
 
 	g_Player.sclYrot = 0.0f;
+	g_Player.posZadd = 0.0f;
+	GetMatrix(&g_Player.model->WldMtx, &Vec3(0.0f, 0.0f, PLAYER_POSFROMZ), PLAYER_ROT);// プレイヤー立ち位置
 
 	MySoundPlayEternal(g_Sound);	// 永遠再生
 
@@ -193,6 +225,12 @@ void InitTitle(bool isFirst)
 	MakeTitleVertex(0, g_Botton[BOTTON_CONFIG].vtx,		&Vec3(SCREEN_CENTER_X/2, 500, 0), &Vec2(175, 45));
 	MakeTitleVertex(0, g_Botton[BOTTON_EXIT].vtx,		&Vec3(SCREEN_CENTER_X/2, 600, 0), &Vec2(150, 45));
 
+	for (int i = 0; i < MAX_TITLEBOTTOM; i++)
+	{
+		SetTitleVertexColor(g_Botton[i].vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
+	}
+
+	
 }
 
 /*=====================================================================
@@ -220,6 +258,7 @@ void UninitTitle(bool isEnd)
 		//---------------------------------------------------------------------
 		//	リソース開放処理
 		//---------------------------------------------------------------------
+
 		DeleteModel(&g_Player.model);
 		MySoundDeleteAuto(&g_Sound);// 増やしたものも一気に開放
 
@@ -228,6 +267,12 @@ void UninitTitle(bool isEnd)
 		{
 			SAFE_RELEASE(g_Botton[i].tex)
 		}
+
+		UninitTitleEffect(true);
+	}
+	else
+	{
+		UninitTitleEffect(false);
 	}
 
 }
