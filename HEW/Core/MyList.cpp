@@ -336,7 +336,7 @@ void MyListDeleteObjectAll(MyList list)
 {
 	ListManager *manager = (ListManager*)list;
 
-	if (manager->ListData.numObj != 0)
+	while(manager->ListData.numObj != 0)
 	{
 		DelObjAndPool(manager, manager->Top_pt);
 	}
