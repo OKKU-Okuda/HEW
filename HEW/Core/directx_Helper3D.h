@@ -141,6 +141,15 @@ void Set3DTexPos(VERTEX_3D *vtx_data, int X_parts, int Y_parts, int nowX, int no
 void DrawModel(Xmodel* pModel);
 
 /*=====================================================================
+別行列使用モデル描画関数
+戻り値:void
+引数　:
+Xmodel* pModel		:モデル格納構造体
+D3DXMATRIX* pMat	：行列
+=====================================================================*/
+void DrawModelWithOtherMatrix(Xmodel* pModel, D3DXMATRIX* pMat);
+
+/*=====================================================================
 モデル作成関数
 	xfileモデルを読み込み、関連のテクスチャも読み込む関数
 	※ xfileで使用するテクスチャは同一ディレクトリ内に置くこと ※

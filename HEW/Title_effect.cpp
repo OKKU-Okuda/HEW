@@ -13,10 +13,10 @@
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 #define BOX_SIZEXYZ	(20.0f)
-#define NUM_ZANZO	(10)
+#define NUM_ZANZO	(15)
 #define SCL_SUB		(1.0f / NUM_ZANZO)
 #define EFFECT_RADIUS	(50.0f)
-#define EFFECT_POSZ_SET	(700.0f)
+#define EFFECT_POSZ_SET	(2000.0f)
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -44,12 +44,12 @@ typedef struct {
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-
+Matrix* BrendMatrix(Matrix* pMat, TITLE_3DEFFECT* pEffect, DWORD idx);
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
 static MyList		g_list3DEffect;		// 3Dボックスエフェクトのリスト	
-static LPD3DXMESH	g_box;				// ボックスのメッシュ
+static Model		g_modelbox;			// ボックスのメッシュ
 
 static struct {
 	Texture tex;	// 疑似ブラー表現用のテクスチャ
@@ -67,16 +67,16 @@ void SetTitle3DEffect()
 	// 拡張関数の引数と同じものを宣言
 	float len = 150;
 	float agl = 0;
-	float spd = 2;
+	float spd = 20;
 	Color col(0, 0, 0, 1);
 	Vec3 paddrot(0, 0, 0);
 
 	//len += rand() % 5;
 	agl += (rand() % 1000 / 1000.0f) * (2 * D3DX_PI);
 	spd += (rand() % 1000 / 1000.0f) * (2.0f);
-	paddrot.x = (rand() % 1000 / 2000.0f);
-	paddrot.y = (rand() % 1000 / 2000.0f);
-	paddrot.z = (rand() % 1000 / 2000.0f);
+	paddrot.x = (rand() % 1000 / 4000.0f);
+	paddrot.y = (rand() % 1000 / 4000.0f);
+	paddrot.z = (rand() % 1000 / 4000.0f);
 	SetTitle3DEffectEx(len, agl, spd, &col, &paddrot);
 }
 
@@ -121,7 +121,7 @@ void SetTitle3DEffectEx(float len, float agl, float spd, Color *col, Vec3* paddr
 			&Vec3(new_pt->obj[i].sclXYZ, new_pt->obj[i].sclXYZ, new_pt->obj[i].sclXYZ));
 
 		// ボックスの行列(スケール成分を除く）
-		GetMatrix(&new_pt->obj[i].matbox, &Vec3(new_pt->posXY.x, new_pt->posXY.y, new_pt->obj[i].posZ),
+		GetMatrix(&new_pt->obj[i].matbox, &Vec3(0, 0, 0),
 			&new_pt->obj[i].rot);
 
 		// 疑似ブラーの行列(スケール成分を除く)->かなり遠いので単位行列を代入
@@ -160,11 +160,17 @@ void UpdateTitleEffect()
 		work_pt->obj[work_pt->idx].posZ		= work_pt->obj[keep_idx].posZ - work_pt->spd;
 		work_pt->obj[work_pt->idx].sclXYZ	= 1.0f;
 
+		if (work_pt->obj[work_pt->idx].posZ < GetCamera()->pos.z)
+		{
+			MyListDeleteObject(g_list3DEffect, (void**)&work_pt);
+			continue;
+		}
+
 		// スケール行列
 		GetMatrix(&work_pt->obj[work_pt->idx].matScl);
 
 		// ボックスの行列(スケール成分を除く）
-		GetMatrix(&work_pt->obj[work_pt->idx].matbox, &Vec3(work_pt->posXY.x, work_pt->posXY.y, work_pt->obj[work_pt->idx].posZ),
+		GetMatrix(&work_pt->obj[work_pt->idx].matbox, &Vec3(0, 0, 0),
 			&work_pt->obj[work_pt->idx].rot);
 	}
 }
@@ -195,18 +201,11 @@ void DrawTitleEffect()
 		for (int i = 0; i < NUM_ZANZO; i++)
 		{
 			// ボックスの描画
-
-				// ワールドマトリックスの設定(スケール行列を掛け合わせた行列を使用）
-			pDevice->SetTransform(D3DTS_WORLD, &(work_pt->obj[i].matbox * work_pt->obj[i].matScl));
-
-				// テクスチャの設定
-			pDevice->SetTexture(0, NULL);
-
-				// モデルの描画
-			g_box->DrawSubset(0);
+			//DrawModelWithOtherMatrix(g_modelbox, &( work_pt->obj[i].matbox * work_pt->obj[i].matScl ));
+			DrawModelWithOtherMatrix(g_modelbox, BrendMatrix(&work_pt->obj[i].matbox, work_pt, i));
 
 			// 疑似ブラーの描画(スケール行列を掛け合わせた行列を使用）
-			Draw3DVertexBuffer(g_blur.tex, g_blur.vtx, &(work_pt->obj[i].matblur * work_pt->obj[i].matScl));
+//			Draw3DVertexBuffer(g_blur.tex, g_blur.vtx, &(work_pt->obj[i].matblur * work_pt->obj[i].matScl));
 		}
 	}
 
@@ -228,7 +227,7 @@ void InitTitleEffect(bool isFirstInit)
 		g_list3DEffect = MyListCreate(sizeof(TITLE_3DEFFECT));
 
 		// ボックスの作成
-		D3DXCreateBox(pDevice, BOX_SIZEXYZ, BOX_SIZEXYZ, BOX_SIZEXYZ, &g_box, NULL);
+		g_modelbox = CreateModel("data/MODEL/box.x");
 
 		// テクスチャの読み込み
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/blur.png", &g_blur.tex);
@@ -253,7 +252,19 @@ void UninitTitleEffect(bool isLastUninit)
 		// データの開放
 		SAFE_RELEASE(g_blur.vtx)
 		SAFE_RELEASE(g_blur.tex)
-		SAFE_RELEASE(g_box)
+		DeleteModel(&g_modelbox);
 		MyListDelete(&g_list3DEffect);
 	}
+}
+
+Matrix* BrendMatrix(Matrix* pMat, TITLE_3DEFFECT* pEffect,DWORD idx)
+{
+	*pMat = *pMat * (pEffect->obj[idx].matScl);		// スケール行列をかける
+
+	// オフセットもスケーリングされるので入れなおす
+	pMat->_41 = pEffect->posXY.x;
+	pMat->_42 = pEffect->posXY.y;
+	pMat->_43 = pEffect->obj[idx].posZ;
+
+	return pMat;
 }
