@@ -10,6 +10,7 @@
 
 #include "Core/camera.h"			// ビルぼ
 #include "Core/debugproc.h"			// デバッグ用
+#include "Core/fade.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -29,10 +30,8 @@ typedef struct {
 	struct {
 		Vec3  rot;		// 回転
 		Vec3  pos;		// 位置
-		float sclXYZ;	// 大きさ（xyz共通)
-		Matrix matScl;	// 変異していくスケール行列
+		DWORD  scl_idx;	// 使用スケール行列番地
 		Matrix matbox;	// ボックスの行列
-		Matrix matblur;	// ボックスの周りに出すビルボードの行列
 	}obj[NUM_ZANZO];
 
 	DWORD	idx;		// objの一番最新エフェクト番地
@@ -50,13 +49,9 @@ Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEffect, DW
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
-static MyList		g_list3DEffect;		// 3Dボックスエフェクトのリスト	
-static Model		g_modelbox;			// ボックスのメッシュ
-
-static struct {
-	Texture tex;	// 疑似ブラー表現用のテクスチャ
-	VtxBuff vtx;	// ポリゴン頂点バッファ
-}g_blur;								// ブラーワーク
+static Matrix		g_SclMatrix[NUM_ZANZO];		// スケール行列の事前演算格納用
+static MyList		g_list3DEffect;				// 3Dボックスエフェクトのリスト	
+static Model		g_modelbox;					// ボックスのメッシュ
 
 
 /*=====================================================================
@@ -76,9 +71,9 @@ void SetTitle3DEffect()
 	//len += rand() % 5;
 	agl += (rand() % 1000 / 1000.0f) * (2 * D3DX_PI);
 	//spd += (rand() % 1000 / 1000.0f) * (2.0f);
-	paddrot.x = (rand() % 1000 / 5000.0f);
-	paddrot.y = (rand() % 1000 / 5000.0f);
-	paddrot.z = (rand() % 1000 / 5000.0f);
+	paddrot.x = (rand() % 1000 / 6000.0f);
+	paddrot.y = (rand() % 1000 / 6000.0f);
+	paddrot.z = (rand() % 1000 / 6000.0f);
 
 	// 色の乱数指定(青系統)
 	col.r = rand() % 1000 / 1000.0f;
@@ -125,19 +120,11 @@ void SetTitle3DEffectEx(float len, float agl, float spd, Color *col, Vec3* paddr
 		new_pt->obj[i].pos.y		= new_pt->posXY.y;
 		new_pt->obj[i].pos.z		= posZ;
 
-		new_pt->obj[i].sclXYZ	= 1.0f - ((NUM_ZANZO - i)*SCL_SUB);
+		new_pt->obj[i].scl_idx = (NUM_ZANZO - 1) - i;
 		new_pt->obj[i].rot		= rot;
 
-		// スケール行列
-		GetMatrix(&new_pt->obj[i].matScl, &Vec3(0, 0, 0), &Vec3(0, 0, 0), 
-			&Vec3(new_pt->obj[i].sclXYZ, new_pt->obj[i].sclXYZ, new_pt->obj[i].sclXYZ));
-
 		// ボックスの行列(スケール成分を除く）
-		GetMatrix(&new_pt->obj[i].matbox, &Vec3(0, 0, 0),
-			&new_pt->obj[i].rot);
-
-		// 疑似ブラーの行列(スケール成分を除く)->かなり遠いので単位行列を代入
-		GetMatrix(&new_pt->obj[i].matblur, &new_pt->obj[i].pos);
+		GetMatrix(&new_pt->obj[i].matbox, &Vec3(0, 0, 0),&new_pt->obj[i].rot);
 	}
 }
 
@@ -160,38 +147,32 @@ void UpdateTitleEffect(float rot)
 		// 全要素数分スケール値を減少させる
 		for (int i = 0; i < NUM_ZANZO; i++)
 		{
-			work_pt->obj[i].sclXYZ -= SCL_SUB;
-
-			// スケール行列
-			GetMatrix(&work_pt->obj[i].matScl, &Vec3(0, 0, 0), &Vec3(0, 0, 0),
-				&Vec3(work_pt->obj[i].sclXYZ, work_pt->obj[i].sclXYZ, work_pt->obj[i].sclXYZ));
+			work_pt->obj[i].scl_idx++;
 		}
 
 		work_pt->idx = (work_pt->idx + 1) % NUM_ZANZO;	// 更新番地の変更
 
-		work_pt->obj[work_pt->idx].rot		= work_pt->obj[keep_idx].rot + work_pt->addrot;
-		work_pt->obj[work_pt->idx].sclXYZ	= 1.0f;
-
-		work_pt->obj[work_pt->idx].pos.x	= work_pt->posXY.x;
-		work_pt->obj[work_pt->idx].pos.y	= work_pt->posXY.y;
-		work_pt->obj[work_pt->idx].pos.z	= work_pt->obj[keep_idx].pos.z - work_pt->spd;
-
-		if (work_pt->obj[(work_pt->idx + 1) % NUM_ZANZO].pos.z < GetCamera()->pos.z)
+		if (work_pt->obj[work_pt->idx].pos.z < GetCamera()->pos.z)
 		{	// 最後尾のz値が視点のZ値よりも手前にある場合は削除
 			MyListDeleteObject(g_list3DEffect, (void**)&work_pt);
 			continue;
 		}
 
 		if (rot != 0.0f)
-		{
+		{	// 回転させる
 			Vec2 keep_pos = work_pt->posXY;
 
 			work_pt->posXY.x = (cosf(rot)*keep_pos.x) - (sinf(rot)*keep_pos.y);
 			work_pt->posXY.y = (sinf(rot)*keep_pos.x) + (cosf(rot)*keep_pos.y);
 		}
 
-		// スケール行列
-		GetMatrix(&work_pt->obj[work_pt->idx].matScl);
+		
+		work_pt->obj[work_pt->idx].rot		= work_pt->obj[keep_idx].rot + work_pt->addrot;
+		work_pt->obj[work_pt->idx].scl_idx	= 0;
+
+		work_pt->obj[work_pt->idx].pos.x	= work_pt->posXY.x;
+		work_pt->obj[work_pt->idx].pos.y	= work_pt->posXY.y;
+		work_pt->obj[work_pt->idx].pos.z	= work_pt->obj[keep_idx].pos.z - work_pt->spd;
 
 		// ボックスの行列(スケール成分を除く）
 		GetMatrix(&work_pt->obj[work_pt->idx].matbox, &Vec3(0, 0, 0),
@@ -208,7 +189,7 @@ void UpdateTitleEffect(float rot)
 =====================================================================*/
 void DrawTitleEffect()
 {
-	DWORD			d3drs_fog, d3drs_mode,d3drs_start, d3drs_end, d3drs_col;
+	DWORD			d3drs_fog, d3drs_mode, d3drs_start, d3drs_end, d3drs_col;
 	D3DMATERIAL9	matDef;
 	TITLE_3DEFFECT* work_pt = NULL;
 	Matrix			Mat;				// 演算保管用行列
@@ -225,35 +206,26 @@ void DrawTitleEffect()
 	pDevice->GetRenderState(D3DRS_FOGEND,		&d3drs_end);
 
 	// フォグ状態の設定
-	const float End = EFFECT_POSZ_SET - (NUM_ZANZO * 30);
+	const float End		= EFFECT_POSZ_SET - (NUM_ZANZO * 30);
 	const float Start	= End / 3.0f;
-
-	pDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_FOGCOLOR, Color(0, 0, 0, 1.0f));
+	pDevice->SetRenderState(D3DRS_FOGENABLE,	TRUE);
+	pDevice->SetRenderState(D3DRS_FOGCOLOR,		Color(0, 0, 0, 1.0f));
 	pDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);
-	pDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)&Start);
-	pDevice->SetRenderState(D3DRS_FOGEND,	*(DWORD*)&End);
+	pDevice->SetRenderState(D3DRS_FOGSTART,		*(DWORD*)&Start);
+	pDevice->SetRenderState(D3DRS_FOGEND,		*(DWORD*)&End);
 
 
 	// エフェクトの巡回
 	MyListResetIterator(g_list3DEffect, true);
 	while (MyListLoop(g_list3DEffect, (void**)&work_pt))
 	{
-		// 一番最新のビルボード行列の算出(スケールを除く)
-		GetBillboardMatrix(&work_pt->obj[work_pt->idx].matblur,
-			&work_pt->obj[work_pt->idx].pos);
-
-
 		for (int i = 0; i < NUM_ZANZO; i++)
 		{
+			// 色適用
 			g_modelbox->pMaterial->MatD3D.Diffuse = work_pt->color;
 
 			// ボックスの描画
-			//DrawModelWithOtherMatrix(g_modelbox, &( work_pt->obj[i].matbox * work_pt->obj[i].matScl ));
 			DrawModelWithOtherMatrix(g_modelbox, BrendMatrix(&Mat, &work_pt->obj[i].matbox, work_pt, i));
-
-			// 疑似ブラーの描画(スケール行列を掛け合わせた行列を使用）
-//			Draw3DVertexBuffer(g_blur.tex, g_blur.vtx, &(work_pt->obj[i].matblur * work_pt->obj[i].matScl));
 		}
 	}
 
@@ -277,20 +249,20 @@ void InitTitleEffect(bool isFirstInit)
 	if (isFirstInit == true)
 	{
 		D3DDEVICE;
-		
+		float		scl = 1.0f;
+
 		// リストの作成
 		g_list3DEffect = MyListCreate(sizeof(TITLE_3DEFFECT));
 
 		// ボックスの作成
 		g_modelbox = CreateModel("data/MODEL/box.x");
 
-		// テクスチャの読み込み
-		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/blur.png", &g_blur.tex);
-
-		// テクスチャ用ポリゴンの作成
-		g_blur.vtx = Create3DPolygon(&Vec2(BOX_SIZEXYZ, BOX_SIZEXYZ));
+		// スケール行列の事前演算
+		for (int i = 0; i < NUM_ZANZO; i++, scl -= SCL_SUB)
+		{
+			GetMatrix(&g_SclMatrix[i], &Vec3(0, 0, 0), &Vec3(0, 0, 0), &Vec3(scl, scl, scl));
+		}
 	}
-
 
 }
 
@@ -305,8 +277,6 @@ void UninitTitleEffect(bool isLastUninit)
 	if (isLastUninit == true)
 	{
 		// データの開放
-		SAFE_RELEASE(g_blur.vtx)
-		SAFE_RELEASE(g_blur.tex)
 		DeleteModel(&g_modelbox);
 		MyListDelete(&g_list3DEffect);
 	}
@@ -323,7 +293,7 @@ DWORD idx					：上記引数の残基番地
 =====================================================================*/
 Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEffect, DWORD idx)
 {
-	*pOutMat = *pInMat * (pEffect->obj[idx].matScl);		// スケール行列をかける
+	*pOutMat = *pInMat * g_SclMatrix[pEffect->obj[idx].scl_idx];		// スケール行列をかける
 
 	// オフセットもスケーリングされるので入れなおす
 	pOutMat->_41 = pEffect->obj[idx].pos.x;

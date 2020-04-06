@@ -93,15 +93,15 @@ void UpdateTitle()
 		return;
 	}
 
+	SetTitle3DEffect();
+	SetTitle3DEffect();
+	SetTitle3DEffect();
+
 	// 次のフェーズに行く
-	//if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN))
 	{	// タックル１
 		//GoNextPhase(GetPhaseGameTackle1Func());
-		//GoNextPhase(GetPhaseTitleFunc());
-		//SetTitle3DEffect();
-		SetTitle3DEffect();
-		SetTitle3DEffect();
-
+		GoNextPhase(GetPhaseTitleFunc());
 	}
 
 	if (GetKeyboardPress(DIK_LEFT))
