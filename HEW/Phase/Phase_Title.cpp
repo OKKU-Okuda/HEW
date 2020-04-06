@@ -79,6 +79,7 @@ static struct {
 	Texture		tex;
 }g_Botton[MAX_TITLEBOTTOM];			// ボタンワーク
 
+static float  rot_spd;
 
 /*=====================================================================
 Title更新関数
@@ -97,11 +98,29 @@ void UpdateTitle()
 	{	// タックル１
 		//GoNextPhase(GetPhaseGameTackle1Func());
 		//GoNextPhase(GetPhaseTitleFunc());
+		//SetTitle3DEffect();
+		SetTitle3DEffect();
 		SetTitle3DEffect();
 
 	}
-	
-	UpdateTitleEffect();
+
+	if (GetKeyboardPress(DIK_LEFT))
+	{
+		rot_spd += 0.002f;
+	}
+
+	if (GetKeyboardPress(DIK_RIGHT))
+	{
+		rot_spd -= 0.002f;
+	}
+
+	if (GetKeyboardTrigger(DIK_SPACE))
+	{
+		rot_spd = 0.0f;
+	}
+
+	SAFE_NUMBER(rot_spd, -0.05f, 0.05f);
+	UpdateTitleEffect(rot_spd);
 
 	// プレイヤーの縦に大きくなる演出
 	float sclY = 1.0f;
@@ -230,7 +249,7 @@ void InitTitle(bool isFirst)
 		SetTitleVertexColor(g_Botton[i].vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
 	}
 
-	
+	rot_spd = 0.0f;
 }
 
 /*=====================================================================
