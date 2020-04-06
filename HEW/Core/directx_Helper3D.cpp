@@ -235,6 +235,18 @@ void Set3DTexPos(VERTEX_3D *vtx_data, int X_parts, int Y_parts, int nowX, int no
 =====================================================================*/
 void DrawModel(Xmodel* pModel)
 {
+	DrawModelWithOtherMatrix(pModel, &pModel->WldMtx);
+}
+
+/*=====================================================================
+別行列使用モデル描画関数
+戻り値:void
+引数　:
+Xmodel* pModel		:モデル格納構造体
+D3DXMATRIX* pMat	：行列
+=====================================================================*/
+void DrawModelWithOtherMatrix(Xmodel* pModel, D3DXMATRIX* pMat)
+{
 	D3DDEVICE(pDevice);
 	D3DMATERIAL9 matDef;
 
@@ -242,7 +254,7 @@ void DrawModel(Xmodel* pModel)
 	pDevice->GetMaterial(&matDef);
 
 	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &pModel->WldMtx);
+	pDevice->SetTransform(D3DTS_WORLD, pMat);
 
 	for (DWORD adr = 0; adr < pModel->nNummat; adr++)
 	{
@@ -250,7 +262,7 @@ void DrawModel(Xmodel* pModel)
 		pDevice->SetMaterial(&pModel->pMaterial[adr].MatD3D);
 
 		// テクスチャの設定
-		pDevice->SetTexture(0,(Texture)pModel->pMaterial[adr].pTextureFilename);
+		pDevice->SetTexture(0, (Texture)pModel->pMaterial[adr].pTextureFilename);
 
 		// 描画
 		pModel->pMesh->DrawSubset(adr);

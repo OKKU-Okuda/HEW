@@ -93,7 +93,7 @@ void UpdateTitle()
 	}
 
 	// 次のフェーズに行く
-	if (GetKeyboardTrigger(DIK_RETURN))
+	//if (GetKeyboardTrigger(DIK_RETURN))
 	{	// タックル１
 		//GoNextPhase(GetPhaseGameTackle1Func());
 		//GoNextPhase(GetPhaseTitleFunc());
