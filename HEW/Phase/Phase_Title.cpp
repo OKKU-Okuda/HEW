@@ -16,16 +16,6 @@
 #include "Phase_GameTackle1.h"			// 次のフェーズ
 #include "../Title_effect.h"			// タイトルエフェクト
 
-// タイトル仕様
-// タイトルに進めるボタンを3つほど用意
-// 設定、退出、結果、ゲーム開始
-// 背景は動かしたい
-// カーソルをモンハンワールドっぽく
-// タイトルロゴをダイナミックに動かしてしゅつげんさせたい
-// 後ろはビルボードで動かす
-// 
-
-
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -39,6 +29,8 @@
 
 #define BASE_ALPHA		(0.45f)
 #define ADD_ALPHA		(0.05f)
+
+#define SIZE_SELECTEFFECT		(Vec2(350,90))
 
 #define SIZE_BOTTONSTART		(Vec2(200, 45))
 #define SIZE_BOTTONRANKING		(Vec2(200, 45))
@@ -71,7 +63,9 @@ enum TITLE_BOTTON {
 static void SetTitleVertexColor(VERTEX_2D *vtx_data, Color nColor);
 static void MakeTitleVertex(int num, VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size);
 static void SetTitleVertex(VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size);
-
+static void SetTitleTexPos(VERTEX_2D *vtx_data, int X_parts, int Y_parts, int nowX, int nowY);
+static void SetSelectEffect();
+static void UpdateSelectEffect();
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
@@ -103,6 +97,13 @@ static struct {
 	Texture    tex;				// テクスチャ
 	float	   col;				// 色
 }g_Logo;				// ロゴワーク
+
+static struct {
+	VERTEX_2D  vtx[NUM_VERTEX];	// ロゴ頂点
+	Texture    tex;				// テクスチャ
+	DWORD	   cnt_show;		// 表示カウント
+	bool	   isShow;			// 表示flag
+}g_Effect;
 
 /*=====================================================================
 Title更新関数
@@ -183,17 +184,21 @@ void UpdateTitle()
 			{
 				g_Select = (g_Select - 1) % MAX_TITLEBOTTOM;
 				MySoundPlayOnce(g_soundSelect);
+				SetSelectEffect();
 			}
 
 			else if (GetKeyboardTrigger(DIK_DOWN))
 			{
 				g_Select = (g_Select + 1) % MAX_TITLEBOTTOM;
 				MySoundPlayOnce(g_soundSelect);
+				SetSelectEffect();
 			}
+
+			UpdateSelectEffect();
 
 			for (int i = 0; i < MAX_TITLEBOTTOM; i++)
 			{
-				float scl;
+				float scl;	// ボタン拡大倍率
 
 				if (g_Botton[i].col_argb < BASE_ALPHA)
 				{
@@ -253,11 +258,19 @@ void DrawTitle()
 
 
 	pDevice->SetFVF(FVF_VERTEX_2D);
+
 	for (int i = 0; i < MAX_TITLEBOTTOM; i++)
 	{	// タイトルボタンの描画
 		pDevice->SetTexture(0, g_Botton[i].tex);
 		pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Botton[i].vtx, sizeof(VERTEX_2D));
 	}
+
+	if (g_Effect.isShow)
+	{
+		pDevice->SetTexture(0, g_Effect.tex);
+		pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Effect.vtx, sizeof(VERTEX_2D));
+	}
+
 
 	pDevice->SetTexture(0, g_Logo.tex);
 	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Logo.vtx, sizeof(VERTEX_2D));
@@ -291,6 +304,9 @@ void InitTitle(bool isFirst)
 
 		// タイトルロゴのテクスチャ読み込み
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/TitleLogo_000.png", &g_Logo.tex);
+
+		// セレクトエフェクトのテクスチャ読み込み
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/select_effect.png", &g_Effect.tex);
 
 		g_soundBGM		= MySoundCreate("data/BGM/Title.wav");
 		g_soundSelect	= MySoundCreate("data/SE/select.wav");
@@ -352,6 +368,10 @@ void InitTitle(bool isFirst)
 	SetTitleVertexColor(g_Logo.vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
 	g_Logo.col = 0.0f;
 
+	// エフェクト頂点の設置
+	MakeTitleVertex(0, g_Effect.vtx, &Vec3(SCREEN_CENTER_X, SCREEN_CENTER_Y / 3.0f, 0), &SIZE_SELECTEFFECT);
+	g_Effect.cnt_show	= 0ul;
+	g_Effect.isShow		= false;
 	rot_spd		= 0.0f;
 	g_Select	= BOTTON_STRAT;
 }
@@ -391,6 +411,9 @@ void UninitTitle(bool isEnd)
 		{
 			SAFE_RELEASE(g_Botton[i].tex)
 		}
+
+		SAFE_RELEASE(g_Logo.tex);
+		SAFE_RELEASE(g_Effect.tex);
 
 		UninitTitleEffect(true);
 	}
@@ -488,3 +511,57 @@ void SetTitleVertex(VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size)
 	(vtx_data + 3)->vtx.y = Pos->y + Size->y;
 }
 
+/*=====================================================================
+テクスチャ2D座標設置関数(cpp_func)
+	戻り値：void
+	引数：
+VERTEX_2D *vtx_data,	:4つの頂点配列
+int X_parts,			:ｘ分割数
+int Y_parts,			:ｙ分割数
+int nowX,				:x位置
+int nowY				:y位置
+=====================================================================*/
+void SetTitleTexPos(VERTEX_2D *vtx_data, int X_parts, int Y_parts, int nowX, int nowY)
+{
+	D3DXVECTOR2 size = D3DXVECTOR2(1.0f / X_parts, 1.0f / Y_parts);
+
+	(vtx_data)->tex.x =
+		(vtx_data + 2)->tex.x = size.x*nowX;
+	(vtx_data + 1)->tex.x =
+		(vtx_data + 3)->tex.x = size.x*(nowX + 1);
+
+	(vtx_data)->tex.y =
+		(vtx_data + 1)->tex.y = size.y*nowY;
+	(vtx_data + 2)->tex.y =
+		(vtx_data + 3)->tex.y = size.y*(nowY + 1);
+
+}
+
+/*=====================================================================
+選択時発生エフェクト設置関数(cpp_func)
+=====================================================================*/
+void SetSelectEffect()
+{
+	g_Effect.isShow		= true;
+	g_Effect.cnt_show	= 0ul;
+
+	SetTitleVertex(g_Effect.vtx, &g_Botton[g_Select].pos, &SIZE_SELECTEFFECT);
+	SetTitleTexPos(g_Effect.vtx, 1, 7, 0, g_Effect.cnt_show);
+}
+
+void UpdateSelectEffect()
+{
+	if (g_Effect.isShow == false)
+	{
+		return;
+	}
+
+	SetTitleTexPos(g_Effect.vtx, 1, 7, 0, g_Effect.cnt_show++/2);
+	
+
+	if (g_Effect.cnt_show % 15 == 0)
+	{
+		g_Effect.isShow = false;
+	}
+
+}
