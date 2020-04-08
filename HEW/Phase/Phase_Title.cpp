@@ -39,6 +39,16 @@
 
 #define BASE_ALPHA		(0.45f)
 #define ADD_ALPHA		(0.05f)
+
+#define SIZE_BOTTONSTART		(Vec2(200, 45))
+#define SIZE_BOTTONRANKING		(Vec2(200, 45))
+#define SIZE_BOTTONCONFIG		(Vec2(175, 45))
+#define SIZE_BOTTONEXIT			(Vec2(150, 45))
+	
+#define POS_BOTTONSTART		(Vec3(SCREEN_CENTER_X/1.5f, 350, 0))
+#define POS_BOTTONRANKING	(Vec3(SCREEN_CENTER_X/1.5f, 450, 0))
+#define POS_BOTTONCONFIG	(Vec3(SCREEN_CENTER_X/1.5f, 550, 0))
+#define POS_BOTTONEXIT		(Vec3(SCREEN_CENTER_X/1.5f, 650, 0))
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
@@ -79,6 +89,8 @@ static struct {
 
 static struct {
 	VERTEX_2D	vtx[NUM_VERTEX];
+	Vec3		pos;				// ロゴの位置
+	Vec2		size;				// ロゴサイズ
 	Texture		tex;
 	float		col_argb;			// 色の全体値調整用変数				
 }g_Botton[MAX_TITLEBOTTOM];			// ボタンワーク
@@ -173,7 +185,7 @@ void UpdateTitle()
 				MySoundPlayOnce(g_soundSelect);
 			}
 
-			if (GetKeyboardTrigger(DIK_DOWN))
+			else if (GetKeyboardTrigger(DIK_DOWN))
 			{
 				g_Select = (g_Select + 1) % MAX_TITLEBOTTOM;
 				MySoundPlayOnce(g_soundSelect);
@@ -181,6 +193,8 @@ void UpdateTitle()
 
 			for (int i = 0; i < MAX_TITLEBOTTOM; i++)
 			{
+				float scl;
+
 				if (g_Botton[i].col_argb < BASE_ALPHA)
 				{
 					g_Botton[i].col_argb += ADD_ALPHA;
@@ -204,7 +218,10 @@ void UpdateTitle()
 					}
 				}
 
+				scl = (1.0f - BASE_ALPHA / 2) + (g_Botton[i].col_argb / 2);
+
 				SetTitleVertexColor(g_Botton[i].vtx, Color(g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb));
+				SetTitleVertex(g_Botton[i].vtx, &g_Botton[i].pos, &(g_Botton[i].size*scl));
 			}
 		}
 
@@ -281,6 +298,15 @@ void InitTitle(bool isFirst)
 
 		g_Player.model = CreateModel("data/MODEL/Player.x");
 
+		g_Botton[BOTTON_STRAT].pos		= POS_BOTTONSTART;
+		g_Botton[BOTTON_RANKING].pos	= POS_BOTTONRANKING;
+		g_Botton[BOTTON_CONFIG].pos		= POS_BOTTONCONFIG;
+		g_Botton[BOTTON_EXIT].pos		= POS_BOTTONEXIT;
+
+		g_Botton[BOTTON_STRAT].size		= SIZE_BOTTONSTART;
+		g_Botton[BOTTON_RANKING].size	= SIZE_BOTTONRANKING;
+		g_Botton[BOTTON_CONFIG].size	= SIZE_BOTTONCONFIG;
+		g_Botton[BOTTON_EXIT].size		= SIZE_BOTTONEXIT;
 		InitTitleEffect(true);
 	}
 	else
@@ -288,7 +314,7 @@ void InitTitle(bool isFirst)
 		InitTitleEffect(false);
 	}
 
-	MySoundSetMasterVolume(0.1f);
+	MySoundSetMasterVolume(0.5f);
 	//---------------------------------------------------------------------
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
@@ -307,13 +333,13 @@ void InitTitle(bool isFirst)
 	GetMatrix(&g_Player.model->WldMtx, &Vec3(0.0f, 0.0f, PLAYER_POSFROMZ), PLAYER_ROT);// プレイヤー立ち位置
 
 	MySoundPlayEternal(g_soundBGM);	// 永遠再生
-
+	
 
 	// ボタンの頂点の設置
-	MakeTitleVertex(0, g_Botton[BOTTON_STRAT].vtx,		&Vec3(SCREEN_CENTER_X/2, 300, 0), &Vec2(200, 45));
-	MakeTitleVertex(0, g_Botton[BOTTON_RANKING].vtx,	&Vec3(SCREEN_CENTER_X/2, 400, 0), &Vec2(200, 45));
-	MakeTitleVertex(0, g_Botton[BOTTON_CONFIG].vtx,		&Vec3(SCREEN_CENTER_X/2, 500, 0), &Vec2(175, 45));
-	MakeTitleVertex(0, g_Botton[BOTTON_EXIT].vtx,		&Vec3(SCREEN_CENTER_X/2, 600, 0), &Vec2(150, 45));
+	MakeTitleVertex(0, g_Botton[BOTTON_STRAT].vtx,		&POS_BOTTONSTART,	&SIZE_BOTTONSTART);
+	MakeTitleVertex(0, g_Botton[BOTTON_RANKING].vtx,	&POS_BOTTONRANKING, &SIZE_BOTTONRANKING);
+	MakeTitleVertex(0, g_Botton[BOTTON_CONFIG].vtx,		&POS_BOTTONCONFIG,	&SIZE_BOTTONCONFIG);
+	MakeTitleVertex(0, g_Botton[BOTTON_EXIT].vtx,		&POS_BOTTONEXIT,	&SIZE_BOTTONEXIT);
 
 	for (int i = 0; i < MAX_TITLEBOTTOM; i++)
 	{

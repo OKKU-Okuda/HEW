@@ -52,6 +52,7 @@ static LPDIRECT3DDEVICE9	g_pD3DDevice = NULL;	// Deviceオブジェクト(描画に必要)
 static PHASE_FUNC			g_Phase;				// メイン画面遷移データ
 static HWND					g_hWnd;					// ウィンドウハンドル
 static int					g_nCountFPS;			// FPSカウンタ
+static DWORD				g_cntUpdate;			// 更新回数カウント回数
 
 #if USE_TIMESTOPMODE
 static bool					g_isTimeStop;			// 時間停止flag(更新関数をパスする)
@@ -376,6 +377,8 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// 時間の停止初期化
 	g_isTimeStop = false;	
 #endif
+	g_cntUpdate = 0ul;
+
 	return S_OK;
 }
 
@@ -442,7 +445,8 @@ void Update(void)
 	}
 #endif
 
-	PrintDebugProc("FPS:%d", g_nCountFPS);
+	g_cntUpdate++;	// 更新関数カウントのインクリメント
+	PrintDebugProc("%dFPS  %dtimes", g_nCountFPS, g_cntUpdate);
 
 	// フェーズ更新処理
 	g_Phase.Update();
@@ -513,3 +517,10 @@ HWND GetHandle()
 	return g_hWnd;
 }
 
+//=============================================================================
+// 更新関数使用回数の取得
+//=============================================================================
+DWORD GetCount()
+{
+	return g_cntUpdate;
+}

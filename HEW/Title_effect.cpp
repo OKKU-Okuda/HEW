@@ -65,7 +65,7 @@ void SetTitle3DEffect()
 	float len = 300;
 	float agl = 0;
 	float spd = 30;
-	Color col(0, 0, 0, 1);
+	Color col(0, 0, 1, 1);
 	Vec3 paddrot(0, 0, 0);
 
 	//len += rand() % 5;
@@ -76,9 +76,9 @@ void SetTitle3DEffect()
 	paddrot.z = (rand() % 1000 / 8000.0f);
 
 	// 色の乱数指定(青系統)
-	col.b = rand() % 1000 / 1000.0f;
-	col.r = rand() % 1000 / 1000.0f;
-	col.g = rand() % 1000 / 1000.0f;
+	//col.b = rand() % 1000 / 1000.0f;
+	col.r = rand() % 1000 / 1300.0f;
+	col.g = rand() % 1000 / 1300.0f;
 
 	SetTitle3DEffectEx(len, agl, spd, &col, &paddrot);
 }
@@ -136,7 +136,6 @@ void SetTitle3DEffectEx(float len, float agl, float spd, Color *col, Vec3* paddr
 void UpdateTitleEffect(float rot)
 {
 	TITLE_3DEFFECT* work_pt = NULL;
-	int				cnt_effect = 0;
 
 	// エフェクトの巡回
 	MyListResetIterator(g_list3DEffect, true);
@@ -177,11 +176,9 @@ void UpdateTitleEffect(float rot)
 		// ボックスの行列(スケール成分を除く）
 		GetMatrix(&work_pt->obj[work_pt->idx].matbox, &Vec3(0, 0, 0),
 			&work_pt->obj[work_pt->idx].rot);
-
-		cnt_effect++;
 	}
 
-	PrintDebugProc("総エフェクト数:%d * %d = %d", cnt_effect, NUM_ZANZO, cnt_effect*NUM_ZANZO);
+	PrintDebugProc("総エフェクト数:%d * %d = %d", g_list3DEffect->numObj, NUM_ZANZO, g_list3DEffect->numObj*NUM_ZANZO);
 }
 
 /*=====================================================================
