@@ -68,7 +68,8 @@ static void SetTitleVertex(VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size);
 
 // 画面遷移基本関数群をまとめておく
 static PHASE_FUNC	g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
-static MySound		g_Sound;
+static MySound		g_soundBGM;
+static MySound		g_soundSelect;		// 選択音
 
 static struct {
 	Model		model;		// プレイヤーモデル
@@ -83,8 +84,13 @@ static struct {
 }g_Botton[MAX_TITLEBOTTOM];			// ボタンワーク
 
 static DWORD	g_Select;			// ボタン
-
 static float	rot_spd;
+
+static struct {
+	VERTEX_2D  vtx[NUM_VERTEX];	// ロゴ頂点
+	Texture    tex;				// テクスチャ
+	float	   col;				// 色
+}g_Logo;				// ロゴワーク
 
 /*=====================================================================
 Title更新関数
@@ -96,12 +102,29 @@ void UpdateTitle()
 	SetTitle3DEffect();
 	SetTitle3DEffect();
 
-
 	// 次のフェーズに行く
-	if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN) && g_Botton[g_Select].col_argb > 0.75f)
 	{	// タックル１
-		GoNextPhase(GetPhaseGameTackle1Func());
-		//GoNextPhase(GetPhaseTitleFunc());
+
+		switch (g_Select)
+		{
+		case BOTTON_STRAT:
+			GoNextPhase(GetPhaseGameTackle1Func());
+			break;
+
+		case BOTTON_RANKING:
+		case BOTTON_CONFIG:
+			GoNextPhase(GetPhaseTitleFunc());
+			break;
+
+		case BOTTON_EXIT:
+			DestroyWindow(GetHandle());
+			break;
+
+		default:
+			MessageBox(0, 0, 0, 0);
+			break;
+		}
 	}
 
 	if (GetKeyboardPress(DIK_LEFT))
@@ -119,20 +142,11 @@ void UpdateTitle()
 		rot_spd = 0.0f;
 	}
 
-	//SAFE_NUMBER(rot_spd, -0.05f, 0.05f);
+	SAFE_NUMBER(rot_spd, -0.05f, 0.05f);
 	PrintDebugProc("回転：%f", rot_spd);
 	UpdateTitleEffect(rot_spd);
 
 
-	if (GetKeyboardTrigger(DIK_UP))
-	{
-		g_Select = (g_Select - 1) % MAX_TITLEBOTTOM;
-	}
-
-	if (GetKeyboardTrigger(DIK_DOWN))
-	{
-		g_Select = (g_Select + 1) % MAX_TITLEBOTTOM;
-	}
 
 
 	if (GetFade() == FADE_NONE)
@@ -150,6 +164,21 @@ void UpdateTitle()
 		// プレイヤーがある程度近い場合はボタンのα値を上げる
 		if (PLAYER_DISZ - g_Player.posZadd <= 1.0f)
 		{
+			g_Logo.col += 0.02f;
+			SetTitleVertexColor(g_Logo.vtx, Color(g_Logo.col, g_Logo.col, g_Logo.col, g_Logo.col));
+
+			if (GetKeyboardTrigger(DIK_UP))
+			{
+				g_Select = (g_Select - 1) % MAX_TITLEBOTTOM;
+				MySoundPlayOnce(g_soundSelect);
+			}
+
+			if (GetKeyboardTrigger(DIK_DOWN))
+			{
+				g_Select = (g_Select + 1) % MAX_TITLEBOTTOM;
+				MySoundPlayOnce(g_soundSelect);
+			}
+
 			for (int i = 0; i < MAX_TITLEBOTTOM; i++)
 			{
 				if (g_Botton[i].col_argb < BASE_ALPHA)
@@ -175,10 +204,7 @@ void UpdateTitle()
 					}
 				}
 
-				g_Botton[i].vtx[0].diffuse =
-					g_Botton[i].vtx[1].diffuse =
-					g_Botton[i].vtx[2].diffuse =
-					g_Botton[i].vtx[3].diffuse = Color(g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb);
+				SetTitleVertexColor(g_Botton[i].vtx, Color(g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb));
 			}
 		}
 
@@ -201,7 +227,6 @@ void DrawTitle()
 	pDevice->GetRenderState(D3DRS_LIGHTING, &d3drslightning);	
 	pDevice->SetRenderState(D3DRS_LIGHTING, true);
 
-	//pDevice->SetRenderState(D3DRS_AMBIENT, 0xff00ffff);
 	DrawModel(g_Player.model);
 
 	DrawTitleEffect();				// 周囲に舞っているエフェクトの描画
@@ -216,6 +241,10 @@ void DrawTitle()
 		pDevice->SetTexture(0, g_Botton[i].tex);
 		pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Botton[i].vtx, sizeof(VERTEX_2D));
 	}
+
+	pDevice->SetTexture(0, g_Logo.tex);
+	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Logo.vtx, sizeof(VERTEX_2D));
+
 }
 
 /*=====================================================================
@@ -243,7 +272,12 @@ void InitTitle(bool isFirst)
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Config.png",		&g_Botton[BOTTON_CONFIG].tex);
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Title_Exit.png",		&g_Botton[BOTTON_EXIT].tex);
 
-		g_Sound = MySoundCreate("data/BGM/Title.wav");
+		// タイトルロゴのテクスチャ読み込み
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/TitleLogo_000.png", &g_Logo.tex);
+
+		g_soundBGM		= MySoundCreate("data/BGM/Title.wav");
+		g_soundSelect	= MySoundCreate("data/SE/select.wav");
+		MySoundSetVolume(g_soundSelect, 3.0f);
 
 		g_Player.model = CreateModel("data/MODEL/Player.x");
 
@@ -272,7 +306,7 @@ void InitTitle(bool isFirst)
 	g_Player.posZadd = 0.0f;
 	GetMatrix(&g_Player.model->WldMtx, &Vec3(0.0f, 0.0f, PLAYER_POSFROMZ), PLAYER_ROT);// プレイヤー立ち位置
 
-	MySoundPlayEternal(g_Sound);	// 永遠再生
+	MySoundPlayEternal(g_soundBGM);	// 永遠再生
 
 
 	// ボタンの頂点の設置
@@ -286,6 +320,11 @@ void InitTitle(bool isFirst)
 		SetTitleVertexColor(g_Botton[i].vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
 		g_Botton[i].col_argb = 0.0f;
 	}
+
+	// ロゴ頂点の設置
+	MakeTitleVertex(0, g_Logo.vtx, &Vec3(SCREEN_CENTER_X, SCREEN_CENTER_Y / 3.0f, 0), &Vec2(350, 120));
+	SetTitleVertexColor(g_Logo.vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
+	g_Logo.col = 0.0f;
 
 	rot_spd		= 0.0f;
 	g_Select	= BOTTON_STRAT;
@@ -308,8 +347,8 @@ void UninitTitle(bool isEnd)
 //	その他の終了処理
 //---------------------------------------------------------------------
 
-	MySoundStop(g_Sound);	// 停止
-
+	MySoundStop(g_soundBGM);	// 停止
+	MySoundStop(g_soundSelect);
 
 	if (isEnd == true)
 	{
@@ -318,7 +357,8 @@ void UninitTitle(bool isEnd)
 		//---------------------------------------------------------------------
 
 		DeleteModel(&g_Player.model);
-		MySoundDeleteAuto(&g_Sound);// 増やしたものも一気に開放
+		MySoundDeleteAuto(&g_soundBGM);// 増やしたものも一気に開放
+		MySoundDeleteAuto(&g_soundSelect);// 増やしたものも一気に開放
 
 		// ボタンテスクチャの開放
 		for (int i = 0; i < MAX_TITLEBOTTOM; i++)
