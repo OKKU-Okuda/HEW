@@ -38,7 +38,7 @@ void SetTitle3DEffectEx(float len, float agl, float spd, Color *col, Vec3* paddr
 
 
 // タイトルエフェクト基本関数群(PHASE_TITLE専用)
-void UpdateTitleEffect(float rot);
+void UpdateTitleEffect();
 void DrawTitleEffect();
 void InitTitleEffect(bool isFirstInit);
 void UninitTitleEffect(bool isLastUninit);

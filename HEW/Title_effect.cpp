@@ -10,6 +10,7 @@
 
 #include "Core/camera.h"			// ビルぼ
 #include "Core/debugproc.h"			// デバッグ用
+#include "Core/input.h"				// 入力
 #include "Core/fade.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -52,7 +53,7 @@ inline Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEff
 static Matrix		g_SclMatrix[NUM_ZANZO];		// スケール行列の事前演算格納用
 static MyList		g_list3DEffect;				// 3Dボックスエフェクトのリスト	
 static Model		g_modelbox;					// ボックスのメッシュ
-
+static float		g_rot_spd;					// 毎フレーム回転量
 
 /*=====================================================================
 3Dエフェクト設置関数(簡易版）
@@ -133,9 +134,32 @@ void SetTitle3DEffectEx(float len, float agl, float spd, Color *col, Vec3* paddr
 タイトルエフェクト更新関数
 引数：float  エフェクトを回転させる
 =====================================================================*/
-void UpdateTitleEffect(float rot)
+void UpdateTitleEffect()
 {
 	TITLE_3DEFFECT* work_pt = NULL;
+
+	SetTitle3DEffect();
+	SetTitle3DEffect();
+
+	// 毎フレーム回転量のキーボード設定
+	if (GetKeyboardPress(DIK_LEFT))
+	{
+		g_rot_spd += 0.002f;
+	}
+
+	if (GetKeyboardPress(DIK_RIGHT))
+	{
+		g_rot_spd -= 0.002f;
+	}
+
+	if (GetKeyboardTrigger(DIK_SPACE))
+	{
+		g_rot_spd = 0.0f;
+	}
+
+	SAFE_NUMBER(g_rot_spd, -0.05f, 0.05f);
+	PrintDebugProc("回転：%f", g_rot_spd);
+
 
 	// エフェクトの巡回
 	MyListResetIterator(g_list3DEffect, true);
@@ -157,12 +181,12 @@ void UpdateTitleEffect(float rot)
 			continue;
 		}
 
-		if (rot != 0.0f)
+		if (g_rot_spd != 0.0f)
 		{	// 回転させる
 			Vec2 keep_pos = work_pt->posXY;
 
-			work_pt->posXY.x = (cosf(rot)*keep_pos.x) - (sinf(rot)*keep_pos.y);
-			work_pt->posXY.y = (sinf(rot)*keep_pos.x) + (cosf(rot)*keep_pos.y);
+			work_pt->posXY.x = (cosf(g_rot_spd)*keep_pos.x) - (sinf(g_rot_spd)*keep_pos.y);
+			work_pt->posXY.y = (sinf(g_rot_spd)*keep_pos.x) + (cosf(g_rot_spd)*keep_pos.y);
 		}
 
 		
@@ -261,6 +285,7 @@ void InitTitleEffect(bool isFirstInit)
 		}
 	}
 
+	g_rot_spd = 0.0f;
 }
 
 /*=====================================================================

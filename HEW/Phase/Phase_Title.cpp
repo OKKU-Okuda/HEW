@@ -60,12 +60,14 @@ enum TITLE_BOTTON {
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
 
+static void SetSelectEffect();
+static void UpdateSelectEffect();
+static void UpdateTitleBotton(DWORD idx);
+
 static void SetTitleVertexColor(VERTEX_2D *vtx_data, Color nColor);
 static void MakeTitleVertex(int num, VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size);
 static void SetTitleVertex(VERTEX_2D *vtx_data, Vec3 *Pos, Vec2 *Size);
 static void SetTitleTexPos(VERTEX_2D *vtx_data, int X_parts, int Y_parts, int nowX, int nowY);
-static void SetSelectEffect();
-static void UpdateSelectEffect();
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
@@ -90,7 +92,6 @@ static struct {
 }g_Botton[MAX_TITLEBOTTOM];			// ボタンワーク
 
 static DWORD	g_Select;			// ボタン
-static float	rot_spd;
 
 static struct {
 	VERTEX_2D  vtx[NUM_VERTEX];	// ロゴ頂点
@@ -106,22 +107,101 @@ static struct {
 }g_Effect;
 
 /*=====================================================================
+選択時発生エフェクト設置関数(cpp_func)
+=====================================================================*/
+void SetSelectEffect()
+{
+	g_Effect.isShow = true;
+	g_Effect.cnt_show = 0ul;
+
+	// 位置の設定
+	SetTitleVertex(g_Effect.vtx, &g_Botton[g_Select].pos, &SIZE_SELECTEFFECT);
+}
+
+/*=====================================================================
+選択時発生エフェクト更新関数(cpp_func)
+=====================================================================*/
+void UpdateSelectEffect()
+{
+	// 上下の選択
+	if (GetKeyboardTrigger(DIK_UP))
+	{ 
+		g_Select = (g_Select - 1) % MAX_TITLEBOTTOM;
+		MySoundPlayOnce(g_soundSelect);
+		SetSelectEffect();
+	}
+	else if (GetKeyboardTrigger(DIK_DOWN))
+	{
+		g_Select = (g_Select + 1) % MAX_TITLEBOTTOM;
+		MySoundPlayOnce(g_soundSelect);
+		SetSelectEffect();
+	}
+
+	if (g_Effect.isShow == false)
+	{	// 非表示時スキップ
+		return;
+	}
+
+	// 2フレームに1度テクスチャ座標が更新される
+	SetTitleTexPos(g_Effect.vtx, 1, 7, 0, g_Effect.cnt_show++ / 2);
+
+	if (g_Effect.cnt_show % 15 == 0)
+	{	// 一定以上進んだ場合は非表示にする
+		g_Effect.isShow = false;
+	}
+}
+
+/*=====================================================================
+タイトルボタン更新関数(cpp_func)
+=====================================================================*/
+void UpdateTitleBotton(DWORD idx)
+{
+	float scl;	// ボタン拡大倍率
+
+	if (g_Botton[idx].col_argb < BASE_ALPHA)
+	{	// 基本α値以下であれば一律で加算していく
+		g_Botton[idx].col_argb += ADD_ALPHA;
+	}
+	else if (idx == g_Select)
+	{	// 基本α値以上で選択されている場合は完全表示するために加算していく
+		g_Botton[idx].col_argb += ADD_ALPHA;
+
+		if (g_Botton[idx].col_argb > 1.0f)
+		{
+			g_Botton[idx].col_argb = 1.0f;
+		}
+	}
+	else
+	{	// 選択されていない場合は半透明表示の為、基本α値に戻す
+		g_Botton[idx].col_argb -= ADD_ALPHA;
+
+		if (g_Botton[idx].col_argb < BASE_ALPHA)
+		{
+			g_Botton[idx].col_argb = BASE_ALPHA;
+		}
+	}
+
+	// col_argbを参考にサイズを変更
+	scl = (1.0f - BASE_ALPHA / 2) + (g_Botton[idx].col_argb / 2);
+
+	SetTitleVertexColor(g_Botton[idx].vtx, 
+		Color(g_Botton[idx].col_argb, g_Botton[idx].col_argb, g_Botton[idx].col_argb, g_Botton[idx].col_argb));
+	SetTitleVertex(g_Botton[idx].vtx, &g_Botton[idx].pos, &(g_Botton[idx].size*scl));
+}
+
+/*=====================================================================
 Title更新関数
 =====================================================================*/
 void UpdateTitle()
 {
 	PrintDebugProc("タイトルフェーズ");
 
-	SetTitle3DEffect();
-	SetTitle3DEffect();
-
-	// 次のフェーズに行く
+	// 選択ボタンによって変わる処理
 	if (GetKeyboardTrigger(DIK_RETURN) && g_Botton[g_Select].col_argb > 0.75f)
-	{	// タックル１
-
+	{	
 		switch (g_Select)
 		{
-		case BOTTON_STRAT:
+		case BOTTON_STRAT:	// タックル1フェーズに移行
 			GoNextPhase(GetPhaseGameTackle1Func());
 			break;
 
@@ -130,106 +210,45 @@ void UpdateTitle()
 			GoNextPhase(GetPhaseTitleFunc());
 			break;
 
-		case BOTTON_EXIT:
+		case BOTTON_EXIT:	// ゲームの終了
 			DestroyWindow(GetHandle());
 			break;
 
-		default:
+		default:			// エラー出力
 			MessageBox(0, 0, 0, 0);
 			break;
 		}
 	}
 
-	if (GetKeyboardPress(DIK_LEFT))
-	{
-		rot_spd += 0.002f;
-	}
-
-	if (GetKeyboardPress(DIK_RIGHT))
-	{
-		rot_spd -= 0.002f;
-	}
-
-	if (GetKeyboardTrigger(DIK_SPACE))
-	{
-		rot_spd = 0.0f;
-	}
-
-	SAFE_NUMBER(rot_spd, -0.05f, 0.05f);
-	PrintDebugProc("回転：%f", rot_spd);
-	UpdateTitleEffect(rot_spd);
-
-
-
+	// 後ろにある四角形エフェクトの更新
+	UpdateTitleEffect();
 
 	if (GetFade() == FADE_NONE)
-	{
-		// プレイヤーの縦に大きくなる演出
+	{ // フェードが発生していない場合に実行
 		float sclY = 1.0f;
 
+		// プレイヤーの更新(大きさ演出と急に近づく演出)
 		g_Player.sclYrot += 0.079f;
 		sclY += fabsf(sinf(g_Player.sclYrot)) * 0.07f;
-
 		g_Player.posZadd = (PLAYER_DISZ - g_Player.posZadd) * PLAYER_POSRATE + g_Player.posZadd;
 		GetMatrix(&g_Player.model->WldMtx, &Vec3(0.0f, -30.0f, PLAYER_POSFROMZ - g_Player.posZadd), PLAYER_ROT, &Vec3(1.0f, sclY, 1.0f));// プレイヤー立ち位置
 
 
-		// プレイヤーがある程度近い場合はボタンのα値を上げる
 		if (PLAYER_DISZ - g_Player.posZadd <= 1.0f)
-		{
+		{	// プレイヤーが指定位置にいる場合
+
+			// ロゴの更新
 			g_Logo.col += 0.02f;
 			SetTitleVertexColor(g_Logo.vtx, Color(g_Logo.col, g_Logo.col, g_Logo.col, g_Logo.col));
 
-			if (GetKeyboardTrigger(DIK_UP))
-			{
-				g_Select = (g_Select - 1) % MAX_TITLEBOTTOM;
-				MySoundPlayOnce(g_soundSelect);
-				SetSelectEffect();
-			}
-
-			else if (GetKeyboardTrigger(DIK_DOWN))
-			{
-				g_Select = (g_Select + 1) % MAX_TITLEBOTTOM;
-				MySoundPlayOnce(g_soundSelect);
-				SetSelectEffect();
-			}
-
+			// 選択の処理とそのエフェクトの更新
 			UpdateSelectEffect();
 
 			for (int i = 0; i < MAX_TITLEBOTTOM; i++)
-			{
-				float scl;	// ボタン拡大倍率
-
-				if (g_Botton[i].col_argb < BASE_ALPHA)
-				{
-					g_Botton[i].col_argb += ADD_ALPHA;
-				}
-				else if (i == g_Select)
-				{
-					g_Botton[i].col_argb += ADD_ALPHA;
-
-					if (g_Botton[i].col_argb > 1.0f)
-					{
-						g_Botton[i].col_argb = 1.0f;
-					}
-				}
-				else
-				{
-					g_Botton[i].col_argb -= ADD_ALPHA;
-
-					if (g_Botton[i].col_argb < BASE_ALPHA)
-					{
-						g_Botton[i].col_argb = BASE_ALPHA;
-					}
-				}
-
-				scl = (1.0f - BASE_ALPHA / 2) + (g_Botton[i].col_argb / 2);
-
-				SetTitleVertexColor(g_Botton[i].vtx, Color(g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb));
-				SetTitleVertex(g_Botton[i].vtx, &g_Botton[i].pos, &(g_Botton[i].size*scl));
+			{	// タイトルボタンの更新
+				UpdateTitleBotton(i);
 			}
 		}
-
 	}
 
 	// プレイヤー位置の表示
@@ -266,12 +285,12 @@ void DrawTitle()
 	}
 
 	if (g_Effect.isShow)
-	{
+	{	// 選択エフェクトの描画
 		pDevice->SetTexture(0, g_Effect.tex);
 		pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Effect.vtx, sizeof(VERTEX_2D));
 	}
 
-
+	// ロゴの描画
 	pDevice->SetTexture(0, g_Logo.tex);
 	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Logo.vtx, sizeof(VERTEX_2D));
 
@@ -308,10 +327,12 @@ void InitTitle(bool isFirst)
 		// セレクトエフェクトのテクスチャ読み込み
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/select_effect.png", &g_Effect.tex);
 
+		// BGM,SEの読み込み
 		g_soundBGM		= MySoundCreate("data/BGM/Title.wav");
 		g_soundSelect	= MySoundCreate("data/SE/select.wav");
 		MySoundSetVolume(g_soundSelect, 3.0f);
 
+		// プレイヤーのモデル読み込み
 		g_Player.model = CreateModel("data/MODEL/Player.x");
 
 		g_Botton[BOTTON_STRAT].pos		= POS_BOTTONSTART;
@@ -344,6 +365,7 @@ void InitTitle(bool isFirst)
 	GetCamera()->at		= Vec3(200.0f, 0.0f, -200.0f);
 #endif
 
+	// プレイヤーの数値入れ替え
 	g_Player.sclYrot = 0.0f;
 	g_Player.posZadd = 0.0f;
 	GetMatrix(&g_Player.model->WldMtx, &Vec3(0.0f, 0.0f, PLAYER_POSFROMZ), PLAYER_ROT);// プレイヤー立ち位置
@@ -356,7 +378,6 @@ void InitTitle(bool isFirst)
 	MakeTitleVertex(0, g_Botton[BOTTON_RANKING].vtx,	&POS_BOTTONRANKING, &SIZE_BOTTONRANKING);
 	MakeTitleVertex(0, g_Botton[BOTTON_CONFIG].vtx,		&POS_BOTTONCONFIG,	&SIZE_BOTTONCONFIG);
 	MakeTitleVertex(0, g_Botton[BOTTON_EXIT].vtx,		&POS_BOTTONEXIT,	&SIZE_BOTTONEXIT);
-
 	for (int i = 0; i < MAX_TITLEBOTTOM; i++)
 	{
 		SetTitleVertexColor(g_Botton[i].vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
@@ -372,7 +393,7 @@ void InitTitle(bool isFirst)
 	MakeTitleVertex(0, g_Effect.vtx, &Vec3(SCREEN_CENTER_X, SCREEN_CENTER_Y / 3.0f, 0), &SIZE_SELECTEFFECT);
 	g_Effect.cnt_show	= 0ul;
 	g_Effect.isShow		= false;
-	rot_spd		= 0.0f;
+
 	g_Select	= BOTTON_STRAT;
 }
 
@@ -403,8 +424,10 @@ void UninitTitle(bool isEnd)
 		//---------------------------------------------------------------------
 
 		DeleteModel(&g_Player.model);
-		MySoundDeleteAuto(&g_soundBGM);// 増やしたものも一気に開放
-		MySoundDeleteAuto(&g_soundSelect);// 増やしたものも一気に開放
+
+		// サウンドの開放
+		MySoundDeleteAuto(&g_soundBGM);
+		MySoundDeleteAuto(&g_soundSelect);
 
 		// ボタンテスクチャの開放
 		for (int i = 0; i < MAX_TITLEBOTTOM; i++)
@@ -535,33 +558,4 @@ void SetTitleTexPos(VERTEX_2D *vtx_data, int X_parts, int Y_parts, int nowX, int
 	(vtx_data + 2)->tex.y =
 		(vtx_data + 3)->tex.y = size.y*(nowY + 1);
 
-}
-
-/*=====================================================================
-選択時発生エフェクト設置関数(cpp_func)
-=====================================================================*/
-void SetSelectEffect()
-{
-	g_Effect.isShow		= true;
-	g_Effect.cnt_show	= 0ul;
-
-	SetTitleVertex(g_Effect.vtx, &g_Botton[g_Select].pos, &SIZE_SELECTEFFECT);
-}
-
-/*=====================================================================
-選択時発生エフェクト更新関数(cpp_func)
-=====================================================================*/
-void UpdateSelectEffect()
-{
-	if (g_Effect.isShow == false)
-	{	// 非表示時スキップ
-		return;
-	}
-
-	SetTitleTexPos(g_Effect.vtx, 1, 7, 0, g_Effect.cnt_show++/2);
-
-	if (g_Effect.cnt_show % 15 == 0)
-	{	// 
-		g_Effect.isShow = false;
-	}
 }
