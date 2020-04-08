@@ -45,7 +45,7 @@ typedef struct {
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEffect, DWORD idx);
+inline Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEffect, DWORD idx);
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
@@ -65,20 +65,20 @@ void SetTitle3DEffect()
 	float len = 300;
 	float agl = 0;
 	float spd = 30;
-	Color col(0, 0, 1, 1);
+	Color col(0, 0, 0, 1);
 	Vec3 paddrot(0, 0, 0);
 
 	//len += rand() % 5;
 	agl += (rand() % 1000 / 1000.0f) * (2 * D3DX_PI);
 	//spd += (rand() % 1000 / 1000.0f) * (2.0f);
-	paddrot.x = (rand() % 1000 / 6000.0f);
-	paddrot.y = (rand() % 1000 / 6000.0f);
-	paddrot.z = (rand() % 1000 / 6000.0f);
+	paddrot.x = (rand() % 1000 / 8000.0f);
+	paddrot.y = (rand() % 1000 / 8000.0f);
+	paddrot.z = (rand() % 1000 / 8000.0f);
 
 	// 色の乱数指定(青系統)
+	col.b = rand() % 1000 / 1000.0f;
 	col.r = rand() % 1000 / 1000.0f;
 	col.g = rand() % 1000 / 1000.0f;
-	//col.b = rand() % 1000 / 1000.0f;
 
 	SetTitle3DEffectEx(len, agl, spd, &col, &paddrot);
 }
