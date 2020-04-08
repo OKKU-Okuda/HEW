@@ -24,7 +24,7 @@
 // マクロ定義
 //*****************************************************************************
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
-#define WINDOW_NAME		"(/・ω・)/"		// ウインドウのキャプション名
+#define WINDOW_NAME		"RuggerMAN"			// ウインドウのキャプション名
 
 #define PASS_WINDOWMODE		(true)			// 起動時に表示方法選択をパスするか(パス時、ウィンドウモードになる）
 #define USE_TIMESTOPMODE	(true)			// 更新をパスして時間停止を行える機工を追加する(F2)
@@ -196,9 +196,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			dwCurrentTime = timeGetTime();
 			if((dwCurrentTime - dwFPSLastTime) >= 500)	// 0.5秒ごとに実行
 			{
-#ifdef _DEBUG
 				g_nCountFPS = dwFrameCount * 1000 / (dwCurrentTime - dwFPSLastTime);
-#endif
 				dwFPSLastTime = dwCurrentTime;
 				dwFrameCount = 0;
 			}

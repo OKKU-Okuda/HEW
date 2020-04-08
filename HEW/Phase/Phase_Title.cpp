@@ -31,12 +31,14 @@
 //---------------------------------------------------------------------
 
 // プレイヤーの基本立ち位置
-#define PLAYER_POSFROMZ	(600.0f)
-#define PLAYER_POSTOZ	(-125.0f)
+#define PLAYER_POSFROMZ	(6000.0f)
+#define PLAYER_POSTOZ	(-110.0f)
 #define PLAYER_DISZ		(PLAYER_POSFROMZ - PLAYER_POSTOZ)
 #define PLAYER_POSRATE	(0.05f)
-#define PLAYER_ROT		(&Vec3(0, 0.5f, 0))
+#define PLAYER_ROT		(&Vec3(0, 0.3f, 0))
 
+#define BASE_ALPHA		(0.45f)
+#define ADD_ALPHA		(0.05f)
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
@@ -77,9 +79,12 @@ static struct {
 static struct {
 	VERTEX_2D	vtx[NUM_VERTEX];
 	Texture		tex;
+	float		col_argb;			// 色の全体値調整用変数				
 }g_Botton[MAX_TITLEBOTTOM];			// ボタンワーク
 
-static float  rot_spd;
+static DWORD	g_Select;			// ボタン
+
+static float	rot_spd;
 
 /*=====================================================================
 Title更新関数
@@ -88,20 +93,15 @@ void UpdateTitle()
 {
 	PrintDebugProc("タイトルフェーズ");
 
-	if (GetFade() != FADE_NONE)
-	{	// フェードが終了していない場合はこの更新をスキップ
-		return;
-	}
+	SetTitle3DEffect();
+	SetTitle3DEffect();
 
-	SetTitle3DEffect();
-	SetTitle3DEffect();
-	SetTitle3DEffect();
 
 	// 次のフェーズに行く
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{	// タックル１
-		//GoNextPhase(GetPhaseGameTackle1Func());
-		GoNextPhase(GetPhaseTitleFunc());
+		GoNextPhase(GetPhaseGameTackle1Func());
+		//GoNextPhase(GetPhaseTitleFunc());
 	}
 
 	if (GetKeyboardPress(DIK_LEFT))
@@ -119,32 +119,69 @@ void UpdateTitle()
 		rot_spd = 0.0f;
 	}
 
-	SAFE_NUMBER(rot_spd, -0.05f, 0.05f);
+	//SAFE_NUMBER(rot_spd, -0.05f, 0.05f);
+	PrintDebugProc("回転：%f", rot_spd);
 	UpdateTitleEffect(rot_spd);
 
-	// プレイヤーの縦に大きくなる演出
-	float sclY = 1.0f;
 
-	g_Player.sclYrot += 0.079f;
-	sclY += fabsf(sinf(g_Player.sclYrot)) * 0.07f;
-
-	g_Player.posZadd = (PLAYER_DISZ - g_Player.posZadd) * PLAYER_POSRATE + g_Player.posZadd;
-	GetMatrix(&g_Player.model->WldMtx, &Vec3(35.0f, -30.0f, PLAYER_POSFROMZ - g_Player.posZadd), PLAYER_ROT, &Vec3(1.0f, sclY, 1.0f));// プレイヤー立ち位置
-	
-
-	// プレイヤーがある程度近い場合はボタンのα値を上げる
-	if (PLAYER_DISZ - g_Player.posZadd <= 1.0f)
+	if (GetKeyboardTrigger(DIK_UP))
 	{
-		for (int i = 0; i < MAX_TITLEBOTTOM; i++)
-		{
-			Color col = g_Botton[i].vtx[0].diffuse;
-			col.a += 0.01f;
+		g_Select = (g_Select - 1) % MAX_TITLEBOTTOM;
+	}
 
-			g_Botton[i].vtx[0].diffuse =
-				g_Botton[i].vtx[1].diffuse =
-				g_Botton[i].vtx[2].diffuse =
-				g_Botton[i].vtx[3].diffuse = col;
+	if (GetKeyboardTrigger(DIK_DOWN))
+	{
+		g_Select = (g_Select + 1) % MAX_TITLEBOTTOM;
+	}
+
+
+	if (GetFade() == FADE_NONE)
+	{
+		// プレイヤーの縦に大きくなる演出
+		float sclY = 1.0f;
+
+		g_Player.sclYrot += 0.079f;
+		sclY += fabsf(sinf(g_Player.sclYrot)) * 0.07f;
+
+		g_Player.posZadd = (PLAYER_DISZ - g_Player.posZadd) * PLAYER_POSRATE + g_Player.posZadd;
+		GetMatrix(&g_Player.model->WldMtx, &Vec3(0.0f, -30.0f, PLAYER_POSFROMZ - g_Player.posZadd), PLAYER_ROT, &Vec3(1.0f, sclY, 1.0f));// プレイヤー立ち位置
+
+
+		// プレイヤーがある程度近い場合はボタンのα値を上げる
+		if (PLAYER_DISZ - g_Player.posZadd <= 1.0f)
+		{
+			for (int i = 0; i < MAX_TITLEBOTTOM; i++)
+			{
+				if (g_Botton[i].col_argb < BASE_ALPHA)
+				{
+					g_Botton[i].col_argb += ADD_ALPHA;
+				}
+				else if (i == g_Select)
+				{
+					g_Botton[i].col_argb += ADD_ALPHA;
+
+					if (g_Botton[i].col_argb > 1.0f)
+					{
+						g_Botton[i].col_argb = 1.0f;
+					}
+				}
+				else
+				{
+					g_Botton[i].col_argb -= ADD_ALPHA;
+
+					if (g_Botton[i].col_argb < BASE_ALPHA)
+					{
+						g_Botton[i].col_argb = BASE_ALPHA;
+					}
+				}
+
+				g_Botton[i].vtx[0].diffuse =
+					g_Botton[i].vtx[1].diffuse =
+					g_Botton[i].vtx[2].diffuse =
+					g_Botton[i].vtx[3].diffuse = Color(g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb, g_Botton[i].col_argb);
+			}
 		}
+
 	}
 
 	// プレイヤー位置の表示
@@ -179,11 +216,6 @@ void DrawTitle()
 		pDevice->SetTexture(0, g_Botton[i].tex);
 		pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Botton[i].vtx, sizeof(VERTEX_2D));
 	}
-
-
-
-
-
 }
 
 /*=====================================================================
@@ -222,14 +254,19 @@ void InitTitle(bool isFirst)
 		InitTitleEffect(false);
 	}
 
-	MySoundSetMasterVolume(0.2f);
+	MySoundSetMasterVolume(0.1f);
 	//---------------------------------------------------------------------
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
 
 	// カメラ
-	GetCamera()->pos = Vec3(0.0f, 0.0f, -200.0f);	
-	GetCamera()->at = Vec3(0.0f, 0.0f, 0);
+#if 1
+	GetCamera()->pos	= Vec3(0.0f, 0.0f, -200.0f);	
+	GetCamera()->at		= Vec3(-100.0f, 0.0f, 0);
+#else
+	GetCamera()->pos	= Vec3(0.0f, 0.0f, 200.0f);
+	GetCamera()->at		= Vec3(200.0f, 0.0f, -200.0f);
+#endif
 
 	g_Player.sclYrot = 0.0f;
 	g_Player.posZadd = 0.0f;
@@ -247,9 +284,11 @@ void InitTitle(bool isFirst)
 	for (int i = 0; i < MAX_TITLEBOTTOM; i++)
 	{
 		SetTitleVertexColor(g_Botton[i].vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
+		g_Botton[i].col_argb = 0.0f;
 	}
 
-	rot_spd = 0.0f;
+	rot_spd		= 0.0f;
+	g_Select	= BOTTON_STRAT;
 }
 
 /*=====================================================================
