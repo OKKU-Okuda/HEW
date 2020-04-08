@@ -546,22 +546,22 @@ void SetSelectEffect()
 	g_Effect.cnt_show	= 0ul;
 
 	SetTitleVertex(g_Effect.vtx, &g_Botton[g_Select].pos, &SIZE_SELECTEFFECT);
-	SetTitleTexPos(g_Effect.vtx, 1, 7, 0, g_Effect.cnt_show);
 }
 
+/*=====================================================================
+選択時発生エフェクト更新関数(cpp_func)
+=====================================================================*/
 void UpdateSelectEffect()
 {
 	if (g_Effect.isShow == false)
-	{
+	{	// 非表示時スキップ
 		return;
 	}
 
 	SetTitleTexPos(g_Effect.vtx, 1, 7, 0, g_Effect.cnt_show++/2);
-	
 
 	if (g_Effect.cnt_show % 15 == 0)
-	{
+	{	// 
 		g_Effect.isShow = false;
 	}
-
 }
