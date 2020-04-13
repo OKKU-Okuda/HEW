@@ -12,6 +12,8 @@
 #include "Core/debugproc.h"			// デバッグ用
 #include "Core/input.h"				// 入力
 #include "Core/fade.h"
+
+#include "Phase/Phase_Title.h"		// 色取得関数用
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -46,6 +48,8 @@ typedef struct {
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
+static void Title3DRightRot();
+static void Title3DLeftRot();
 inline Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEffect, DWORD idx);
 //---------------------------------------------------------------------
 //	グローバル変数
@@ -53,7 +57,63 @@ inline Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEff
 static Matrix		g_SclMatrix[NUM_ZANZO];		// スケール行列の事前演算格納用
 static MyList		g_list3DEffect;				// 3Dボックスエフェクトのリスト	
 static Model		g_modelbox;					// ボックスのメッシュ
-static float		g_rot_spd;					// 毎フレーム回転量
+
+static struct {
+	float		addrot;				// 毎フレーム回転量
+	float		spdrot;				// 回転加速度
+	NormalFunc	Update;				// 回転量調整関数
+}g_rot;											// 回転ワーク
+
+/*=====================================================================
+3Dエフェクト回転関数
+戻り値：void
+引数：bool :true:右回転
+=====================================================================*/
+void SetTitle3DRot(bool isRight)
+{
+	if (g_rot.Update != NoFunction)
+	{
+		return;
+	}
+
+	if (isRight)
+	{
+		g_rot.Update = Title3DRightRot;
+	}
+	else
+	{
+		g_rot.Update = Title3DLeftRot;
+	}
+
+	g_rot.spdrot = D3DX_PI / 2;
+}
+
+void Title3DRightRot()
+{
+	g_rot.spdrot += 0.06f;
+
+	g_rot.addrot = cosf(g_rot.spdrot)*0.05f;
+
+	if (g_rot.spdrot >= D3DX_PI * 1.5f)
+	{
+		g_rot.Update = NoFunction;
+		g_rot.addrot = 0.0f;
+	}
+}
+
+void Title3DLeftRot()
+{
+	g_rot.spdrot -= 0.06f;
+
+	g_rot.addrot = cosf(g_rot.spdrot)*0.05f;
+
+	if (g_rot.spdrot <= -D3DX_PI / 2)
+	{
+		g_rot.Update = NoFunction;
+		g_rot.addrot = 0.0f;
+	}
+
+}
 
 /*=====================================================================
 3Dエフェクト設置関数(簡易版）
@@ -66,7 +126,7 @@ void SetTitle3DEffect()
 	float len = 300;
 	float agl = 0;
 	float spd = 30;
-	Color col(0, 0, 1, 1);
+	Color col = *GetTitleBottonColor();
 	Vec3 paddrot(0, 0, 0);
 
 	//len += rand() % 5;
@@ -77,9 +137,9 @@ void SetTitle3DEffect()
 	paddrot.z = (rand() % 1000 / 8000.0f);
 
 	// 色の乱数指定(青系統)
-	//col.b = rand() % 1000 / 1000.0f;
-	col.r = rand() % 1000 / 1300.0f;
-	col.g = rand() % 1000 / 1300.0f;
+	col.b += (rand() % 3000 / 5000.0f) - 0.3f;
+	col.r += (rand() % 3000 / 5000.0f) - 0.3f;
+	col.g += (rand() % 3000 / 5000.0f) - 0.3f;
 
 	SetTitle3DEffectEx(len, agl, spd, &col, &paddrot);
 }
@@ -138,28 +198,12 @@ void UpdateTitleEffect()
 {
 	TITLE_3DEFFECT* work_pt = NULL;
 
+	PrintDebugProc("回転：%f", g_rot.addrot);
+
 	SetTitle3DEffect();
 	SetTitle3DEffect();
 
-	// 毎フレーム回転量のキーボード設定
-	if (GetKeyboardPress(DIK_LEFT))
-	{
-		g_rot_spd += 0.002f;
-	}
-
-	if (GetKeyboardPress(DIK_RIGHT))
-	{
-		g_rot_spd -= 0.002f;
-	}
-
-	if (GetKeyboardTrigger(DIK_SPACE))
-	{
-		g_rot_spd = 0.0f;
-	}
-
-	SAFE_NUMBER(g_rot_spd, -0.05f, 0.05f);
-	PrintDebugProc("回転：%f", g_rot_spd);
-
+	g_rot.Update();
 
 	// エフェクトの巡回
 	MyListResetIterator(g_list3DEffect, true);
@@ -181,12 +225,12 @@ void UpdateTitleEffect()
 			continue;
 		}
 
-		if (g_rot_spd != 0.0f)
+		if (g_rot.addrot != 0.0f)
 		{	// 回転させる
 			Vec2 keep_pos = work_pt->posXY;
 
-			work_pt->posXY.x = (cosf(g_rot_spd)*keep_pos.x) - (sinf(g_rot_spd)*keep_pos.y);
-			work_pt->posXY.y = (sinf(g_rot_spd)*keep_pos.x) + (cosf(g_rot_spd)*keep_pos.y);
+			work_pt->posXY.x = (cosf(g_rot.addrot)*keep_pos.x) - (sinf(g_rot.addrot)*keep_pos.y);
+			work_pt->posXY.y = (sinf(g_rot.addrot)*keep_pos.x) + (cosf(g_rot.addrot)*keep_pos.y);
 		}
 
 		
@@ -285,7 +329,8 @@ void InitTitleEffect(bool isFirstInit)
 		}
 	}
 
-	g_rot_spd = 0.0f;
+	g_rot.addrot = 0.0f;
+	g_rot.Update = NoFunction;
 }
 
 /*=====================================================================

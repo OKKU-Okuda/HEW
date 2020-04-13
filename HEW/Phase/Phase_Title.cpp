@@ -85,6 +85,7 @@ static struct {
 
 static struct {
 	VERTEX_2D	vtx[NUM_VERTEX];
+	Color		col_theme;			// ボタンのtheme色
 	Vec3		pos;				// ロゴの位置
 	Vec2		size;				// ロゴサイズ
 	Texture		tex;
@@ -116,6 +117,7 @@ void SetSelectEffect()
 
 	// 位置の設定
 	SetTitleVertex(g_Effect.vtx, &g_Botton[g_Select].pos, &SIZE_SELECTEFFECT);
+	SetTitleVertexColor(g_Effect.vtx, *GetTitleBottonColor());
 }
 
 /*=====================================================================
@@ -128,12 +130,14 @@ void UpdateSelectEffect()
 	{ 
 		g_Select = (g_Select - 1) % MAX_TITLEBOTTOM;
 		MySoundPlayOnce(g_soundSelect);
+		SetTitle3DRot(true);
 		SetSelectEffect();
 	}
 	else if (GetKeyboardTrigger(DIK_DOWN))
 	{
 		g_Select = (g_Select + 1) % MAX_TITLEBOTTOM;
 		MySoundPlayOnce(g_soundSelect);
+		SetTitle3DRot(false);
 		SetSelectEffect();
 	}
 
@@ -344,6 +348,12 @@ void InitTitle(bool isFirst)
 		g_Botton[BOTTON_RANKING].size	= SIZE_BOTTONRANKING;
 		g_Botton[BOTTON_CONFIG].size	= SIZE_BOTTONCONFIG;
 		g_Botton[BOTTON_EXIT].size		= SIZE_BOTTONEXIT;
+
+		g_Botton[BOTTON_STRAT].col_theme	= { 1.0f, 0.5f, 0.0f, 1.0f };
+		g_Botton[BOTTON_RANKING].col_theme	= { 1.0f, 1.0f, 0.0f, 1.0f };
+		g_Botton[BOTTON_CONFIG].col_theme	= { 1.0f, 1.0f, 0.5f, 1.0f };
+		g_Botton[BOTTON_EXIT].col_theme		= { 0.5f, 0.5f, 0.5f, 1.0f };
+
 		InitTitleEffect(true);
 	}
 	else
@@ -351,7 +361,7 @@ void InitTitle(bool isFirst)
 		InitTitleEffect(false);
 	}
 
-	MySoundSetMasterVolume(0.5f);
+	MySoundSetMasterVolume(0.1f);
 	//---------------------------------------------------------------------
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
@@ -445,6 +455,14 @@ void UninitTitle(bool isEnd)
 		UninitTitleEffect(false);
 	}
 
+}
+
+/*=====================================================================
+Titleボタンtheme色取得関数
+=====================================================================*/
+Color* GetTitleBottonColor()
+{
+	return &g_Botton[g_Select].col_theme;
 }
 
 /*=====================================================================
