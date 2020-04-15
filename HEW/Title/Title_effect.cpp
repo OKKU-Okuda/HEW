@@ -5,15 +5,16 @@
 	タイトルのエフェクトに関するプログラム
 ***********************************************************************/
 #include "Title_effect.h"
-#include "Core/MyList.h"
-#include "Core/directx_Helper3D.h"
 
-#include "Core/camera.h"			// ビルぼ
-#include "Core/debugproc.h"			// デバッグ用
-#include "Core/input.h"				// 入力
-#include "Core/fade.h"
+#include "../Core/MyList.h"
+#include "../Core/directx_Helper3D.h"
 
-#include "Phase/Phase_Title.h"		// 色取得関数用
+#include "../Core/camera.h"			// ビルぼ
+#include "../Core/debugproc.h"			// デバッグ用
+#include "../Core/input.h"				// 入力
+#include "../Core/fade.h"
+
+#include "../Phase/Phase_Title.h"		// 色取得関数用
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
