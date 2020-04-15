@@ -84,14 +84,16 @@ typedef struct
 	D3DXVECTOR2 tex;		// テクスチャ座標
 } VERTEX_3D;
 
-// 画面遷移基本関数群集合構造体
-// フェーズ保持に必要な情報(この関数は全てmain.cpp内とfade.cpp内でのみ実行される)
+// 画面遷移基本関数群集合構造体、
+// →フェーズ保持に必要な情報(この関数は全てmain.cpp内とfade.cpp内でのみ実行される)
+// 機能別関数群集合構造体
+// →機能ごとに分割する際に必要な情報
 typedef struct {
 	void(*Init)		(bool isFirst);	// 初期化関数 (引数:Resource読み込みの要求->true)
 	void(*Uninit)	(bool isEnd);	// 終了化関数 (引数:Resource開放処理の要求->true)
 	void(*Update)	(void);			// 更新関数
 	void(*Draw)		(void);			// 描画関数
-}PHASE_FUNC;
+}PHASE_FUNC, OBJ_FUNC;
 
 
 //*****************************************************************************
