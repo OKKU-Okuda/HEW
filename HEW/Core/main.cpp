@@ -451,6 +451,9 @@ void Update(void)
 	// フェーズ更新処理
 	g_Phase.Update();
 
+	// カメラ更新処理
+	UpdateCamera();
+
 	// フェード処理の更新
 	UpdateFade();
 

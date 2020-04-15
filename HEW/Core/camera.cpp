@@ -27,14 +27,17 @@
 // プロトタイプ宣言
 //*****************************************************************************
 
+static void NoCameraFunc(CAMERA*);		// 更新しないカメラ関数ポインタ用
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-CAMERA			g_Camera;					// カメラデータ
+static CAMERA			g_Camera;					// カメラデータ
 
-Matrix		g_mtxView;					// ビューマトリックス
-Matrix		g_mtxProjection;			// プロジェクションマトリックス
+static CameraFunc	g_UpdateFunc;			// カメラ更新関数ポインタ
+
+static Matrix		g_mtxView;					// ビューマトリックス
+static Matrix		g_mtxProjection;			// プロジェクションマトリックス
 
 //=============================================================================
 // カメラの初期化
@@ -50,6 +53,7 @@ HRESULT InitCamera(void)
 	g_Camera.nearZ	= VIEW_NEAR_Z;
 	g_Camera.farZ	= VIEW_FAR_Z;
 
+	ClearCameraFunc();
 	return S_OK;
 }
 
@@ -60,20 +64,20 @@ void UninitCamera(void)
 {
 }
 
-#if 0 // 使う？
 //=============================================================================
 // カメラの更新処理
 //=============================================================================
 void UpdateCamera(void)
 {
+	// 更新関数
+	g_UpdateFunc(&g_Camera);
+
 	//D3DXVECTOR3 posPlayer;
 	//D3DXVECTOR3 rotPlayer;
 	//D3DXVECTOR3 movePlayer;
 	//float fLength;
-
 	// モデルの位置取得
 	//posPlayer = GetPositionPlayer();
-
 	//// モデルの目的の向き取得
 	//rotPlayer = GetRotationPlayer();
 	//
@@ -102,7 +106,7 @@ void UpdateCamera(void)
 	//g_posCameraR.y += (g_posCameraRDest.y - g_posCameraR.y) * RATE_CHASE_CAMERA_R;
 	//g_posCameraR.z += (g_posCameraRDest.z - g_posCameraR.z) * RATE_CHASE_CAMERA_R;
 }
-#endif
+
 //=============================================================================
 // カメラの設定処理	(毎フレームDraw処理開始前に実行する)
 //=============================================================================
@@ -138,12 +142,30 @@ void SetCamera(void)
 }
 
 //=============================================================================
-// カメラの向きの取得
+// カメラ更新関数ポインタ設置関数
 //=============================================================================
-//D3DXVECTOR3 GetRotCamera(void)
-//{
-//	return g_rotCamera;
-//}
+void SetCameraFunc(CameraFunc pFunc)
+{
+	g_UpdateFunc = pFunc;
+	return;
+}
+
+//=============================================================================
+// カメラ更新関数ポインタ削除関数
+//=============================================================================
+void ClearCameraFunc()
+{
+	g_UpdateFunc = NoCameraFunc;
+	return;
+}
+
+//=============================================================================
+// カメラ更新関数ポインタ取得関数
+//=============================================================================
+CameraFunc GetCameraFunc()
+{
+	return g_UpdateFunc;
+}
 
 //=============================================================================
 // ビューマトリックスの取得
@@ -159,4 +181,12 @@ D3DXMATRIX *GetMtxView(void)
 CAMERA *GetCamera()
 {
 	return &g_Camera;
+}
+
+//=============================================================================
+// カメラ更新しない関数(cpp_func)
+//=============================================================================
+void NoCameraFunc(CAMERA*)
+{
+	return;
 }
