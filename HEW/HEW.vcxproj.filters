@@ -63,10 +63,10 @@
     <ClCompile Include="Core\directx_Helper3D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Title\Title_effect.cpp">
+    <ClCompile Include="Title\effect.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Title\Title_Logo.cpp">
+    <ClCompile Include="Title\Logo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,10 +119,10 @@
     <ClInclude Include="Core\directx_Helper3D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Title\Title_effect.h">
+    <ClInclude Include="Title\effect.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Title\Title_Logo.h">
+    <ClInclude Include="Title\Logo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

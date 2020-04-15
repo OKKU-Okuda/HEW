@@ -144,8 +144,8 @@
     <ClCompile Include="Phase\Phase_Title.cpp" />
     <ClCompile Include="Core\sound.cpp" />
     <ClCompile Include="player.cpp" />
-    <ClCompile Include="Title\Title_effect.cpp" />
-    <ClCompile Include="Title\Title_Logo.cpp" />
+    <ClCompile Include="Title\effect.cpp" />
+    <ClCompile Include="Title\Logo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
@@ -164,8 +164,8 @@
     <ClInclude Include="Phase\Phase_Title.h" />
     <ClInclude Include="Core\sound.h" />
     <ClInclude Include="player.h" />
-    <ClInclude Include="Title\Title_effect.h" />
-    <ClInclude Include="Title\Title_Logo.h" />
+    <ClInclude Include="Title\effect.h" />
+    <ClInclude Include="Title\Logo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

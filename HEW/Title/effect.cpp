@@ -4,7 +4,7 @@
 
 	タイトルのエフェクトに関するプログラム
 ***********************************************************************/
-#include "Title_effect.h"
+#include "effect.h"
 
 #include "../Core/MyList.h"
 #include "../Core/directx_Helper3D.h"
