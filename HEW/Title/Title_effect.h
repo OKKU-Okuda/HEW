@@ -5,7 +5,8 @@
 	Title_effect.cpp‚ÉŠÖ‚·‚éƒwƒbƒ_[
 ***********************************************************************/
 #pragma once
-#include "Core/main.h"
+
+#include "../Core/main.h"
 
 
 
