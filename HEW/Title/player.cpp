@@ -40,7 +40,7 @@ static void DrawPlayer();
 // 画面遷移基本関数群をまとめておく
 static OBJ_FUNC g_Func = { InitPlayer,UninitPlayer,UpdatePlayer,DrawPlayer };
 
-static Model		g_model;		// プレイヤーモデル
+static Model		g_model;	// プレイヤーモデル
 static float		g_sclYrot;	// 大きくする演出の際の絶対値サイン関数
 static float		g_posZadd;	// 基本値から加算したZ位置		
 
