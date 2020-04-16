@@ -15,7 +15,7 @@
 #include "Phase_Title.h"				
 #include "Phase_GameTackle1.h"				// 次のフェーズ
 #include "../Title/effect.h"				// タイトルエフェクト
-#include "../Title/player.h"				// タイトルエフェクト
+#include "../Title/player.h"				// プレイヤー
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -223,7 +223,6 @@ void UpdateTitle()
 		// プレイヤーの更新
 		GetPlayerFunc()->Update();
 
-		PrintDebugProc("::;:;:%f", GetPlayerPosition()->z);
 		if (GetPlayerPosition()->z<=-105)
 		{	// プレイヤーが指定位置にいる場合
 

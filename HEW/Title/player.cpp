@@ -149,7 +149,5 @@ player位置取得関数(行列経由)
 =====================================================================*/
 Vec3* GetPlayerPosition()
 {
-//	Vec3 あ(g_model.WldMtx[3][0]);
-
 	return (Vec3*)(g_model->WldMtx.m[3]);
 }
