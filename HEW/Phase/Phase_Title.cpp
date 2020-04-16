@@ -11,7 +11,6 @@
 #include "../Core/camera.h"
 #include "../Core/debugproc.h"
 
-#include "../Core/directx_Helper3D.h"		// 描画援助関数
 #include "Phase_Title.h"				
 #include "Phase_GameTackle1.h"				// 次のフェーズ
 #include "../Title/effect.h"				// タイトルエフェクト

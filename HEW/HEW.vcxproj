@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="Core\camera.cpp" />
     <ClCompile Include="Core\debugproc.cpp" />
+    <ClCompile Include="Core\directx_Helper2D.cpp" />
     <ClCompile Include="Core\directx_Helper3D.cpp" />
     <ClCompile Include="Core\fade.cpp" />
     <ClCompile Include="Core\input.cpp" />
@@ -144,6 +145,7 @@
     <ClCompile Include="Phase\Phase_Title.cpp" />
     <ClCompile Include="Core\sound.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="Title\bottons.cpp" />
     <ClCompile Include="Title\effect.cpp" />
     <ClCompile Include="Title\Logo.cpp" />
     <ClCompile Include="Title\player.cpp" />
@@ -151,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
     <ClInclude Include="Core\debugproc.h" />
+    <ClInclude Include="Core\directx_Helper2D.h" />
     <ClInclude Include="Core\directx_Helper3D.h" />
     <ClInclude Include="Core\fade.h" />
     <ClInclude Include="Core\input.h" />
@@ -165,6 +168,7 @@
     <ClInclude Include="Phase\Phase_Title.h" />
     <ClInclude Include="Core\sound.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="Title\bottons.h" />
     <ClInclude Include="Title\effect.h" />
     <ClInclude Include="Title\Logo.h" />
     <ClInclude Include="Title\player.h" />
