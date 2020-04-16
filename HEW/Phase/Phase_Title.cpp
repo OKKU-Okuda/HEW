@@ -15,17 +15,11 @@
 #include "Phase_Title.h"				
 #include "Phase_GameTackle1.h"				// 次のフェーズ
 #include "../Title/effect.h"				// タイトルエフェクト
+#include "../Title/player.h"				// タイトルエフェクト
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
-
-// プレイヤーの基本立ち位置
-#define PLAYER_POSFROMZ	(6000.0f)
-#define PLAYER_POSTOZ	(-110.0f)
-#define PLAYER_DISZ		(PLAYER_POSFROMZ - PLAYER_POSTOZ)
-#define PLAYER_POSRATE	(0.05f)
-#define PLAYER_ROT		(&Vec3(0, 0.3f, 0))
 
 #define BASE_ALPHA		(0.45f)
 #define ADD_ALPHA		(0.05f)
@@ -77,11 +71,6 @@ static PHASE_FUNC	g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
 static MySound		g_soundBGM;
 static MySound		g_soundSelect;		// 選択音
 
-static struct {
-	Model		model;		// プレイヤーモデル
-	float		sclYrot;	// 大きくする演出の際の絶対値サイン関数
-	float		posZadd;	// 基本値から加算したZ位置		
-}g_Player;							// プレイヤーワーク
 
 static struct {
 	VERTEX_2D	vtx[NUM_VERTEX];
@@ -230,16 +219,12 @@ void UpdateTitle()
 
 	if (GetFade() == FADE_NONE)
 	{ // フェードが発生していない場合に実行
-		float sclY = 1.0f;
 
-		// プレイヤーの更新(大きさ演出と急に近づく演出)
-		g_Player.sclYrot += 0.079f;
-		sclY += fabsf(sinf(g_Player.sclYrot)) * 0.07f;
-		g_Player.posZadd = (PLAYER_DISZ - g_Player.posZadd) * PLAYER_POSRATE + g_Player.posZadd;
-		GetMatrix(&g_Player.model->WldMtx, &Vec3(0.0f, -30.0f, PLAYER_POSFROMZ - g_Player.posZadd), PLAYER_ROT, &Vec3(1.0f, sclY, 1.0f));// プレイヤー立ち位置
+		// プレイヤーの更新
+		GetPlayerFunc()->Update();
 
-
-		if (PLAYER_DISZ - g_Player.posZadd <= 1.0f)
+		PrintDebugProc("::;:;:%f", GetPlayerPosition()->z);
+		if (GetPlayerPosition()->z<=-105)
 		{	// プレイヤーが指定位置にいる場合
 
 			// ロゴの更新
@@ -256,9 +241,6 @@ void UpdateTitle()
 		}
 	}
 
-	// プレイヤー位置の表示
-	Vec4 vc(g_Player.model->WldMtx.m[3]);
-	PrintDebugProc("プレイヤー位置:%vec4", vc);
 }
 
 /*=====================================================================
@@ -273,7 +255,8 @@ void DrawTitle()
 	pDevice->GetRenderState(D3DRS_LIGHTING, &d3drslightning);	
 	pDevice->SetRenderState(D3DRS_LIGHTING, true);
 
-	DrawModel(g_Player.model);
+	// プレイヤーの描画
+	GetPlayerFunc()->Draw();
 
 	DrawTitleEffect();				// 周囲に舞っているエフェクトの描画
 
@@ -337,8 +320,6 @@ void InitTitle(bool isFirst)
 		g_soundSelect	= MySoundCreate("data/SE/select.wav");
 		MySoundSetVolume(g_soundSelect, 3.0f);
 
-		// プレイヤーのモデル読み込み
-		g_Player.model = CreateModel("data/MODEL/Player.x");
 
 		g_Botton[BOTTON_STRAT].pos		= POS_BOTTONSTART;
 		g_Botton[BOTTON_RANKING].pos	= POS_BOTTONRANKING;
@@ -356,11 +337,15 @@ void InitTitle(bool isFirst)
 		g_Botton[BOTTON_EXIT].col_theme		= { 0.5f, 0.5f, 0.5f, 1.0f };
 
 		InitTitleEffect(true);
+
+		// プレイヤーの読み込み
+		GetPlayerFunc()->Init(true);
+		return;
 	}
-	else
-	{
-		InitTitleEffect(false);
-	}
+
+
+	InitTitleEffect(false);
+	
 
 	MySoundSetMasterVolume(0.1f);
 	//---------------------------------------------------------------------
@@ -376,10 +361,9 @@ void InitTitle(bool isFirst)
 	GetCamera()->at		= Vec3(200.0f, 0.0f, -200.0f);
 #endif
 
-	// プレイヤーの数値入れ替え
-	g_Player.sclYrot = 0.0f;
-	g_Player.posZadd = 0.0f;
-	GetMatrix(&g_Player.model->WldMtx, &Vec3(0.0f, 0.0f, PLAYER_POSFROMZ), PLAYER_ROT);// プレイヤー立ち位置
+	// プレイヤーの読み込み
+	GetPlayerFunc()->Init(false);
+
 
 	MySoundPlayEternal(g_soundBGM);	// 永遠再生
 	
@@ -428,33 +412,36 @@ void UninitTitle(bool isEnd)
 	MySoundStop(g_soundBGM);	// 停止
 	MySoundStop(g_soundSelect);
 
-	if (isEnd == true)
+	GetPlayerFunc()->Uninit(false);
+	UninitTitleEffect(false);
+
+
+
+	if (isEnd == false)
 	{
-		//---------------------------------------------------------------------
-		//	リソース開放処理
-		//---------------------------------------------------------------------
-
-		DeleteModel(&g_Player.model);
-
-		// サウンドの開放
-		MySoundDeleteAuto(&g_soundBGM);
-		MySoundDeleteAuto(&g_soundSelect);
-
-		// ボタンテスクチャの開放
-		for (int i = 0; i < MAX_TITLEBOTTOM; i++)
-		{
-			SAFE_RELEASE(g_Botton[i].tex)
-		}
-
-		SAFE_RELEASE(g_Logo.tex);
-		SAFE_RELEASE(g_Effect.tex);
-
-		UninitTitleEffect(true);
+		return;
 	}
-	else
+
+	//---------------------------------------------------------------------
+	//	リソース開放処理
+	//---------------------------------------------------------------------
+
+
+	// サウンドの開放
+	MySoundDeleteAuto(&g_soundBGM);
+	MySoundDeleteAuto(&g_soundSelect);
+
+	// ボタンテスクチャの開放
+	for (int i = 0; i < MAX_TITLEBOTTOM; i++)
 	{
-		UninitTitleEffect(false);
+		SAFE_RELEASE(g_Botton[i].tex)
 	}
+
+	SAFE_RELEASE(g_Logo.tex);
+	SAFE_RELEASE(g_Effect.tex);
+
+	UninitTitleEffect(true);
+	
 
 }
 

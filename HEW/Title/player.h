@@ -20,8 +20,7 @@ playerŠî–{ŠÖ”ŒQæ“¾ŠÖ”
 =====================================================================*/
 OBJ_FUNC* GetPlayerFunc();
 
-// Šî–{ŠÖ”ŒQ
-void InitPlayer(bool isFirst);
-void UninitPlayer(bool isEnd);
-void UpdatePlayer();
-void DrawPlayer();
+/*=====================================================================
+playerˆÊ’uæ“¾ŠÖ”
+=====================================================================*/
+Vec3* GetPlayerPosition();
