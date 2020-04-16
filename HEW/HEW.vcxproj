@@ -146,6 +146,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="Title\effect.cpp" />
     <ClCompile Include="Title\Logo.cpp" />
+    <ClCompile Include="Title\player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="Title\effect.h" />
     <ClInclude Include="Title\Logo.h" />
+    <ClInclude Include="Title\player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
