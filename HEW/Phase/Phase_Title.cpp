@@ -11,8 +11,8 @@
 #include "../Core/camera.h"
 #include "../Core/debugproc.h"
 
-#include "Phase_Title.h"				
-#include "Phase_GameTackle1.h"				// 次のフェーズ
+#include "Phase_Title.h"
+
 #include "../Title/effect.h"				// タイトルエフェクト
 #include "../Title/player.h"				// プレイヤー
 #include "../Title/bottons.h"				// ボタン
@@ -39,7 +39,6 @@
 // 画面遷移基本関数群をまとめておく
 static PHASE_FUNC	g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
 static MySound		g_soundBGM;
-static MySound		g_soundSelect;		// 選択音
 
 
 
@@ -142,8 +141,6 @@ void InitTitle(bool isFirst)
 
 		// BGM,SEの読み込み
 		g_soundBGM		= MySoundCreate("data/BGM/Title.wav");
-		g_soundSelect	= MySoundCreate("data/SE/select.wav");
-		MySoundSetVolume(g_soundSelect, 3.0f);
 
 
 
@@ -218,7 +215,6 @@ void UninitTitle(bool isEnd)
 //---------------------------------------------------------------------
 
 	MySoundStop(g_soundBGM);	// 停止
-	MySoundStop(g_soundSelect);
 
 	GetPlayerFunc()->Uninit(false);
 	UninitTitleEffect(false);
@@ -237,7 +233,6 @@ void UninitTitle(bool isEnd)
 
 	// サウンドの開放
 	MySoundDeleteAuto(&g_soundBGM);
-	MySoundDeleteAuto(&g_soundSelect);
 
 	SAFE_RELEASE(g_Logo.tex);
 

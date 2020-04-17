@@ -64,6 +64,8 @@ Bottons更新関数
 =====================================================================*/
 void UpdateBottons()
 {
+	DWORD cntNoneUpdate = 0ul;	// 更新しなかったボタン数
+
 	for (int idx = 0; idx < MAX_TITLESELECT; idx++)
 	{
 		float scl;	// ボタン拡大倍率
@@ -79,6 +81,7 @@ void UpdateBottons()
 			if (g_Botton[idx].col_argb > 1.0f)
 			{
 				g_Botton[idx].col_argb = 1.0f;
+				cntNoneUpdate++;
 			}
 		}
 		else
@@ -88,6 +91,7 @@ void UpdateBottons()
 			if (g_Botton[idx].col_argb < BASE_ALPHA)
 			{
 				g_Botton[idx].col_argb = BASE_ALPHA;
+				cntNoneUpdate++;
 			}
 		}
 
@@ -100,6 +104,10 @@ void UpdateBottons()
 	}
 
 
+	if (cntNoneUpdate >= (MAX_TITLESELECT))
+	{	// 全てのボタンの大きさが確定したら、更新関数に入らないようにする
+		g_Func.Update = NoFunction;
+	}
 }
 
 /*=====================================================================
@@ -171,6 +179,9 @@ void InitBottons(bool isFirst)
 		Set2DVertexColor(g_Botton[i].vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
 		g_Botton[i].col_argb = 0.0f;
 	}
+
+	// 初期関数の設定
+	g_Func = { InitBottons,UninitBottons,UpdateBottons,DrawBottons };
 }
 
 /*=====================================================================
@@ -219,6 +230,14 @@ Titleボタン位置取得関数
 Vec3* GetTitleBottonPosition()
 {
 	return &g_Botton[GetSelect()].pos;
+}
+
+/*=====================================================================
+Titleボタン変更通知関数
+=====================================================================*/
+void SetBottonScaleChanged()
+{
+	g_Func.Update = UpdateBottons;
 }
 
 /*=====================================================================
