@@ -11,6 +11,7 @@
 
 #include "select.h"	
 #include "bottons.h"
+#include "effect.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -48,6 +49,7 @@ static VERTEX_2D	g_vtx[NUM_VERTEX];	// ロゴ頂点
 static Texture		g_tex;				// テクスチャ
 static DWORD		g_cnt_show;			// 表示カウント
 
+static MySound		g_soundSelect;		// 選択音
 
 static DWORD		g_Select;			// ボタン
 
@@ -61,16 +63,15 @@ void UpdateSelect()
 	if (GetKeyboardTrigger(DIK_UP))
 	{
 		g_Select = (g_Select - 1) % MAX_TITLESELECT;
-		//MySoundPlayOnce(g_soundSelect);
-	//	SetTitle3DRot(true);
+		SetTitle3DRot(true);
+		SetBottonScaleChanged();
 		SetSelectEffectActive();
 	}
 	else if (GetKeyboardTrigger(DIK_DOWN))
 	{
 		g_Select = (g_Select + 1) % MAX_TITLESELECT;
-		//MySoundPlayOnce(g_soundSelect);
-	//	SetTitle3DRot(false);
-	//	SetSelectEffect();
+		SetTitle3DRot(false);
+		SetBottonScaleChanged();
 		SetSelectEffectActive();
 	}
 
@@ -134,6 +135,11 @@ void InitSelect(bool isFirst)
 
 		// セレクトエフェクトのテクスチャ読み込み
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/select_effect.png", &g_tex);
+		
+		// セレクトサウンドの読み込み
+		g_soundSelect = MySoundCreate("data/SE/select.wav");
+		MySoundSetVolume(g_soundSelect, 3.0f);
+
 		return;
 	}
 
@@ -165,6 +171,7 @@ void UninitSelect(bool isEnd)
 	//---------------------------------------------------------------------
 	//	その他の終了処理
 	//---------------------------------------------------------------------
+	MySoundStop(g_soundSelect);
 
 	if (isEnd == true)
 	{
@@ -175,6 +182,9 @@ void UninitSelect(bool isEnd)
 	//---------------------------------------------------------------------
 
 	SAFE_RELEASE(g_tex);
+
+	MySoundDeleteAuto(&g_soundSelect);
+
 }
 
 /*=====================================================================
@@ -220,6 +230,9 @@ void SetSelectEffectActive()
 	// 位置の設定
 	Set2DVerTex(g_vtx, GetTitleBottonPosition(), &SIZE_SELECTEFFECT);
 	Set2DVertexColor(g_vtx, *GetTitleBottonColor());
+
+	// サウンドの再生
+	MySoundPlayOnce(g_soundSelect);
 }
 
 /*=====================================================================
