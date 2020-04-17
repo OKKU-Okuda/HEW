@@ -17,6 +17,7 @@
 #include "../Title/player.h"				// プレイヤー
 #include "../Title/bottons.h"				// ボタン
 #include "../Title/select.h"				// 選択処理
+#include "../Title/logo.h"					// ロゴ
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -40,16 +41,6 @@
 static PHASE_FUNC	g_PhaseFunc = { InitTitle,UninitTitle,UpdateTitle,DrawTitle };
 static MySound		g_soundBGM;
 
-
-
-
-static struct {
-	VERTEX_2D  vtx[NUM_VERTEX];	// ロゴ頂点
-	Texture    tex;				// テクスチャ
-	float	   col;				// 色
-}g_Logo;				// ロゴワーク
-
-
 /*=====================================================================
 Title更新関数
 =====================================================================*/
@@ -70,15 +61,14 @@ void UpdateTitle()
 		if (GetPlayerPosition()->z<=-105)
 		{	// プレイヤーが指定位置にいる場合
 
-			// ロゴの更新
-			g_Logo.col += 0.02f;
-			Set2DVertexColor(g_Logo.vtx, Color(g_Logo.col, g_Logo.col, g_Logo.col, g_Logo.col));
-
 			// 選択の処理とそのエフェクトの更新
 			GetSelectFunc()->Update();
 
 			// ボタンの更新
 			GetBottonsFunc()->Update();
+
+			// タイトルロゴの更新
+			GetLogoFunc()->Update();
 		}
 	}
 
@@ -111,9 +101,7 @@ void DrawTitle()
 	GetSelectFunc()->Draw();
 
 	// ロゴの描画
-	pDevice->SetTexture(0, g_Logo.tex);
-	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Logo.vtx, sizeof(VERTEX_2D));
-
+	GetLogoFunc()->Draw();
 }
 
 /*=====================================================================
@@ -133,17 +121,9 @@ void InitTitle(bool isFirst)
 		//---------------------------------------------------------------------
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
-		D3DDEVICE;
-
-		// タイトルロゴのテクスチャ読み込み
-		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/TitleLogo_000.png", &g_Logo.tex);
-
 
 		// BGM,SEの読み込み
 		g_soundBGM		= MySoundCreate("data/BGM/Title.wav");
-
-
-
 		InitTitleEffect(true);
 
 		// プレイヤーのリソース読み込み
@@ -154,6 +134,9 @@ void InitTitle(bool isFirst)
 
 		// 選択エフェクトのリソース読み込み
 		GetSelectFunc()->Init(true);
+
+		// ロゴのリソース読み込み
+		GetLogoFunc()->Init(true);
 
 		return;
 	}
@@ -182,18 +165,13 @@ void InitTitle(bool isFirst)
 	// ボタン初期化
 	GetBottonsFunc()->Init(false);
 
-	// 選択エフェクとの描画
+	// 選択エフェクと初期化
 	GetSelectFunc()->Init(false);
 
+	// ロゴ初期化
+	GetLogoFunc()->Init(false);
+
 	MySoundPlayEternal(g_soundBGM);	// 永遠再生
-	
-
-
-	// ロゴ頂点の設置
-	MakeNormal2DVertex(0, g_Logo.vtx, &Vec3(SCREEN_CENTER_X, SCREEN_CENTER_Y / 3.0f, 0), &Vec2(350, 120));
-	Set2DVertexColor(g_Logo.vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
-	g_Logo.col = 0.0f;
-
 
 }
 
@@ -234,7 +212,6 @@ void UninitTitle(bool isEnd)
 	// サウンドの開放
 	MySoundDeleteAuto(&g_soundBGM);
 
-	SAFE_RELEASE(g_Logo.tex);
 
 	UninitTitleEffect(true);
 	
