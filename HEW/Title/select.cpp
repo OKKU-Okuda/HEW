@@ -173,7 +173,7 @@ void UninitSelect(bool isEnd)
 	//---------------------------------------------------------------------
 	MySoundStop(g_soundSelect);
 
-	if (isEnd == true)
+	if (isEnd == false)
 	{
 		return;
 	}

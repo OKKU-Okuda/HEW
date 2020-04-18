@@ -107,7 +107,7 @@ void UninitLogo(bool isEnd)
 	//	‚»‚Ì‘¼‚ÌI—¹ˆ—
 	//---------------------------------------------------------------------
 
-	if (isEnd == true)
+	if (isEnd == false)
 	{
 		return;
 	}

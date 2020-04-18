@@ -50,7 +50,7 @@ void UpdateTitle()
 
 
 	// 後ろにある四角形エフェクトの更新
-	UpdateTitleEffect();
+	GetEffectFunc()->Update();
 
 	if (GetFade() == FADE_NONE)
 	{ // フェードが発生していない場合に実行
@@ -58,7 +58,7 @@ void UpdateTitle()
 		// プレイヤーの更新
 		GetPlayerFunc()->Update();
 
-		if (GetPlayerPosition()->z<=-105)
+		if (GetPlayerPosition()->z <= -105)
 		{	// プレイヤーが指定位置にいる場合
 
 			// 選択の処理とそのエフェクトの更新
@@ -89,7 +89,8 @@ void DrawTitle()
 	// プレイヤーの描画
 	GetPlayerFunc()->Draw();
 
-	DrawTitleEffect();				// 周囲に舞っているエフェクトの描画
+	// 周囲に舞っているエフェクトの描画
+	GetEffectFunc()->Draw();
 
 	// 元のライティング状態に戻す
 	pDevice->SetRenderState(D3DRS_LIGHTING, d3drslightning);
@@ -124,7 +125,9 @@ void InitTitle(bool isFirst)
 
 		// BGM,SEの読み込み
 		g_soundBGM		= MySoundCreate("data/BGM/Title.wav");
-		InitTitleEffect(true);
+
+		// エフェクトのリソース読み込み
+		GetEffectFunc()->Init(true);
 
 		// プレイヤーのリソース読み込み
 		GetPlayerFunc()->Init(true);
@@ -142,7 +145,6 @@ void InitTitle(bool isFirst)
 	}
 
 
-	InitTitleEffect(false);
 	
 
 	MySoundSetMasterVolume(0.1f);
@@ -171,6 +173,9 @@ void InitTitle(bool isFirst)
 	// ロゴ初期化
 	GetLogoFunc()->Init(false);
 
+	// エフェクト初期化
+	GetEffectFunc()->Init(false);
+
 	MySoundPlayEternal(g_soundBGM);	// 永遠再生
 
 }
@@ -194,9 +199,20 @@ void UninitTitle(bool isEnd)
 
 	MySoundStop(g_soundBGM);	// 停止
 
+	// プレイヤー終了化
 	GetPlayerFunc()->Uninit(false);
-	UninitTitleEffect(false);
 
+	// ボタン終了化
+	GetBottonsFunc()->Uninit(false);
+
+	// 選択エフェクと終了化
+	GetSelectFunc()->Uninit(false);
+
+	// ロゴ終了化
+	GetLogoFunc()->Uninit(false);
+
+	// エフェクト終了化
+	GetEffectFunc()->Uninit(false);
 
 
 	if (isEnd == false)
@@ -213,8 +229,21 @@ void UninitTitle(bool isEnd)
 	MySoundDeleteAuto(&g_soundBGM);
 
 
-	UninitTitleEffect(true);
-	
+	// プレイヤー開放
+	GetPlayerFunc()->Uninit(true);
+
+	// ボタン開放
+	GetBottonsFunc()->Uninit(true);
+
+	// 選択エフェクと開放
+	GetSelectFunc()->Uninit(true);
+
+	// ロゴ開放
+	GetLogoFunc()->Uninit(true);
+
+	// エフェクト開放
+	GetEffectFunc()->Uninit(true);
+
 
 }
 

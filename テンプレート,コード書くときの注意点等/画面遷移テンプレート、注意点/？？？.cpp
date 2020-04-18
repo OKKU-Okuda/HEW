@@ -95,7 +95,7 @@ void UninitHHH(bool isEnd)
 
 
 
-	if (isEnd == true)
+	if (isEnd == false)
 	{
 		return;
 	}

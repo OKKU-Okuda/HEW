@@ -201,7 +201,7 @@ void UninitBottons(bool isEnd)
 	//---------------------------------------------------------------------
 
 
-	if (isEnd == true)
+	if (isEnd == false)
 	{
 		return;
 	}

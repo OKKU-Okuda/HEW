@@ -46,8 +46,7 @@ Vec3*	paddrot		毎フレーム毎にエフェクト自体を回転させる量
 void SetTitle3DEffectEx(float len, float agl, float spd, Color *col, Vec3* paddrot);
 
 
-// タイトルエフェクト基本関数群(PHASE_TITLE専用)
-void UpdateTitleEffect();
-void DrawTitleEffect();
-void InitTitleEffect(bool isFirstInit);
-void UninitTitleEffect(bool isLastUninit);
+/*=====================================================================
+エフェクト基本関数群取得関数
+=====================================================================*/
+OBJ_FUNC* GetEffectFunc();

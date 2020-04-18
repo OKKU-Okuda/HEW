@@ -49,12 +49,22 @@ typedef struct {
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
+// タイトルエフェクト基本関数群(PHASE_TITLE専用)
+static void UpdateTitleEffect();
+static void DrawTitleEffect();
+static void InitTitleEffect(bool isFirstInit);
+static void UninitTitleEffect(bool isLastUninit);
+
 static void Title3DRightRot();
 static void Title3DLeftRot();
 inline Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEffect, DWORD idx);
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
+
+// 画面遷移基本関数群をまとめておく
+static OBJ_FUNC g_Func = { InitTitleEffect,UninitTitleEffect,UpdateTitleEffect,DrawTitleEffect };
+
 static Matrix		g_SclMatrix[NUM_ZANZO];		// スケール行列の事前演算格納用
 static MyList		g_list3DEffect;				// 3Dボックスエフェクトのリスト	
 static Model		g_modelbox;					// ボックスのメッシュ
@@ -328,6 +338,7 @@ void InitTitleEffect(bool isFirstInit)
 		{
 			GetMatrix(&g_SclMatrix[i], &Vec3(0, 0, 0), &Vec3(0, 0, 0), &Vec3(scl, scl, scl));
 		}
+		return;
 	}
 
 	g_rot.addrot = 0.0f;
@@ -342,12 +353,14 @@ void UninitTitleEffect(bool isLastUninit)
 
 	MyListDeleteObjectAll(g_list3DEffect);	// エフェクト全消し
 
-	if (isLastUninit == true)
+	if (isLastUninit == false)
 	{
+		return;
+	}
+
 		// データの開放
 		DeleteModel(&g_modelbox);
 		MyListDelete(&g_list3DEffect);
-	}
 }
 
 /*=====================================================================
@@ -369,4 +382,12 @@ Matrix* BrendMatrix(Matrix* pOutMat, Matrix* pInMat, TITLE_3DEFFECT* pEffect, DW
 	pOutMat->_43 = pEffect->obj[idx].pos.z;
 
 	return pOutMat;
+}
+
+/*=====================================================================
+エフェクト基本関数群取得関数
+=====================================================================*/
+OBJ_FUNC* GetEffectFunc()
+{
+	return &g_Func;
 }
