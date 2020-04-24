@@ -146,6 +146,7 @@
     <ClCompile Include="Core\sound.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="Title\bottons.cpp" />
+    <ClCompile Include="Title\control.cpp" />
     <ClCompile Include="Title\effect.cpp" />
     <ClCompile Include="Title\Logo.cpp" />
     <ClCompile Include="Title\player.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Core\sound.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="Title\bottons.h" />
+    <ClInclude Include="Title\control.h" />
     <ClInclude Include="Title\effect.h" />
     <ClInclude Include="Title\Logo.h" />
     <ClInclude Include="Title\player.h" />

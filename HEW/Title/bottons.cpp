@@ -54,7 +54,7 @@ static void DrawBottons();
 //---------------------------------------------------------------------
 
 // 画面遷移基本関数群をまとめておく
-static OBJ_FUNC g_Func = { InitBottons,UninitBottons,UpdateBottons,DrawBottons };
+static OBJ_FUNC g_Func = { InitBottons,UninitBottons,NoFunction,DrawBottons };
 
 static BOTTON	g_Botton[MAX_TITLESELECT];			// ボタンワーク
 
@@ -181,7 +181,7 @@ void InitBottons(bool isFirst)
 	}
 
 	// 初期関数の設定
-	g_Func = { InitBottons,UninitBottons,UpdateBottons,DrawBottons };
+	g_Func = { InitBottons,UninitBottons,NoFunction,DrawBottons };
 }
 
 /*=====================================================================
@@ -246,4 +246,12 @@ Bottons基本関数群取得関数
 OBJ_FUNC* GetBottonsFunc()
 {
 	return &g_Func;
+}
+
+/*=====================================================================
+Bottons関数ACTIVE取得関数
+=====================================================================*/
+void SetBottonsFuncActive()
+{
+	SetBottonScaleChanged();
 }

@@ -18,6 +18,9 @@
 #include "../Title/bottons.h"				// ボタン
 #include "../Title/select.h"				// 選択処理
 #include "../Title/logo.h"					// ロゴ
+#include "../Title/control.h"				// コントロール
+
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -52,25 +55,20 @@ void UpdateTitle()
 	// 後ろにある四角形エフェクトの更新
 	GetEffectFunc()->Update();
 
-	if (GetFade() == FADE_NONE)
-	{ // フェードが発生していない場合に実行
+	// 制御の更新
+	GetControlFunc()->Update();
 
-		// プレイヤーの更新
-		GetPlayerFunc()->Update();
+	// プレイヤーの更新
+	GetPlayerFunc()->Update();
 
-		if (GetPlayerPosition()->z <= -105)
-		{	// プレイヤーが指定位置にいる場合
+	// 選択の処理とそのエフェクトの更新
+	GetSelectFunc()->Update();
 
-			// 選択の処理とそのエフェクトの更新
-			GetSelectFunc()->Update();
+	// ボタンの更新
+	GetBottonsFunc()->Update();
 
-			// ボタンの更新
-			GetBottonsFunc()->Update();
-
-			// タイトルロゴの更新
-			GetLogoFunc()->Update();
-		}
-	}
+	// タイトルロゴの更新
+	GetLogoFunc()->Update();
 
 }
 
@@ -141,6 +139,8 @@ void InitTitle(bool isFirst)
 		// ロゴのリソース読み込み
 		GetLogoFunc()->Init(true);
 
+		// 制御のリソース読み込み
+		GetControlFunc()->Init(true);
 		return;
 	}
 
@@ -176,8 +176,10 @@ void InitTitle(bool isFirst)
 	// エフェクト初期化
 	GetEffectFunc()->Init(false);
 
-	MySoundPlayEternal(g_soundBGM);	// 永遠再生
+	// 制御初期化
+	GetControlFunc()->Init(false);
 
+	MySoundPlayEternal(g_soundBGM);	// 永遠再生
 }
 
 /*=====================================================================
@@ -214,6 +216,9 @@ void UninitTitle(bool isEnd)
 	// エフェクト終了化
 	GetEffectFunc()->Uninit(false);
 
+	// 制御終了化
+	GetControlFunc()->Uninit(false);
+
 
 	if (isEnd == false)
 	{
@@ -244,6 +249,8 @@ void UninitTitle(bool isEnd)
 	// エフェクト開放
 	GetEffectFunc()->Uninit(true);
 
+	// 制御開放
+	GetControlFunc()->Uninit(true);
 
 }
 

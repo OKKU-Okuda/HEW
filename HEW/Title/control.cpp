@@ -1,25 +1,22 @@
 /**********************************************************************
-[[playerプログラム(player.cpp)]]
+[[Controlプログラム(Control.cpp)]]
 	作者：奥田　真規
 
-	playerに関するプログラム
+	Controlに関するプログラム
 ***********************************************************************/
-#include "player.h"	
-
 #include "../Core/input.h"
-#include "../Core/directx_Helper3D.h"
-#include "../Core/debugproc.h"
+#include"../Core/main.h"
+
+#include "../Core/fade.h"
+#include "Control.h"	
+#include "player.h"
+#include "select.h"
+#include "bottons.h"
+#include "Logo.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
-
-
-// プレイヤーの基本立ち位置
-#define PLAYER_POSFROMZ	(6000.0f)
-#define PLAYER_POSTOZ	(-110.0f)
-#define PLAYER_DISZ		(PLAYER_POSFROMZ - PLAYER_POSTOZ)
-#define PLAYER_POSRATE	(0.05f)
-#define PLAYER_ROT		(&Vec3(0, 0.3f, 0))
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -28,52 +25,57 @@
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-static void InitPlayer(bool isFirst);
-static void UninitPlayer(bool isEnd);
-static void UpdatePlayer();
-static void DrawPlayer();
+
+// 基本関数群
+static void InitControl(bool isFirst);
+static void UninitControl(bool isEnd);
+static void CheckFadeControl();
+static void CheckPlayerControl();
 
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
 
 // 画面遷移基本関数群をまとめておく
-static OBJ_FUNC g_Func = { InitPlayer,UninitPlayer,NoFunction,DrawPlayer };
-
-static Model		g_model;	// プレイヤーモデル
-static float		g_sclYrot;	// 大きくする演出の際の絶対値サイン関数
-static float		g_posZadd;	// 基本値から加算したZ位置		
+static OBJ_FUNC g_Func = { InitControl,UninitControl,CheckFadeControl,NoFunction };
 
 /*=====================================================================
-player更新関数
+Control更新関数
 =====================================================================*/
-void UpdatePlayer()
+void CheckFadeControl()
 {
-	float sclY = 1.0f;
+	if (GetFade() == FADE_NONE)
+	{ // フェードが発生していない場合に実行
 
-	// プレイヤーの更新(大きさ演出と急に近づく演出)
-	g_sclYrot += 0.079f;
-	sclY += fabsf(sinf(g_sclYrot)) * 0.07f;
-	g_posZadd = (PLAYER_DISZ - g_posZadd) * PLAYER_POSRATE + g_posZadd;
-	GetMatrix(&g_model->WldMtx, &Vec3(0.0f, -30.0f, PLAYER_POSFROMZ - g_posZadd), PLAYER_ROT, &Vec3(1.0f, sclY, 1.0f));// プレイヤー立ち位置
+		// プレイヤーをアクティブ
+		SetPlayerFuncActive();
 
+		// コントロールの更新関数を更新
+		g_Func.Update = CheckPlayerControl;
+	}
+}
 
-	// プレイヤー位置の表示
-	Vec4 vc(g_model->WldMtx.m[3]);
-	PrintDebugProc("プレイヤー位置:%vec4", vc);
+void CheckPlayerControl()
+{
+	if (GetPlayerPosition()->z <= -105)
+	{	// プレイヤーが指定位置にいる場合
 
+		// セレクトをアクティブ
+		SetSelectFuncActive();
+
+		// ボタンをアクティブ
+		SetBottonsFuncActive();
+
+		// ロゴをアクティブ
+		SetLogoFuncActive();
+
+		// コントロールの更新関数を更新
+		g_Func.Update = NoFunction;
+	}
 }
 
 /*=====================================================================
-player描画関数
-=====================================================================*/
-void DrawPlayer()
-{
-	DrawModel(g_model);
-}
-
-/*=====================================================================
-player初期化関数
+Control初期化関数
 	戻り値 : void
 	引数 :
 	bool isFirst		true:リソース読み込み系を含めた初期化処理を行う
@@ -82,15 +84,13 @@ player初期化関数
 
 						false;リソース開放系以外の初期化処理を行う
 =====================================================================*/
-void InitPlayer(bool isFirst)
+void InitControl(bool isFirst)
 {
 	if (isFirst == true)
 	{
 		//---------------------------------------------------------------------
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
-		// プレイヤーのモデル読み込み
-		g_model = CreateModel("data/MODEL/Player.x");
 
 		return;
 	}
@@ -99,17 +99,11 @@ void InitPlayer(bool isFirst)
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
 
-	// プレイヤーの数値入れ替え
-	g_sclYrot = 0.0f;
-	g_posZadd = 0.0f;
-	GetMatrix(&g_model->WldMtx, &Vec3(0.0f, 0.0f, PLAYER_POSFROMZ), PLAYER_ROT);// プレイヤー立ち位置
-    
-	g_Func = { InitPlayer,UninitPlayer,NoFunction,DrawPlayer };
-
+	g_Func = { InitControl,UninitControl,CheckFadeControl,NoFunction };
 }
 
 /*=====================================================================
-player終了化関数
+Control終了化関数
 	戻り値 : void
 	引数 :
 	bool isEnd			true:リソース開放系を含めた終了化処理を行う
@@ -118,11 +112,16 @@ player終了化関数
 
 						false;リソース開放系以外の終了化処理を行う	
 =====================================================================*/
-void UninitPlayer(bool isEnd)
+void UninitControl(bool isEnd)
 {
 	//---------------------------------------------------------------------
 	//	その他の終了処理
 	//---------------------------------------------------------------------
+
+
+
+
+
 	if (isEnd == false)
 	{
 		return;
@@ -131,30 +130,16 @@ void UninitPlayer(bool isEnd)
 	//---------------------------------------------------------------------
 	//	リソース開放処理
 	//---------------------------------------------------------------------
-	DeleteModel(&g_model);
-	
+
+
+
+
 }
 
 /*=====================================================================
-player基本関数群取得関数
+Control基本関数群取得関数
 =====================================================================*/
-OBJ_FUNC* GetPlayerFunc()
+OBJ_FUNC* GetControlFunc()
 {
 	return &g_Func;
-}
-
-/*=====================================================================
-player位置取得関数(行列経由)
-=====================================================================*/
-Vec3* GetPlayerPosition()
-{
-	return (Vec3*)(g_model->WldMtx.m[3]);
-}
-
-/*=====================================================================
-player更新関数アクティブ
-=====================================================================*/
-void SetPlayerFuncActive()
-{
-	g_Func.Update = UpdatePlayer;
 }

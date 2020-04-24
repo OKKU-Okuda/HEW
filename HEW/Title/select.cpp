@@ -41,7 +41,7 @@ static void DrawSelectEffect();
 //---------------------------------------------------------------------
 
 // 画面遷移基本関数群をまとめておく
-static OBJ_FUNC g_Func = { InitSelect,UninitSelect,UpdateSelect,NoFunction };
+static OBJ_FUNC g_Func = { InitSelect,UninitSelect,NoFunction,NoFunction };
 
 // セレクトエフェクト
 static NormalFunc	g_updatefunc;		// エフェクト更新関数
@@ -154,6 +154,7 @@ void InitSelect(bool isFirst)
 
 	g_Select = SELECT_STRAT;
 
+	g_Func = { InitSelect,UninitSelect,NoFunction,NoFunction };
 }
 
 /*=====================================================================
@@ -242,4 +243,12 @@ void SetSelectEffectPassive()
 {
 	g_Func.Draw		= NoFunction;
 	g_updatefunc	= NoFunction;
+}
+
+/*=====================================================================
+選択エフェクト更新関数アクティブ関数
+=====================================================================*/
+void SetSelectFuncActive()
+{
+	g_Func.Update = UpdateSelect;
 }
