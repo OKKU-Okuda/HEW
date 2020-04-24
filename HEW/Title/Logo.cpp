@@ -28,7 +28,7 @@ static void DrawLogo();
 //---------------------------------------------------------------------
 
 // 画面遷移基本関数群をまとめておく
-static OBJ_FUNC g_Func = { InitLogo,UninitLogo,UpdateLogo,DrawLogo };
+static OBJ_FUNC g_Func = { InitLogo,UninitLogo,NoFunction,DrawLogo };
 
 static VERTEX_2D  g_vtx[NUM_VERTEX];	// ロゴ頂点
 static Texture    g_tex;				// テクスチャ
@@ -44,6 +44,10 @@ void UpdateLogo()
 	g_col += 0.02f;
 	Set2DVertexColor(g_vtx, Color(g_col, g_col, g_col, g_col));
 
+	if (g_col > 1.0f)
+	{	// 更新をしないように設定
+		g_Func.Update = NoFunction;
+	}
 }
 
 /*=====================================================================
@@ -89,6 +93,7 @@ void InitLogo(bool isFirst)
 	Set2DVertexColor(g_vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
 	g_col = 0.0f;
 
+	g_Func = { InitLogo,UninitLogo,NoFunction,DrawLogo };
 }
 
 /*=====================================================================
@@ -123,4 +128,12 @@ Logo基本関数群取得関数
 OBJ_FUNC* GetLogoFunc()
 {
 	return &g_Func;
+}
+
+/*=====================================================================
+Logoアクティブ関数
+=====================================================================*/
+void SetLogoFuncActive()
+{
+	g_Func.Update = UpdateLogo;
 }
