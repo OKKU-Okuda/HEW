@@ -20,7 +20,9 @@
 #include "../Title/logo.h"					// ロゴ
 #include "../Title/control.h"				// コントロール
 
-
+#ifdef _DEBUG
+#include "Phase_GameKick.h"
+#endif
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -70,6 +72,15 @@ void UpdateTitle()
 	// タイトルロゴの更新
 	GetLogoFunc()->Update();
 
+#ifdef _DEBUG
+	PrintDebugProc("(ﾃﾞﾊﾞｯｸﾞ)K:キックゲームに直行");
+	// キックに直行処理
+	if (GetKeyboardTrigger(DIK_K))
+	{
+		GoNextPhase(GetPhaseGameKickFunc());
+	}
+
+#endif
 }
 
 /*=====================================================================
