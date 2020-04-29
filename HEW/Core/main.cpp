@@ -87,7 +87,6 @@ void UninitGameResource()
 	UninitGameTackle2(true);
 	UninitGameTackle1(true);
 	UninitTitle(true);
-
 }
 
 //=============================================================================

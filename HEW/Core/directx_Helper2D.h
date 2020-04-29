@@ -85,6 +85,16 @@ void Draw2DVertex(LPDIRECT3DTEXTURE9 pTex, VERTEX_2D* pVtx);
 void MakeNormal2DVertex(int num, VERTEX_2D *vtx_data, D3DXVECTOR3 *Pos, D3DXVECTOR2 *Size);
 
 /*=====================================================================
+単体2D頂点作成関数
+	戻り値：void
+	引数：
+	VERTEX_2D* pVtx,		:変更する頂点のアドレス(1つのみの変更）
+	D3DXVECTOR3* pPos,		:頂点設置位置
+	D3DXVECTOR2* pTexPos	:テクスチャ座標
+=====================================================================*/
+void Make2DVertex(VERTEX_2D* pVtx, D3DXVECTOR3* pPos, D3DXVECTOR2* pTexPos);
+
+/*=====================================================================
 普遍的に頂点バッファ作成関数(ノーマル)
 	戻り値：LPDIRECT3DVERTEXBUFFER9
 	引数：

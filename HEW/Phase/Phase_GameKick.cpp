@@ -13,6 +13,9 @@
 
 #include "Phase_GameKick.h"	
 #include "Phase_Result.h"
+
+#include "../GameKick/OrderLogo.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -45,6 +48,8 @@ void UpdateGameKick()
 		GoNextPhase(GetPhaseResultFunc());
 	}
 
+
+	GetOrderLogoFunc()->Update();
 }
 
 /*=====================================================================
@@ -52,6 +57,7 @@ GameKick描画関数
 =====================================================================*/
 void DrawGameKick()
 {
+	GetOrderLogoFunc()->Draw();
 
 }
 
@@ -73,6 +79,8 @@ void InitGameKick(bool isFirst)
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
 
+		GetOrderLogoFunc()->Init(true);
+
 		return;
 	}
 
@@ -80,6 +88,7 @@ void InitGameKick(bool isFirst)
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
 
+	GetOrderLogoFunc()->Init(false);
 
 }
 
@@ -99,6 +108,7 @@ void UninitGameKick(bool isEnd)
 	//	その他の終了処理
 	//---------------------------------------------------------------------
 
+	GetOrderLogoFunc()->Uninit(false);
 
 
 
@@ -110,7 +120,8 @@ void UninitGameKick(bool isEnd)
 	//	リソース開放処理
 	//---------------------------------------------------------------------
 
-	
+	GetOrderLogoFunc()->Uninit(true);
+
 
 }
 
