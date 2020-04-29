@@ -137,6 +137,7 @@
     <ClCompile Include="Core\light.cpp" />
     <ClCompile Include="Core\main.cpp" />
     <ClCompile Include="Core\MyList.cpp" />
+    <ClCompile Include="GameKick\OrderLogo.cpp" />
     <ClCompile Include="Phase\Phase_GameKick.cpp" />
     <ClCompile Include="Phase\Phase_GameTackle1.cpp" />
     <ClCompile Include="Phase\Phase_GameTackle2.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Core\light.h" />
     <ClInclude Include="Core\main.h" />
     <ClInclude Include="Core\MyList.h" />
+    <ClInclude Include="GameKick\OrderLogo.h" />
     <ClInclude Include="Phase\Phase_GameKick.h" />
     <ClInclude Include="Phase\Phase_GameTackle1.h" />
     <ClInclude Include="Phase\Phase_GameTackle2.h" />
