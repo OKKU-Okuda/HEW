@@ -14,8 +14,8 @@
 #include "Phase_GameTackle1.h"	
 #include "Phase_GameTackle2.h"
 
-#include "../player.h"
-
+#include "../GameTackle/player.h"
+#include "../GameTackle/enemy.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -48,7 +48,11 @@ void UpdateGameTackle1()
 		GoNextPhase(GetPhaseGameTackle2Func());
 	}
 
+	// プレイヤーの更新
 	GetPlayerFuncX()->Update();
+
+	// エネミーの更新
+	GetTackleEnemyFunc()->Update();
 }
 
 /*=====================================================================
@@ -56,8 +60,11 @@ GameTackle1描画関数
 =====================================================================*/
 void DrawGameTackle1()
 {
+	// プレイヤーの描画
 	GetPlayerFuncX()->Draw();
 
+	// エネミーの描画
+	GetTackleEnemyFunc()->Draw();
 }
 
 /*=====================================================================
@@ -78,7 +85,11 @@ void InitGameTackle1(bool isFirst)
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
 
+		// プレイヤーの読み込み
 		GetPlayerFuncX()->Init(true);
+
+		// エネミーの読み込み
+		GetTackleEnemyFunc()->Init(true);
 
 		return;
 	}
@@ -87,8 +98,11 @@ void InitGameTackle1(bool isFirst)
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
 
+	// プレイヤーの初期化
 	GetPlayerFuncX()->Init(false);
 
+	// エネミーの初期化
+	GetTackleEnemyFunc()->Init(false);
 
 }
 
@@ -108,8 +122,11 @@ void UninitGameTackle1(bool isEnd)
 	//	その他の終了処理
 	//---------------------------------------------------------------------
 
+	// プレイヤーの終了化
 	GetPlayerFuncX()->Uninit(false);
 
+	// エネミーの終了化
+	GetTackleEnemyFunc()->Uninit(false);
 
 
 	if (isEnd == false)
@@ -120,9 +137,13 @@ void UninitGameTackle1(bool isEnd)
 	//	リソース開放処理
 	//---------------------------------------------------------------------
 
+	// プレイヤーの開放
 	GetPlayerFuncX()->Uninit(true);
 
 
+
+	// エネミーの開放
+	GetTackleEnemyFunc()->Uninit(false);
 }
 
 /*=====================================================================

@@ -1,13 +1,14 @@
 /**********************************************************************
-[[？？？プログラム(？？？.cpp)]]
+[[TackleEnemyプログラム(TackleEnemy.cpp)]]
 	作者：奥田　真規
 
-	？？？に関するプログラム
+	TackleEnemyに関するプログラム
 ***********************************************************************/
+#include"../Core/main.h"
 #include "../Core/input.h"
 
-#include "？？？.h"	
-
+#include "enemy.h"	
+#include"player.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -21,33 +22,43 @@
 //---------------------------------------------------------------------
 
 // 基本関数群
-static void Init？？？(bool isFirst);
-static void Uninit？？？(bool isEnd);
-static void Update？？？();
-static void Draw？？？();
+static void InitTackleEnemy(bool isFirst);
+static void UninitTackleEnemy(bool isEnd);
+static void UpdateTackleEnemy();
+static void DrawTackleEnemy();
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
 
 // 画面遷移基本関数群をまとめておく
-static OBJ_FUNC g_Func = { Init？？？,Uninit？？？,Update？？？,Draw？？？ };
+static OBJ_FUNC g_Func = { InitTackleEnemy,UninitTackleEnemy,UpdateTackleEnemy,DrawTackleEnemy };
+
+// エネミーモデル
+static Model	g_modelEnemy;
 
 /*=====================================================================
-？？？更新関数
+TackleEnemy更新関数
 =====================================================================*/
-void Update？？？()
+void UpdateTackleEnemy()
 {
+
+	// プレイヤーの横にエネミーを描画するようにする
+	g_modelEnemy->WldMtx._41 = GetPlayerPositionX()->x;
+	g_modelEnemy->WldMtx._42 = GetPlayerPositionX()->y;
+	g_modelEnemy->WldMtx._43 = GetPlayerPositionX()->z;
+
 }
 
 /*=====================================================================
-？？？描画関数
+TackleEnemy描画関数
 =====================================================================*/
-void Draw？？？()
+void DrawTackleEnemy()
 {
+	DrawModel(g_modelEnemy);
 }
 
 /*=====================================================================
-？？？初期化関数
+TackleEnemy初期化関数
 	戻り値 : void
 	引数 :
 	bool isFirst		true:リソース読み込み系を含めた初期化処理を行う
@@ -56,7 +67,7 @@ void Draw？？？()
 
 						false;リソース開放系以外の初期化処理を行う
 =====================================================================*/
-void Init？？？(bool isFirst)
+void InitTackleEnemy(bool isFirst)
 {
 	if (isFirst == true)
 	{
@@ -64,18 +75,18 @@ void Init？？？(bool isFirst)
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
 
+		// エネミーモデルの読み込み
+		g_modelEnemy = CreateModel("data/MODEL/enemy.x");
 		return;
 	}
 
 	//---------------------------------------------------------------------
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
-
-
 }
 
 /*=====================================================================
-？？？終了化関数
+TackleEnemy終了化関数
 	戻り値 : void
 	引数 :
 	bool isEnd			true:リソース開放系を含めた終了化処理を行う
@@ -84,7 +95,7 @@ void Init？？？(bool isFirst)
 
 						false;リソース開放系以外の終了化処理を行う	
 =====================================================================*/
-void Uninit？？？(bool isEnd)
+void UninitTackleEnemy(bool isEnd)
 {
 	//---------------------------------------------------------------------
 	//	その他の終了処理
@@ -104,14 +115,15 @@ void Uninit？？？(bool isEnd)
 	//---------------------------------------------------------------------
 
 
-
+	// モデル開放
+	DeleteModel(&g_modelEnemy);
 
 }
 
 /*=====================================================================
-？？？基本関数群取得関数
+TackleEnemy基本関数群取得関数
 =====================================================================*/
-OBJ_FUNC* Get？？？Func()
+OBJ_FUNC* GetTackleEnemyFunc()
 {
 	return &g_Func;
 }

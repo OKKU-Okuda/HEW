@@ -4,13 +4,13 @@
 
 	playerに関するプログラム
 ***********************************************************************/
-#include"Core/main.h"
+#include"../Core/main.h"
 
 #include "player.h"	
 
-#include "Core/input.h"
-#include "Core/directx_Helper3D.h"
-#include "Core/debugproc.h"
+#include "../Core/input.h"
+#include "../Core/directx_Helper3D.h"
+#include "../Core/debugproc.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
