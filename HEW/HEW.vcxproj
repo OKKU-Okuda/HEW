@@ -138,6 +138,8 @@
     <ClCompile Include="Core\main.cpp" />
     <ClCompile Include="Core\MyList.cpp" />
     <ClCompile Include="GameKick\OrderLogo.cpp" />
+    <ClCompile Include="GameTackle\player.cpp" />
+    <ClCompile Include="GameTackle\enemy.cpp" />
     <ClCompile Include="Phase\Phase_GameKick.cpp" />
     <ClCompile Include="Phase\Phase_GameTackle1.cpp" />
     <ClCompile Include="Phase\Phase_GameTackle2.cpp" />
@@ -145,7 +147,6 @@
     <ClCompile Include="Phase\Phase_Result.cpp" />
     <ClCompile Include="Phase\Phase_Title.cpp" />
     <ClCompile Include="Core\sound.cpp" />
-    <ClCompile Include="player.cpp" />
     <ClCompile Include="Title\bottons.cpp" />
     <ClCompile Include="Title\control.cpp" />
     <ClCompile Include="Title\effect.cpp" />
@@ -164,6 +165,8 @@
     <ClInclude Include="Core\main.h" />
     <ClInclude Include="Core\MyList.h" />
     <ClInclude Include="GameKick\OrderLogo.h" />
+    <ClInclude Include="GameTackle\player.h" />
+    <ClInclude Include="GameTackle\enemy.h" />
     <ClInclude Include="Phase\Phase_GameKick.h" />
     <ClInclude Include="Phase\Phase_GameTackle1.h" />
     <ClInclude Include="Phase\Phase_GameTackle2.h" />
@@ -171,13 +174,15 @@
     <ClInclude Include="Phase\Phase_Result.h" />
     <ClInclude Include="Phase\Phase_Title.h" />
     <ClInclude Include="Core\sound.h" />
-    <ClInclude Include="player.h" />
     <ClInclude Include="Title\bottons.h" />
     <ClInclude Include="Title\control.h" />
     <ClInclude Include="Title\effect.h" />
     <ClInclude Include="Title\Logo.h" />
     <ClInclude Include="Title\player.h" />
     <ClInclude Include="Title\select.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="HEW.exe" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
