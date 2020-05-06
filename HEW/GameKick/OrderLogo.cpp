@@ -184,6 +184,15 @@ OBJ_FUNC* GetOrderLogoFunc()
 	return &g_Func;
 }
 
+/*=====================================================================
+OrderLogo5頂点変更関数
+戻り値：void
+引数：
+VERTEX_2D *pVtx,	：5頂点の配列アドレス
+Vec3* pBottomPos,	：下底の中央座標
+Vec2*pBaseSize,		：四角形にした時のベースサイズ
+float difference
+=====================================================================*/
 void SetLogo5Vertex(VERTEX_2D *pVtx, Vec3* pBottomPos, Vec2*pBaseSize, float difference)
 {
 	// 下底の頂点設置

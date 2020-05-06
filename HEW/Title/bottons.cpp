@@ -103,6 +103,11 @@ void UpdateBottons()
 		Set2DVerTex(g_Botton[idx].vtx, &g_Botton[idx].pos, &(g_Botton[idx].size*scl));
 	}
 
+#ifdef _DEBUG
+//	g_Botton[0].vtx[0].vtx.x += 200.0f;
+//	g_Botton[0].vtx[1].vtx.x += 200.0f;
+#endif
+
 
 	if (cntNoneUpdate >= (MAX_TITLESELECT))
 	{	// 全てのボタンの大きさが確定したら、更新関数に入らないようにする
@@ -174,6 +179,7 @@ void InitBottons(bool isFirst)
 	MakeNormal2DVertex(0, g_Botton[SELECT_CONFIG].vtx,	&POS_BOTTONCONFIG,	&SIZE_BOTTONCONFIG);
 	MakeNormal2DVertex(0, g_Botton[SELECT_EXIT].vtx,	&POS_BOTTONEXIT,	&SIZE_BOTTONEXIT);
 	
+
 	for (int i = 0; i < MAX_TITLESELECT; i++)
 	{
 		Set2DVertexColor(g_Botton[i].vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
