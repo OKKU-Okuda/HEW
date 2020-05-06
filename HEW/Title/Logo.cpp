@@ -94,6 +94,7 @@ void InitLogo(bool isFirst)
 	g_col = 0.0f;
 
 	g_Func = { InitLogo,UninitLogo,NoFunction,DrawLogo };
+
 }
 
 /*=====================================================================
