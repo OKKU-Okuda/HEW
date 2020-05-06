@@ -6,6 +6,7 @@
 //=============================================================================
 #include "camera.h"
 #include "input.h"
+#include "debugproc.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -69,8 +70,16 @@ void UninitCamera(void)
 //=============================================================================
 void UpdateCamera(void)
 {
+	Vec3 length( g_Camera.pos - g_Camera.at);
+
 	// 更新関数
 	g_UpdateFunc(&g_Camera);
+
+	// 視点と注視点の距離を演算
+	g_Camera.length = D3DXVec3Length(&length);
+
+	// 回転
+	g_Camera.rotXZ = atan2f(-length.z, length.x);
 
 	//D3DXVECTOR3 posPlayer;
 	//D3DXVECTOR3 rotPlayer;
@@ -105,6 +114,10 @@ void UpdateCamera(void)
 	//g_posCameraR.x += (g_posCameraRDest.x - g_posCameraR.x) * RATE_CHASE_CAMERA_R;
 	//g_posCameraR.y += (g_posCameraRDest.y - g_posCameraR.y) * RATE_CHASE_CAMERA_R;
 	//g_posCameraR.z += (g_posCameraRDest.z - g_posCameraR.z) * RATE_CHASE_CAMERA_R;
+
+	PrintDebugProc("*****カメラ****\nXZ回転：%f\nカメラ距離：%f\n視点：%vec3\n注視点：%vec3", 
+		g_Camera.rotXZ, g_Camera.length, g_Camera.pos, g_Camera.at);
+
 }
 
 //=============================================================================

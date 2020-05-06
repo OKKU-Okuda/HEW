@@ -16,6 +16,8 @@
 
 #include "../GameTackle/player.h"
 #include "../GameTackle/enemy.h"
+#include "../GameTackle/camera.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -104,6 +106,12 @@ void InitGameTackle1(bool isFirst)
 	// エネミーの初期化
 	GetTackleEnemyFunc()->Init(false);
 
+
+
+	// カメラ更新関数の設定
+	GetCamera()->length = 30.0f;
+	GetCamera()->rotXZ = 0.0f;
+	SetCameraFunc(TackleCameraUpdate);
 }
 
 /*=====================================================================
