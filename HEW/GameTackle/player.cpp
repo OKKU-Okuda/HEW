@@ -510,7 +510,7 @@ void UpdatePlayer(void)
 	if (dir > 0)
 	{
 		// カメラに対して入力のあった方向へプレイヤーを向かせて移動させる
-		//g_Player[PLAYER_PARENT].rot.y = cam->rot.y + roty;
+		g_Player[PLAYER_PARENT].rot.y =  roty;
 	}
 	g_Player[PLAYER_PARENT].pos.x -= sinf(g_Player[PLAYER_PARENT].rot.y) * g_Player[PLAYER_PARENT].spd;
 	g_Player[PLAYER_PARENT].pos.z -= cosf(g_Player[PLAYER_PARENT].rot.y) * g_Player[PLAYER_PARENT].spd;
