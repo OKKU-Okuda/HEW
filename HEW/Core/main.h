@@ -108,4 +108,13 @@ HWND GetHandle();
 //=============================================================================
 DWORD GetCount();
 
+// 補間用のデータ構造体を定義
+struct INTERPOLATION_DATA
+{
+	D3DXVECTOR3 pos;		// 頂点座標
+	D3DXVECTOR3 rot;		// 回転
+	D3DXVECTOR3 scl;		// 拡大縮小
+	float		frame;		// 実行フレーム数 ( dt = 1.0f/frame )
+};
+
 #endif
