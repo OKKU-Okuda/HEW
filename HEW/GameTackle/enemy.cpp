@@ -41,11 +41,12 @@ TackleEnemy更新関数
 =====================================================================*/
 void UpdateTackleEnemy()
 {
+	PLAYER *player = GetPlayer();
 
 	// プレイヤーの横にエネミーを描画するようにする
-	g_modelEnemy->WldMtx._41 = GetPlayerPositionX()->x;
-	g_modelEnemy->WldMtx._42 = GetPlayerPositionX()->y;
-	g_modelEnemy->WldMtx._43 = GetPlayerPositionX()->z;
+	g_modelEnemy->WldMtx._41 = player[0].pos.x;
+	g_modelEnemy->WldMtx._42 = player[0].pos.y;
+	g_modelEnemy->WldMtx._43 = player[0].pos.z;
 
 }
 

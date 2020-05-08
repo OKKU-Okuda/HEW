@@ -50,8 +50,8 @@ void UpdateGameTackle1()
 		GoNextPhase(GetPhaseGameTackle2Func());
 	}
 
-	// プレイヤーの更新
-	GetPlayerFuncX()->Update();
+	// プレイヤーの更新処理
+	UpdatePlayer();
 
 	// エネミーの更新
 	GetTackleEnemyFunc()->Update();
@@ -62,8 +62,8 @@ GameTackle1描画関数
 =====================================================================*/
 void DrawGameTackle1()
 {
-	// プレイヤーの描画
-	GetPlayerFuncX()->Draw();
+	// モデルの描画処理
+	DrawPlayer();
 
 	// エネミーの描画
 	GetTackleEnemyFunc()->Draw();
@@ -87,8 +87,8 @@ void InitGameTackle1(bool isFirst)
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
 
-		// プレイヤーの読み込み
-		GetPlayerFuncX()->Init(true);
+	// プレイヤーの初期化
+		InitPlayer();
 
 		// エネミーの読み込み
 		GetTackleEnemyFunc()->Init(true);
@@ -101,7 +101,7 @@ void InitGameTackle1(bool isFirst)
 	//---------------------------------------------------------------------
 
 	// プレイヤーの初期化
-	GetPlayerFuncX()->Init(false);
+	InitPlayer();
 
 	// エネミーの初期化
 	GetTackleEnemyFunc()->Init(false);
@@ -130,8 +130,8 @@ void UninitGameTackle1(bool isEnd)
 	//	その他の終了処理
 	//---------------------------------------------------------------------
 
-	// プレイヤーの終了化
-	GetPlayerFuncX()->Uninit(false);
+	// プレイヤーの終了処理
+	UninitPlayer();
 
 	// エネミーの終了化
 	GetTackleEnemyFunc()->Uninit(false);
@@ -145,10 +145,8 @@ void UninitGameTackle1(bool isEnd)
 	//	リソース開放処理
 	//---------------------------------------------------------------------
 
-	// プレイヤーの開放
-	GetPlayerFuncX()->Uninit(true);
-
-
+	// プレイヤーの終了処理
+	UninitPlayer();
 
 	// エネミーの開放
 	GetTackleEnemyFunc()->Uninit(false);

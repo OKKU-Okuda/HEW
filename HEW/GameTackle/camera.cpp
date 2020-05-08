@@ -29,8 +29,9 @@
 
 void TackleCameraUpdate(CAMERA* pCam)
 {
+	PLAYER *player = GetPlayer();
 
-	pCam->at = *GetPlayerPositionX() + Vec3(0, 20.0f, 0);
+	pCam->at = player[0].pos + Vec3(0, 20.0f, 0);
 	pCam->pos = pCam->at + Vec3(0, 0, -80.0f);
 
 }
