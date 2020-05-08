@@ -44,10 +44,11 @@ void UpdateTackleEnemy()
 	PLAYER *player = GetPlayer();
 
 	// プレイヤーの横にエネミーを描画するようにする
-	g_modelEnemy->WldMtx._41 = player[0].pos.x;
+	g_modelEnemy->WldMtx._41 = player[0].pos.x + 30.0f;
 	g_modelEnemy->WldMtx._42 = player[0].pos.y;
 	g_modelEnemy->WldMtx._43 = player[0].pos.z;
 
+	GetMatrix(&g_modelEnemy->WldMtx, &GetPlayer()->pos, &Vec3(0, 0, 0), &Vec3(2, 2, 20));
 }
 
 /*=====================================================================

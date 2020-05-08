@@ -26,12 +26,46 @@
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
+static Vec3 OffsetCamPos(0, 0, -80.0f);
 
 void TackleCameraUpdate(CAMERA* pCam)
 {
+	const float add = 2.0f;
+
 	PLAYER *player = GetPlayer();
 
-	pCam->at = player[0].pos + Vec3(0, 20.0f, 0);
-	pCam->pos = pCam->at + Vec3(0, 0, -80.0f);
+	// キー操作でのカメラ移動
+	if (GetKeyboardPress(DIK_DOWN))
+	{
+		OffsetCamPos.z -= add;
+	}
 
+	if (GetKeyboardPress(DIK_UP))
+	{
+		OffsetCamPos.z += add;
+	}
+
+	if (GetKeyboardPress(DIK_LEFT))
+	{
+		OffsetCamPos.x -= add;
+	}
+
+	if (GetKeyboardPress(DIK_RIGHT))
+	{
+		OffsetCamPos.x += add;
+	}
+
+	if (GetKeyboardPress(DIK_SPACE))
+	{
+		OffsetCamPos.y += add;
+	}
+
+	if (GetKeyboardPress(DIK_LSHIFT))
+	{
+		OffsetCamPos.y -= add;
+	}
+
+	pCam->at = player[0].pos + Vec3(0, 20.0f, 0);
+	pCam->pos = pCam->at + OffsetCamPos;
+ 
 }
