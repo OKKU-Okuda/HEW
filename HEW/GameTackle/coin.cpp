@@ -28,17 +28,16 @@
 D3DXVECTOR3 *BezierCurve( D3DXVECTOR3* p_pos, float t, D3DXVECTOR2* p_start, D3DXVECTOR2* p_second, D3DXVECTOR2* p_third, D3DXVECTOR2* p_end)
 {
 	float tp = 1 - t;
+	float a, b, c, d;
 
-	p_pos->x = (t * t * t * p_end->x) + 
-			   (3 * t * t * tp * p_third->x) + 
-			   (3 * t * tp * tp * p_second->x) + 
-			   (tp * tp * tp * p_start->x);
+	// ３次のバーンステイン多項式
+	a = t * t * t;
+	b = 3 * t * t * tp;
+	c = 3 * t * tp * tp;
+	d = tp * tp * tp;
 
-	p_pos->y = (t * t * t * p_end->y) + 
-			   (3 * t * t * tp * p_third->y) + 
-			   (3 * t * tp * tp * p_second->y) + 
-			   (tp * tp * tp * p_start->y);
-
+	p_pos->x = (a * p_end->x) + (b * p_third->x) + (c * p_second->x) + (d * p_start->x);
+	p_pos->y = (a * p_end->y) + (b * p_third->y) + (c * p_second->y) + (d * p_start->y);
 	p_pos->z = 0;
 
 	return p_pos;
