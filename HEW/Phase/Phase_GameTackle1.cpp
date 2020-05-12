@@ -17,6 +17,7 @@
 #include "../GameTackle/player.h"
 #include "../GameTackle/enemy.h"
 #include "../GameTackle/camera.h"
+#include "../GameTackle/field.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -90,6 +91,9 @@ void InitGameTackle1(bool isFirst)
 	// プレイヤーの初期化
 		InitPlayer();
 
+		// フィールドの初期化
+		InitField();
+
 		// エネミーの読み込み
 		GetTackleEnemyFunc()->Init(true);
 
@@ -104,6 +108,8 @@ void InitGameTackle1(bool isFirst)
 	// エネミーの初期化
 	GetTackleEnemyFunc()->Init(false);
 
+	// フィールドのリセット処理
+	ResetField();
 
 
 	// カメラ更新関数の設定
@@ -145,6 +151,9 @@ void UninitGameTackle1(bool isEnd)
 
 	// エネミーの開放
 	GetTackleEnemyFunc()->Uninit(false);
+
+	// フィールドの終了化
+	UninitField();
 }
 
 /*=====================================================================
