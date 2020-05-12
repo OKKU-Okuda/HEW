@@ -46,8 +46,8 @@ enum FIELD_STATE {
 
 typedef struct {
 	int x;
-	int y;
-//	int z;
+//	int y;
+	int z;
 }Vec2_Int;
 
 // フィールド独自関数構造体
@@ -58,6 +58,7 @@ typedef struct {
 	void(*Draw)(FIELD_CHIP*);
 }FIELD_OBJFUNC;
 
+// CHIP識別ID共用体
 union CHIP_ID {
 	struct {
 		short x;
@@ -66,6 +67,8 @@ union CHIP_ID {
 
 	DWORD bit;
 };
+
+// フィールド
 typedef struct FIELD_CHIP{
 	FIELD_TYPE		Type;		// 道の種類(一応すぐ参照できるように保管)
 	FIELD_STATE		State;		// 状態保管

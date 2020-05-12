@@ -18,14 +18,19 @@
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
+static bool CheckHitFieldRoad(FIELD_CHIP* pData);
+static void UpdateFieldRoad(FIELD_CHIP* pData);
+static void DrawFieldRoad(FIELD_CHIP* pData);
 
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
+
+static FIELD_OBJFUNC g_Func = { CheckHitFieldRoad,UpdateFieldRoad,DrawFieldRoad };	// 道独自の関数
+
 static Mesh g_meshFlat;			// 道の真ん中
 static Mesh g_meshRightWall;	// 右の壁
 static Mesh g_meshLeftWall;		// 左の壁
-static FIELD_OBJFUNC g_Func;	// 道独自の関数
 
 /*=====================================================================
 ●●関数
@@ -42,17 +47,17 @@ void InitFieldRoad()
 
 	// 左右の壁作成
 	g_meshRightWall= Create3DBoxMesh(&Vec3(5.0f, 20.0f, FIELDCHIP_HEIGHT),
-		&Vec3(FIELDROAD_X/2, 0, 0));
+		&Vec3(FIELDROAD_X / 2, 0, 0));
 	g_meshLeftWall = Create3DBoxMesh(&Vec3(5.0f, 20.0f, FIELDCHIP_HEIGHT),
 		&Vec3(-FIELDROAD_X / 2, 0, 0));
 
 }
 
-void CheckHitFieldRoad(FIELD_CHIP* pData)
+bool CheckHitFieldRoad(FIELD_CHIP* pData)
 {
 	
 }
-
+// ワールド行列の逆行列に
 void UpdateFieldRoad(FIELD_CHIP* pData)
 {
 

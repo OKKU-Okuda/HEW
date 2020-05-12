@@ -101,3 +101,23 @@ CHIP_ID GetFieldChipID(Vec3* pos)
 
 	return ans;
 }
+
+FIELD_CHIP* GetChipMemory()
+{
+	// 巡回
+	for (int i = 0; i < MAX_FIELD; i++)
+	{
+		if (g_Field[i].State != FSTATE_NONE)
+		{// 使用中のはスキップ
+			continue;
+		}
+
+
+		return &g_Field[i];
+	}
+
+	MessageBox(0, 0, 0, 0);
+
+	// すべて使用していた場合はnullを返す
+	return NULL;
+}
