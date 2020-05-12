@@ -50,6 +50,11 @@ void InitFieldRoad()
 
 void CheckHitFieldRoad(FIELD_CHIP* pData)
 {
+	
+}
+
+void UpdateFieldRoad(FIELD_CHIP* pData)
+{
 
 }
 
@@ -60,7 +65,7 @@ void DrawFieldRoad(FIELD_CHIP* pData)
 	pDevice->SetTexture(0, NULL);
 
 	// ワールドマトリックスの設定
-	//pDevice->SetTransform(D3DTS_WORLD, &pData->WldMat);
+	pDevice->SetTransform(D3DTS_WORLD, &pData->WldMat);
 
 	g_meshFlat->DrawSubset(0);
 	g_meshRightWall->DrawSubset(0);

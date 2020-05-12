@@ -47,8 +47,8 @@ enum FIELD_STATE {
 typedef struct {
 	int x;
 	int y;
-	int z;
-}Vec3_Int;
+//	int z;
+}Vec2_Int;
 
 // フィールド独自関数構造体
 struct FIELD_CHIP;	// 前方宣言
@@ -58,11 +58,20 @@ typedef struct {
 	void(*Draw)(FIELD_CHIP*);
 }FIELD_OBJFUNC;
 
+union CHIP_ID {
+	struct {
+		short x;
+		short z;
+	}vec2;
+
+	DWORD bit;
+};
 typedef struct FIELD_CHIP{
 	FIELD_TYPE		Type;		// 道の種類(一応すぐ参照できるように保管)
 	FIELD_STATE		State;		// 状態保管
-
+	CHIP_ID			ID;			// CHIP場所から位置を判別するID
 	FIELD_OBJFUNC*	pFunc;		// 道ごとに異なる更新関数等取得関数ポインタ
+
 	Matrix			WldMat;		// 当フィールドのワールド行列
 }FIELD_CHIP;
 
@@ -75,3 +84,4 @@ typedef struct FIELD_CHIP{
 void InitField();
 void UninitField();
 void ResetField();
+void UpdateField();
