@@ -22,3 +22,6 @@ typedef struct {
 // ä÷êîåQ
 void InitFieldRoad();
 void DrawFieldRoad(FIELD_CHIP* pData);
+bool CheckHitFieldRoad(FIELD_CHIP* pData);
+
+FIELD_OBJFUNC* GetFieldRoadFunc();

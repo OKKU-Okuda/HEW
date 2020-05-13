@@ -10,11 +10,11 @@
 #define MAX_GIMMICK		(5)			// フィールド毎ギミック数
 
 // 1フィールドの縦横サイズ
-#define FIELDCHIP_WIDTH		(100.0f)
+#define FIELDCHIP_WIDTH		(1000.0f)
 #define FIELDCHIP_HEIGHT	(FIELDCHIP_WIDTH)
 
 // 道のサイズ
-#define FIELDROAD_X		(50.0f)
+#define FIELDROAD_X		(100.0f)
 #define FIELDROAD_Y		(10.0f)		
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言 (他cppでも使用する)
@@ -76,15 +76,16 @@ typedef struct FIELD_CHIP{
 	FIELD_OBJFUNC*	pFunc;		// 道ごとに異なる更新関数等取得関数ポインタ
 
 	Matrix			WldMat;		// 当フィールドのワールド行列
+
 }FIELD_CHIP;
 
 //---------------------------------------------------------------------
 //	プロトタイプ宣言 (他cppでも使用する)
 //---------------------------------------------------------------------
 
-
 // フィールド基本関数群
 void InitField();
 void UninitField();
 void ResetField();
 void UpdateField();
+void DrawField();
