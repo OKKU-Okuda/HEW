@@ -22,11 +22,32 @@
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
+static Mesh g_meshCoin;			// 道の真ん中
 
-//=============================================================================
-// ベジェ曲線の処理
-//=============================================================================
-D3DXVECTOR3 *BezierCurve( D3DXVECTOR3* p_out, float t, D3DXVECTOR2* p_start, D3DXVECTOR2* p_second, D3DXVECTOR2* p_third, D3DXVECTOR2* p_end)
+/*=====================================================================
+InitCoin関数
+	コインの初期化をする関数
+	戻り値 : void
+	引数 : void
+=====================================================================*/
+void InitCoin(void)
+{
+
+}
+
+/*=====================================================================
+BezierCurve関数
+	ベジェ曲線の処理する関数
+	戻り値 : D3DXVECTOR3*
+	引数 : ( D3DXVECTOR3* , float , D3DXVECTOR2* , D3DXVECTOR2* , D3DXVECTOR2* , D3DXVECTOR2*)
+=====================================================================*/
+D3DXVECTOR3 *BezierCurve( 
+	D3DXVECTOR3* p_out, 
+	float t,
+	D3DXVECTOR2* p_start,
+	D3DXVECTOR2* p_second, 
+	D3DXVECTOR2* p_third, 
+	D3DXVECTOR2* p_end)
 {
 	float tp = 1 - t;
 	float a, b, c, d;
@@ -44,9 +65,12 @@ D3DXVECTOR3 *BezierCurve( D3DXVECTOR3* p_out, float t, D3DXVECTOR2* p_start, D3D
 	return p_out;
 }
 
-//=============================================================================
-// スクリーン座標をワールド座標に変換
-//=============================================================================
+/*=====================================================================
+CalcScreenToWorld関数
+	スクリーン座標をワールド座標に変換する関数
+	戻り値 : D3DXVECTOR3*
+	引数 : 	(D3DXVECTOR3* , float , float , float , int , int , D3DXMATRIX* , D3DXMATRIX* )
+=====================================================================*/
 D3DXVECTOR3* CalcScreenToWorld(
 	D3DXVECTOR3* p_out,
 	float Sx,			// スクリーンX座標
@@ -62,8 +86,10 @@ D3DXVECTOR3* CalcScreenToWorld(
 	D3DXMatrixInverse(&InvView, NULL, View);
 	D3DXMatrixInverse(&InvPrj, NULL, Prj);
 	D3DXMatrixIdentity(&VP);
-	VP._11 = Screen_w / 2.0f; VP._22 = -Screen_h / 2.0f;
-	VP._41 = Screen_w / 2.0f; VP._42 = Screen_h / 2.0f;
+	VP._11 = Screen_w / 2.0f;
+	VP._22 = -Screen_h / 2.0f;
+	VP._41 = Screen_w / 2.0f;
+	VP._42 = Screen_h / 2.0f;
 	D3DXMatrixInverse(&InvViewport, NULL, &VP);
 
 	// 逆変換
