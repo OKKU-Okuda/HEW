@@ -88,13 +88,30 @@ LPD3DXMESH Create3DBoxMesh(D3DXVECTOR3 *size, D3DXVECTOR3 *pos)
 	LPD3DXMESH	mesh;		// 戻り値として返す
 	VERTEX_3D*	pVtx;		// 頂点ポインタ
 	WORD*		pIdx;		// インデックスポインタ(16)
-	WORD		Idx[]=
+	WORD		Idx[] =
 	{
-		0,1,2,3,3,4,5,6,7,7,8,9,10,11,11,12,13,14,15,15,16,17,18,19,19,20,21,22,23
+		0,1,2,
+		3,2,1,
+
+		4,5,6,
+		7,6,5,
+
+		8,9,10,
+		11,10,9,
+
+		12,13,14,
+		15,14,13,
+
+		16,17,18,
+		19,18,17,
+
+		20,21,22,
+		23,22,21
 	};
 
 	// メッシュ作成(面数、頂点数、オプション、fvf,デバイス、メッシュ)
-	D3DXCreateMeshFVF(27, 24, D3DXMESH_MANAGED, FVF_VERTEX_3D, pDevice, &mesh);
+	D3DXCreateMeshFVF(12, 24, D3DXMESH_MANAGED, FVF_VERTEX_3D, pDevice, &mesh);
+	//D3DXCreateMeshFVF(30, 24, D3DXMESH_MANAGED, FVF_VERTEX_3D, pDevice, &mesh);
 
 	// 頂点の設置
 	{
@@ -114,7 +131,7 @@ LPD3DXMESH Create3DBoxMesh(D3DXVECTOR3 *size, D3DXVECTOR3 *pos)
 		pVtx[4].nor =
 			pVtx[5].nor =
 			pVtx[6].nor =
-			pVtx[7].nor = D3DXVECTOR3(0, 0, 1.0f);
+			pVtx[7].nor = D3DXVECTOR3(0, 0, -1.0f);
 		pVtx[8].nor =
 			pVtx[9].nor =
 			pVtx[10].nor =
@@ -122,7 +139,7 @@ LPD3DXMESH Create3DBoxMesh(D3DXVECTOR3 *size, D3DXVECTOR3 *pos)
 		pVtx[12].nor =
 			pVtx[13].nor =
 			pVtx[14].nor =
-			pVtx[15].nor = D3DXVECTOR3(0, 0, -1.0f);
+			pVtx[15].nor = D3DXVECTOR3(0, 0, 1.0f);
 		pVtx[16].nor =
 			pVtx[17].nor =
 			pVtx[18].nor =
@@ -150,47 +167,48 @@ LPD3DXMESH Create3DBoxMesh(D3DXVECTOR3 *size, D3DXVECTOR3 *pos)
 		pVtx[14].tex = D3DXVECTOR2(0.25f, 1.0f);
 		pVtx[15].tex = D3DXVECTOR2(0.5f, 1.0f);
 
-		pVtx[16].tex = pVtx[7].tex;
-		pVtx[17].tex = pVtx[3].tex;
-		pVtx[18].tex = D3DXVECTOR2(0.75f, 0.5f);
-		pVtx[19].tex = D3DXVECTOR2(0.75f, 0.25f);
-		pVtx[20].tex = pVtx[2].tex;
-		pVtx[21].tex = pVtx[6].tex;
-		pVtx[22].tex = D3DXVECTOR2(0.0f, 0.25f);
-		pVtx[23].tex = D3DXVECTOR2(0.0f, 0.75f);
+		pVtx[16].tex = pVtx[2].tex;
+		pVtx[17].tex = pVtx[6].tex;
+		pVtx[18].tex = D3DXVECTOR2(0.0f, 0.25f);
+		pVtx[19].tex = D3DXVECTOR2(0.0f, 0.5f);
+
+		pVtx[20].tex = pVtx[7].tex;
+		pVtx[21].tex = pVtx[3].tex;
+		pVtx[22].tex = D3DXVECTOR2(0.75f, 0.5f);
+		pVtx[23].tex = D3DXVECTOR2(0.75f, 0.25f);
 
 		// 各頂点ごとのローカル座標(8回計算)
 		pVtx[0].vtx =
 			pVtx[14].vtx =
-			pVtx[18].vtx = D3DXVECTOR3(pos->x - (size->x / 2), pos->y + (size->y / 2), pos->z - (size->z / 2));
+			pVtx[18].vtx = D3DXVECTOR3(pos->x - (size->x / 2), pos->y + (size->y / 2), pos->z + (size->z / 2));
 
 		pVtx[1].vtx =
 			pVtx[15].vtx =
-			pVtx[23].vtx = D3DXVECTOR3(pos->x + (size->x / 2), pos->y + (size->y / 2), pos->z - (size->z / 2));
+			pVtx[23].vtx = D3DXVECTOR3(pos->x + (size->x / 2), pos->y + (size->y / 2), pos->z + (size->z / 2));
 
 		pVtx[2].vtx =
 			pVtx[4].vtx =
-			pVtx[16].vtx = D3DXVECTOR3(pos->x - (size->x / 2), pos->y + (size->y / 2), pos->z + (size->z / 2));
+			pVtx[16].vtx = D3DXVECTOR3(pos->x - (size->x / 2), pos->y + (size->y / 2), pos->z - (size->z / 2));
 
 		pVtx[3].vtx =
 			pVtx[5].vtx =
-			pVtx[21].vtx = D3DXVECTOR3(pos->x + (size->x / 2), pos->y + (size->y / 2), pos->z + (size->z / 2));
+			pVtx[21].vtx = D3DXVECTOR3(pos->x + (size->x / 2), pos->y + (size->y / 2), pos->z - (size->z / 2));
 
 		pVtx[10].vtx =
-			pVtx[13].vtx =
-			pVtx[19].vtx = D3DXVECTOR3(pos->x - (size->x / 2), pos->y - (size->y / 2), pos->z - (size->z / 2));
+			pVtx[12].vtx =
+			pVtx[19].vtx = D3DXVECTOR3(pos->x - (size->x / 2), pos->y - (size->y / 2), pos->z + (size->z / 2));
 
 		pVtx[11].vtx =
-			pVtx[12].vtx =
-			pVtx[22].vtx = D3DXVECTOR3(pos->x + (size->x / 2), pos->y - (size->y / 2), pos->z - (size->z / 2));
+			pVtx[13].vtx =
+			pVtx[22].vtx = D3DXVECTOR3(pos->x + (size->x / 2), pos->y - (size->y / 2), pos->z + (size->z / 2));
 
 		pVtx[8].vtx =
 			pVtx[6].vtx =
-			pVtx[17].vtx = D3DXVECTOR3(pos->x - (size->x / 2), pos->y - (size->y / 2), pos->z + (size->z / 2));
+			pVtx[17].vtx = D3DXVECTOR3(pos->x - (size->x / 2), pos->y - (size->y / 2), pos->z - (size->z / 2));
 
 		pVtx[9].vtx =
 			pVtx[7].vtx =
-			pVtx[20].vtx = D3DXVECTOR3(pos->x + (size->x / 2), pos->y - (size->y / 2), pos->z + (size->z / 2));
+			pVtx[20].vtx = D3DXVECTOR3(pos->x + (size->x / 2), pos->y - (size->y / 2), pos->z - (size->z / 2));
 
 		mesh->UnlockVertexBuffer();
 	}

@@ -33,24 +33,24 @@ void TackleCameraUpdate(CAMERA* pCam)
 	const float add = 2.0f;
 
 	PLAYER *player = GetPlayer();
-
+	
 	// ƒL[‘€ì‚Å‚ÌƒJƒƒ‰ˆÚ“®
-	if (GetKeyboardPress(DIK_DOWN))
+	if (GetKeyboardPress(DIK_W))
 	{
 		OffsetCamPos.z -= add;
 	}
 
-	if (GetKeyboardPress(DIK_UP))
+	if (GetKeyboardPress(DIK_S))
 	{
 		OffsetCamPos.z += add;
 	}
 
-	if (GetKeyboardPress(DIK_LEFT))
+	if (GetKeyboardPress(DIK_A))
 	{
 		OffsetCamPos.x -= add;
 	}
 
-	if (GetKeyboardPress(DIK_RIGHT))
+	if (GetKeyboardPress(DIK_D))
 	{
 		OffsetCamPos.x += add;
 	}
@@ -64,7 +64,7 @@ void TackleCameraUpdate(CAMERA* pCam)
 	{
 		OffsetCamPos.y -= add;
 	}
-
+	
 	pCam->at = player[0].pos + Vec3(0, 20.0f, 0);
 	pCam->pos = pCam->at + OffsetCamPos;
  
