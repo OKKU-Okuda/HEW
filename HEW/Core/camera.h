@@ -14,6 +14,8 @@ typedef struct {
 	Vec3 pos;		// 視点
 	Vec3 at;		// 注視点
 	Vec3 up;		// 上方向ベクトル(正規化ひっす)
+	Vec3 rot;		// カメラの回転
+	float len;		// カメラの視点と注視点の距離
 	float rotXZ;	// XZ面回転
 	float length;	// 視点注視点間距離
 
