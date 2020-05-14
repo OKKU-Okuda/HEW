@@ -15,20 +15,33 @@
 
 // 道のサイズ
 #define FIELDROAD_X		(100.0f)
-#define FIELDROAD_Y		(10.0f)		
+#define FIELDROAD_Y		(10.0f)	
+
+#define PLAYER_POSX		(FIELDCHIP_WIDTH/2)
+#define PLAYER_POSZ		(FIELDCHIP_HEIGHT/2)
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言 (他cppでも使用する)
 //---------------------------------------------------------------------
 
-// フィールドタイプ
+// プレイヤーの走る方向列挙
+enum FIELD_DIRECTION {
+	FDIRECTION_0ZP,	// ↑
+	FDIRECTION_1XP,	// →
+	FDIRECTION_2ZM,	// ↓
+	FDIRECTION_3XM,	// ←
+
+	MAX_FIELDDIRECTION	/*最大数取得*/
+};
+
+// フィールドタイプ列挙
 enum FIELD_TYPE {
 	FTYPE_ROAD,			// 一本道
-	FTYPE_CLIFFR,		// 右半分崖の道
-	FTYPE_CLIFFL,		// 左半分崖の道
-	FTYPE_JUMP,			// イッツアジャンプワールド
-	FTYPE_TURNLR,		// 左右分岐点の道
-	FTYPE_TURNR,		// 右に曲がる道
-	FTYPE_TURNL,		// 左に曲がる道
+	FTYPE_CLIFFR,		// 右半分崖の道：未実装
+	FTYPE_CLIFFL,		// 左半分崖の道：未実装
+	FTYPE_JUMP,			// イッツアジャンプワールド：未実装
+	FTYPE_TURNLR,		// 左右分岐点の道：未実装
+	FTYPE_TURNR,		// 右に曲がる道：未実装
+	FTYPE_TURNL,		// 左に曲がる道：未実装
 
 	MAX_FIELDTYPE		/* 最大数取得 */
 };
@@ -53,7 +66,7 @@ typedef struct {
 // フィールド独自関数構造体
 struct FIELD_CHIP;	// 前方宣言
 typedef struct {
-	bool(*CheckHit)(FIELD_CHIP*);
+	bool(*CheckHit)(FIELD_CHIP*,Vec3*);		// Vec3はプレイヤーのCHIP座標が入っている
 	void(*Update)(FIELD_CHIP*);
 	void(*Draw)(FIELD_CHIP*);
 }FIELD_OBJFUNC;
@@ -82,6 +95,17 @@ typedef struct FIELD_CHIP{
 //---------------------------------------------------------------------
 //	プロトタイプ宣言 (他cppでも使用する)
 //---------------------------------------------------------------------
+
+/*=====================================================================
+プレイヤーフィールド上当たり判定関数
+	(GIMMICK当たり判定は別途存在)
+	道の障害物によってプレイヤーの位置を変えます
+
+	戻り値 : void
+	引数 : bool		true:道の中にプレイヤーがいる
+=====================================================================*/
+bool PlayerCheckHitOnField();
+
 
 // フィールド基本関数群
 void InitField();
