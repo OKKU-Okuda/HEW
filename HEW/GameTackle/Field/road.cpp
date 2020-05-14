@@ -21,7 +21,7 @@
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-static bool CheckHitFieldRoad(FIELD_CHIP* pData);
+bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos);
 static void UpdateFieldRoad(FIELD_CHIP* pData);
 static void DrawFieldRoad(FIELD_CHIP* pData);
 
@@ -63,22 +63,20 @@ void InitFieldRoad()
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field.png", &g_texFlat);
 }
 
-bool CheckHitFieldRoad(FIELD_CHIP* pData)
+bool CheckHitFieldRoad(FIELD_CHIP* pData,Vec3* pPos)
 {
-	Matrix invmat;
-	Vec3 pos;
+	//if (pPos->x >= -FIELDROAD_X / 2 && pPos->x <= FIELDROAD_X / 2)
+	//{
+	//	return true;
+	//}
 
-	GetInverseMatrix(&invmat, &pData->WldMat);
-	D3DXMatrixInverse(&invmat, NULL, &pData->WldMat);
-	D3DXVec3TransformCoord(&pos, &GetPlayer()->pos, &invmat);
-
-	PrintDebugProc("test%vec3", pos);
+	SAFE_NUMBER(pPos->x, -FIELDROAD_X / 2, FIELDROAD_X / 2);
 	return true;
 }
 
-// ワールド行列の逆行列に
 void UpdateFieldRoad(FIELD_CHIP* pData)
 {
+
 
 }
 

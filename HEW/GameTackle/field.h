@@ -56,7 +56,7 @@ typedef struct {
 // フィールド独自関数構造体
 struct FIELD_CHIP;	// 前方宣言
 typedef struct {
-	bool(*CheckHit)(FIELD_CHIP*);
+	bool(*CheckHit)(FIELD_CHIP*,Vec3*);		// Vec3はプレイヤーのCHIP座標が入っている
 	void(*Update)(FIELD_CHIP*);
 	void(*Draw)(FIELD_CHIP*);
 }FIELD_OBJFUNC;

@@ -53,12 +53,39 @@ void UpdateField()
 {
 	PLAYER* player = GetPlayer();
 	CHIP_ID	id;
+	Matrix mat;
+	Vec3	pos;
 
 	id = GetFieldChipID(&player->pos);
 
 	PrintDebugProc("プレイヤーチャンク算出 X:%d Z:%d", id.vec2.x, id.vec2.z);
 
-	g_pOnField->pFunc->CheckHit(g_pOnField);
+	D3DXMatrixInverse(&mat, NULL, &g_pOnField->WldMat);
+	D3DXVec3TransformCoord(&pos, &GetPlayer()->pos, &mat);
+
+	PrintDebugProc("チャンク座標%vec3", pos);
+
+	if (g_pOnField->pFunc->CheckHit(g_pOnField, &pos))
+	{
+		PrintDebugProc("---チャンク内---");
+	}
+
+	D3DXVec3TransformCoord(&GetPlayer()->pos, &pos, &g_pOnField->WldMat);
+
+}
+
+void PlayerCheckHitOnField()
+{
+	PLAYER* player = GetPlayer();
+	CHIP_ID	id;
+
+	id = GetFieldChipID(&player->pos);
+
+	PrintDebugProc("プレイヤーチャンク算出 X:%d Z:%d", id.vec2.x, id.vec2.z);
+
+//	D3DXMatrixInverse(&invmat, NULL, &pData->WldMat);
+//	D3DXVec3TransformCoord(&pos, &GetPlayer()->pos, &invmat);
+
 }
 
 void DrawField()
@@ -88,7 +115,8 @@ void InitField()
 	g_pOnField = GetChipMemory();
 	g_pOnField->pFunc = GetFieldRoadFunc();
 	g_pOnField->State = FSTATE_READY;
-	GetMatrix(&g_pOnField->WldMat, &Vec3(FIELDCHIP_WIDTH*0.5f, 0, FIELDCHIP_WIDTH*1.5f));
+	GetMatrix(&g_pOnField->WldMat, &Vec3(FIELDCHIP_WIDTH*0.5f, 0, FIELDCHIP_WIDTH*1.5f),
+		&Vec3(0, D3DX_PI / 2, 0));
 
 	// プレイヤーのところにこれを書いてもらう
 	GetPlayer()->pos.x = PLAYER_POSX;
