@@ -5,18 +5,24 @@
 //
 //=============================================================================
 #include"../Core/main.h"
-#include "player.h"	
 #include "../Core/input.h"
 #include "../Core/directx_Helper3D.h"
 #include "../Core/debugproc.h"
+#include "../Core/camera.h"
+
+#include "kiseki.h"
+#include "player.h"	
+#include "shadow.h"	
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define	VALUE_MOVE			(5.0f)							// 移動量
 #define	VALUE_ROTATE		(D3DX_PI * 0.02f)				// 回転量
-#define	PLAYER_PARENT		(0)								// 回転量
-
+#define	PLAYER_PARENT		(0)								// 親の添え字(体)
+#define	VERTEX_MAX			(300)							// 軌跡の最大数
+#define	JUMP_HEIGHT			(8.0f)							// ジャンプの高さ
+#define	GRAVITY				(0.25f)							// 重力
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -28,9 +34,109 @@
 
 static PLAYER				g_Player[PLAYER_PARTS_MAX];						// プレイヤー
 
+static int kiseki_idx = 0;
+D3DXVECTOR3 up_back[VERTEX_MAX];						// 
+D3DXVECTOR3 bottom_back[VERTEX_MAX];					// 
+D3DXVECTOR3 up_back2[VERTEX_MAX];						// 
+D3DXVECTOR3 bottom_back2[VERTEX_MAX];					// 
+D3DXVECTOR3 up_back3[VERTEX_MAX];						// 
+D3DXVECTOR3 bottom_back3[VERTEX_MAX];					// 
+D3DXVECTOR3 back_pos;									// 
+
+D3DXVECTOR3 g_Pos;										// プレイヤーの位置
+D3DXVECTOR3 g_Rot;										// プレイヤーの向き
 
 //=============================================================================
 // アニメーションのテーブル
+//=============================================================================
+
+//=============================================================================
+// 歩いているときのアニメーションのテーブル
+//=============================================================================
+
+INTERPOLATION_DATA stop_tbl_body[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA stop_tbl_head[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA stop_tbl_right_shoulder[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),	D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA stop_tbl_right_arm[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA stop_tbl_left_shoulder[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),	  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA stop_tbl_left_arm[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+};
+
+INTERPOLATION_DATA stop_tbl_right_thigh[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+};
+
+
+INTERPOLATION_DATA stop_tbl_right_foot[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA stop_tbl_left_thigh[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA stop_tbl_left_foot[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+
+
+//=============================================================================
+// 走っている時のアニメーションのテーブル
 //=============================================================================
 
 INTERPOLATION_DATA dash_tbl_body[] = {	// pos, rot, scl, frame
@@ -111,66 +217,150 @@ INTERPOLATION_DATA dash_tbl_left_foot[] = {	// pos, rot, scl, frame
 
 };
 
+
 //=============================================================================
-// 歩いているときのアニメーションのテーブル
+// ジャンプのアニメーションのテーブル
 //=============================================================================
 
-INTERPOLATION_DATA stop_tbl_body[] = {	// pos, rot, scl, frame
+INTERPOLATION_DATA jump_tbl_body[] = {	// pos, rot, scl, frame
 	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
 
 };
 
-INTERPOLATION_DATA stop_tbl_head[] = {	// pos, rot, scl, frame
+INTERPOLATION_DATA jump_tbl_head[] = {	// pos, rot, scl, frame
 	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
 
 };
 
-INTERPOLATION_DATA stop_tbl_right_shoulder[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, D3DX_PI / 4, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, D3DX_PI / 4, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, D3DX_PI / 4, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, D3DX_PI / 4, 0.0f),	D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+INTERPOLATION_DATA jump_tbl_right_shoulder[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 4 * 3, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 4 * 3, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI, 0.0f, 0.0f),	D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
 
 };
 
-INTERPOLATION_DATA stop_tbl_right_arm[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+INTERPOLATION_DATA jump_tbl_right_arm[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(-D3DX_PI / 8, D3DX_PI / 3, -D3DX_PI / 7),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(-D3DX_PI / 8, D3DX_PI / 3, -D3DX_PI / 7),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(-D3DX_PI / 8, D3DX_PI / 3, -D3DX_PI / 7),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(-D3DX_PI / 8, D3DX_PI / 3, -D3DX_PI / 7),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
 
 };
 
-INTERPOLATION_DATA stop_tbl_left_shoulder[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, -D3DX_PI / 4, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, -D3DX_PI / 4, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, -D3DX_PI / 4, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(0.0f, -D3DX_PI / 4, 0.0f),	  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+INTERPOLATION_DATA jump_tbl_left_shoulder[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 16, 0.0f, -D3DX_PI / 8),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 16, 0.0f, -D3DX_PI / 8),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(-D3DX_PI / 6, 0.0f, -D3DX_PI / 8),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(-D3DX_PI / 6, 0.0f, -D3DX_PI / 8),	  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
 
 };
 
-INTERPOLATION_DATA stop_tbl_left_arm[] = {	// pos, rot, scl, frame
+INTERPOLATION_DATA jump_tbl_left_arm[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(-D3DX_PI / 12, -D3DX_PI / 18, D3DX_PI / 3),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(-D3DX_PI / 12, -D3DX_PI / 18, D3DX_PI / 3),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(-D3DX_PI / 12, -D3DX_PI / 6, D3DX_PI / 3),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(-D3DX_PI / 12, -D3DX_PI / 6, D3DX_PI / 3),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+};
+
+INTERPOLATION_DATA jump_tbl_right_thigh[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 4, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 4, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+};
+
+
+INTERPOLATION_DATA jump_tbl_right_foot[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(D3DX_PI / 20, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(D3DX_PI / 20, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 30, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 30, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+
+};
+
+INTERPOLATION_DATA jump_tbl_left_thigh[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 3, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 3, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+
+};
+
+INTERPOLATION_DATA jump_tbl_left_foot[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 4, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 4, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 2000 },
+
+};
+
+//=============================================================================
+// スライディングのアニメーションのテーブル
+//=============================================================================
+
+INTERPOLATION_DATA sliding_tbl_body[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(0.0f, 8.0f, 0.0f),  D3DXVECTOR3(D3DX_PI / 2.2f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 8.0f, 0.0f),  D3DXVECTOR3(D3DX_PI / 2.2f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 8.0f, 0.0f),  D3DXVECTOR3(D3DX_PI / 2.2f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 8.0f, 0.0f),  D3DXVECTOR3(D3DX_PI / 2.2f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA sliding_tbl_head[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 5, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 5, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 5, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 5, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA sliding_tbl_right_shoulder[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 3, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 10 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 3, 0.04f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 3, 0.04f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 10 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 3, 0.0f, 0.0f),	D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
+
+};
+
+INTERPOLATION_DATA sliding_tbl_right_arm[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(-D3DX_PI / 3, D3DX_PI / 3, -D3DX_PI / 3),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(-D3DX_PI / 3, D3DX_PI / 3, -D3DX_PI / 3),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(-D3DX_PI / 3, D3DX_PI / 3, -D3DX_PI / 3),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(-D3DX_PI / 3, D3DX_PI / 3, -D3DX_PI / 3),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+
+};
+
+INTERPOLATION_DATA sliding_tbl_left_shoulder[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 3, 0.0f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 3, 0.02f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 3, 0.02f, 0.0f),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 3, 0.0f, 0.0f),	  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
+
+};
+
+INTERPOLATION_DATA sliding_tbl_left_arm[] = {	// pos, rot, scl, frame
 	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 };
 
-INTERPOLATION_DATA stop_tbl_right_thigh[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+INTERPOLATION_DATA sliding_tbl_right_thigh[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 20, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 5 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 18, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 18, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 5 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 20, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
 };
 
 
-INTERPOLATION_DATA stop_tbl_right_foot[] = {	// pos, rot, scl, frame
+INTERPOLATION_DATA sliding_tbl_right_foot[] = {	// pos, rot, scl, frame
 	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
@@ -178,22 +368,21 @@ INTERPOLATION_DATA stop_tbl_right_foot[] = {	// pos, rot, scl, frame
 
 };
 
-INTERPOLATION_DATA stop_tbl_left_thigh[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+INTERPOLATION_DATA sliding_tbl_left_thigh[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 4, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 5 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 4 * 1.05f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 4 * 1.05f, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 5 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 4, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
 
 };
 
-INTERPOLATION_DATA stop_tbl_left_foot[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+INTERPOLATION_DATA sliding_tbl_left_foot[] = {	// pos, rot, scl, frame
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 
 };
-
 
 static INTERPOLATION_DATA* parts_stop_adr[] =
 {
@@ -225,6 +414,37 @@ static INTERPOLATION_DATA* parts_dash_adr[] =
 
 };
 
+static INTERPOLATION_DATA* parts_jump_adr[] =
+{
+	jump_tbl_body,
+	jump_tbl_head,
+	jump_tbl_right_shoulder,
+	jump_tbl_right_arm,
+	jump_tbl_left_shoulder,
+	jump_tbl_left_arm,
+	jump_tbl_right_thigh,
+	jump_tbl_right_foot,
+	jump_tbl_left_thigh,
+	jump_tbl_left_foot,
+
+};
+
+static INTERPOLATION_DATA* parts_sliding_adr[] =
+{
+	sliding_tbl_body,
+	sliding_tbl_head,
+	sliding_tbl_right_shoulder,
+	sliding_tbl_right_arm,
+	sliding_tbl_left_shoulder,
+	sliding_tbl_left_arm,
+	sliding_tbl_right_thigh,
+	sliding_tbl_right_foot,
+	sliding_tbl_left_thigh,
+	sliding_tbl_left_foot,
+
+};
+
+
 static const char *const filename[] =
 {
 	"data/MODEL/body.x",			// 読み込むモデル名
@@ -246,8 +466,23 @@ static const char *const filename[] =
 HRESULT InitPlayer(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
+
+	kiseki_idx = 0;
+
+	g_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	g_Rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+
+	for (int j = 0; j < VERTEX_MAX; j++)
+	{
+		up_back[j] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		bottom_back[j] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	}
+
 	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
 	{
+
 		g_Player[i].use = true;
 
 		// 位置・回転・スケールの初期設定
@@ -255,9 +490,12 @@ HRESULT InitPlayer(void)
 		g_Player[i].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_Player[i].scl = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 
-		g_Player[i].spd = 0.0f;		// 移動スピードクリア
+		g_Player[i].jump_spped = JUMP_HEIGHT;
 
-		g_Player[i].dash_use = false;		// 移動スピードクリア
+		g_Player[i].spd = VALUE_MOVE;		// 移動スピードクリア
+
+		g_Player[i].anim_use = PLAYER_STOP;		// 移動スピードクリア
+		g_Player[i].old_anim_use = PLAYER_STOP;		// 移動スピードクリア
 
 		g_Player[i].pD3DTexture = NULL;
 		g_Player[i].pD3DXMesh = NULL;
@@ -284,12 +522,12 @@ HRESULT InitPlayer(void)
 			&g_Player[i].pD3DTexture);	// 読み込むメモリー
 #endif
 
-		//// 影の初期化
-		//D3DXVECTOR3 pos = g_Player[i].pos;
-		//pos.y = 0.0f;
-		//g_Player[i].shadowIdx = CreateShadow(pos, g_Player[i].scl);
+		// 影の初期化
+		D3DXVECTOR3 pos = g_Player[i].pos;
+		pos.y = 0.0f;
+		g_Player[i].shadowIdx = CreateShadow(pos, g_Player[i].scl);
 
-		g_Player[i].tbl_adr = parts_dash_adr[i];
+		g_Player[i].tbl_adr = parts_stop_adr[i];
 		g_Player[i].tbl_cnt = sizeof(stop_tbl_body) / sizeof(INTERPOLATION_DATA);
 		g_Player[i].move_time = 0.0f;
 
@@ -395,43 +633,7 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
-	//CAMERA *cam = GetCamera();
-
-	// 階層アニメーション
-	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
-	{
-		// 使われているなら処理する
-		if (g_Player[i].use == true)
-		{
-			// 移動処理
-			int		index = (int)g_Player[i].move_time;
-			float	time = g_Player[i].move_time - index;
-			int		size = g_Player[i].tbl_cnt;
-
-			float dt = 1.0f / g_Player[i].tbl_adr[index].frame;	// 1フレームで進める時間
-			g_Player[i].move_time += dt;						// アニメーションの合計時間に足す
-
-			if (index > (size - 2))	// ゴールをオーバーしていたら、ゴールへ戻す
-			{
-				g_Player[i].move_time = 0.0f;
-				index = 0;
-			}
-			if (i != 0)
-			{
-				// 座標を求める	X = StartX + (EndX - StartX) * 今の時間
-				D3DXVECTOR3 vec = g_Player[i].tbl_adr[index + 1].pos - g_Player[i].tbl_adr[index].pos;
-				g_Player[i].pos = g_Player[i].tbl_adr[index].pos + vec * time;
-
-				// 回転を求める	R = StartX + (EndX - StartX) * 今の時間
-				D3DXVECTOR3 rot = g_Player[i].tbl_adr[index + 1].rot - g_Player[i].tbl_adr[index].rot;
-				g_Player[i].rot = g_Player[i].tbl_adr[index].rot + rot * time;
-
-				// scaleを求める S = StartX + (EndX - StartX) * 今の時間
-				D3DXVECTOR3 scl = g_Player[i].tbl_adr[index + 1].scl - g_Player[i].tbl_adr[index].scl;
-				g_Player[i].scl = g_Player[i].tbl_adr[index].scl + scl * time;
-			}
-		}
-	}
+	CAMERA *cam = GetCamera();
 
 	//移動処理
 	int		dir = 0;	// ０：向きは変えない
@@ -457,11 +659,16 @@ void UpdatePlayer(void)
 		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
 	}
 
-	if (GetKeyboardPress(DIK_SPACE))
+	//ジャンプ処理
+	if (GetKeyboardTrigger(DIK_SPACE))
 	{
-		g_Player[PLAYER_PARENT].pos.z = g_Player[PLAYER_PARENT].pos.x = 0.0f;
-		dir = 1;
-		g_Player[PLAYER_PARENT].spd = 0.0f;
+		g_Player[PLAYER_PARENT].anim_use = PLAYER_JUMPING;
+	}
+
+	//スライディング処理
+	else if (GetKeyboardTrigger(DIK_K))
+	{
+		g_Player[PLAYER_PARENT].anim_use = PLAYER_SLIDING;
 	}
 
 	// 入力されたキーに合わせて向きを決める
@@ -470,6 +677,7 @@ void UpdatePlayer(void)
 	{
 	case 1:	// 下向き
 		roty = 0.0f;
+		g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
 		break;
 
 	case 2:	// 上向き
@@ -501,32 +709,160 @@ void UpdatePlayer(void)
 		break;
 
 	case 0:
-		//roty = g_Player[PLAYER_PARENT].rot.y - cam->rot.y;
+		roty = g_Rot.y - cam->rot.y;
 		break;
+
+	default:
+		break;
+
 
 	}
 
 	//	// Key入力があったら移動処理する
-	if (dir > 0)
-	{
+	//if (dir > 0)
+	//{
 		// カメラに対して入力のあった方向へプレイヤーを向かせて移動させる
-		g_Player[PLAYER_PARENT].rot.y =  roty;
+	//g_Rot.y = cam->rot.y + roty;
+	//}
+
+	//移動処理
+	g_Pos.x -= sinf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
+	g_Pos.z -= cosf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
+
+	//ジャンプ処理
+	if (g_Player[PLAYER_PARENT].anim_use == 2)
+	{
+		g_Pos.y += g_Player[PLAYER_PARENT].jump_spped;
+
+		g_Player[PLAYER_PARENT].jump_spped -= GRAVITY;
+
+		//地面に着いたら
+		if (g_Pos.y <= 0.0f)
+		{
+			g_Pos.y = 0.0f;
+
+			g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
+
+			g_Player[PLAYER_PARENT].jump_spped = JUMP_HEIGHT;
+		}
+
 	}
-	g_Player[PLAYER_PARENT].pos.x -= sinf(g_Player[PLAYER_PARENT].rot.y) * g_Player[PLAYER_PARENT].spd;
-	g_Player[PLAYER_PARENT].pos.z -= cosf(g_Player[PLAYER_PARENT].rot.y) * g_Player[PLAYER_PARENT].spd;
+
+
+	// 階層アニメーション
+	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
+	{
+		// 使われているなら処理する
+		if (g_Player[i].use == true)
+		{
+			g_Player[i].anim_use = g_Player[PLAYER_PARENT].anim_use;
+
+			g_Player[i].old_anim_use = g_Player[i].anim_use;
+
+			if (g_Player[i].anim_use == PLAYER_RUNNING)
+			{
+				g_Player[i].tbl_adr = parts_dash_adr[i];
+			}
+
+			else if (g_Player[i].anim_use == PLAYER_JUMPING)
+			{
+				g_Player[i].tbl_adr = parts_jump_adr[i];
+			}
+
+			else if (g_Player[i].anim_use == PLAYER_SLIDING)
+			{
+				g_Player[i].tbl_adr = parts_sliding_adr[i];
+			}
+
+			if (g_Player[i].anim_use != g_Player[i].old_anim_use)
+			{
+				g_Player[i].move_time = 0.0f;
+			}
+			// 移動処理
+			int		index = (int)g_Player[i].move_time;
+			float	time = g_Player[i].move_time - index;
+			int		size = g_Player[i].tbl_cnt;
+
+			float dt = 1.0f / g_Player[i].tbl_adr[index].frame;	// 1フレームで進める時間
+			g_Player[i].move_time += dt;						// アニメーションの合計時間に足す
+
+			if (index > (size - 2))	// ゴールをオーバーしていたら、ゴールへ戻す
+			{
+				g_Player[i].move_time = 0.0f;
+				index = 0;
+			}
+			// 座標を求める	X = StartX + (EndX - StartX) * 今の時間
+			D3DXVECTOR3 vec = g_Player[i].tbl_adr[index + 1].pos - g_Player[i].tbl_adr[index].pos;
+			g_Player[i].pos = g_Player[i].tbl_adr[index].pos + vec * time;
+
+			// 回転を求める	R = StartX + (EndX - StartX) * 今の時間
+			D3DXVECTOR3 rot = g_Player[i].tbl_adr[index + 1].rot - g_Player[i].tbl_adr[index].rot;
+			g_Player[i].rot = g_Player[i].tbl_adr[index].rot + rot * time;
+
+			// scaleを求める S = StartX + (EndX - StartX) * 今の時間
+			D3DXVECTOR3 scl = g_Player[i].tbl_adr[index + 1].scl - g_Player[i].tbl_adr[index].scl;
+			g_Player[i].scl = g_Player[i].tbl_adr[index].scl + scl * time;
+		}
+	}
 
 	// カメラの注視点と視点を主人公に追従させる
-	//cam->at.x = g_Player[PLAYER_PARENT].pos.x;
-	//cam->at.z = g_Player[PLAYER_PARENT].pos.z;
-	//cam->pos.x = cam->at.x - sinf(cam->rot.y) * cam->len;
-	//cam->pos.z = cam->at.z - cosf(cam->rot.y) * cam->len;
+	cam->at.x = g_Pos.x;
+	cam->at.z = g_Pos.z;
+	cam->pos.x = cam->at.x - sinf(cam->rot.y) * cam->len;
+	cam->pos.z = cam->at.z - cosf(cam->rot.y) * cam->len;
+
 
 	g_Player[PLAYER_PARENT].spd *= 0.9f;
+
+
+	//背中の位置
+	D3DXVec3TransformCoord(&back_pos, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &g_Player[0].mtxWorld);
+
+	up_back[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 15.0f, 0.0f);
+
+	bottom_back[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 10.0f, 0.0f);
+
+	up_back2[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 10.0f, 0.0f);
+
+	bottom_back2[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+
+	up_back3[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 5.0f, 5.0f);
+
+	bottom_back3[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	if (kiseki_idx > 0)
+	{
+		if (g_Player[PLAYER_PARENT].anim_use == PLAYER_RUNNING || g_Player[PLAYER_PARENT].anim_use == PLAYER_JUMPING)
+		{
+			SetKiseki(up_back[kiseki_idx - 1], up_back[kiseki_idx], bottom_back[kiseki_idx - 1], bottom_back[kiseki_idx], 0, 0);
+			SetKiseki(up_back[kiseki_idx - 1], bottom_back[kiseki_idx - 1], up_back[kiseki_idx], bottom_back[kiseki_idx], 0, 0);
+
+			SetKiseki(up_back2[kiseki_idx - 1], up_back2[kiseki_idx], bottom_back2[kiseki_idx - 1], bottom_back2[kiseki_idx], 0, 1);
+			SetKiseki(up_back2[kiseki_idx - 1], bottom_back2[kiseki_idx - 1], up_back2[kiseki_idx], bottom_back2[kiseki_idx], 0, 1);
+
+			SetKiseki(up_back3[kiseki_idx - 1], up_back3[kiseki_idx], bottom_back3[kiseki_idx - 1], bottom_back3[kiseki_idx], 0, 0);
+			SetKiseki(up_back3[kiseki_idx - 1], bottom_back3[kiseki_idx - 1], up_back3[kiseki_idx], bottom_back3[kiseki_idx], 0, 0);
+		}
+	}
+
+	kiseki_idx++;
+
+	if (kiseki_idx >= 300)
+	{
+		kiseki_idx = 0;
+	}
+
+
+	g_Player[PLAYER_PARENT].pos = g_Player[PLAYER_PARENT].pos + g_Pos;
+
+	g_Player[PLAYER_PARENT].rot = g_Player[PLAYER_PARENT].rot + g_Rot;
 
 	// 影もプレイヤーの位置に合わせる
 	//D3DXVECTOR3 pos = g_Player[PLAYER_PARENT].pos;
 	//pos.y = 0.0f;
 	//SetPositionShadow(g_Player[PLAYER_PARENT].shadowIdx, pos, g_Player[PLAYER_PARENT].scl);
+
+
 
 }
 

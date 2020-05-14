@@ -18,6 +18,8 @@
 #include "../GameTackle/enemy.h"
 #include "../GameTackle/camera.h"
 #include "../GameTackle/field.h"
+#include "../GameTackle/shadow.h"
+#include "../GameTackle/kiseki.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -54,6 +56,12 @@ void UpdateGameTackle1()
 	// プレイヤーの更新処理
 	UpdatePlayer();
 
+	// 軌跡の更新
+	UpdateKiseki();
+
+	// 影の更新
+	UpdateShadow();
+
 	// エネミーの更新
 	GetTackleEnemyFunc()->Update();
 
@@ -69,8 +77,15 @@ void DrawGameTackle1()
 	// フィールドの描画
 	DrawField();
 
+
+	// 影の描画
+	DrawShadow();
+
 	// モデルの描画処理
 	DrawPlayer();
+
+	// 軌跡の描画
+	DrawKiseki();
 
 	// エネミーの描画
 	GetTackleEnemyFunc()->Draw();
@@ -96,8 +111,14 @@ void InitGameTackle1(bool isFirst)
 		//	リソース読み込み処理(Create???,Load???,シリーズ)
 		//---------------------------------------------------------------------
 
+		//影の初期化
+		InitShadow();
+
 	// プレイヤーの初期化
 		InitPlayer();
+
+		//軌跡の初期化
+		InitKiseki(0);
 
 		// フィールドの初期化
 		InitField();

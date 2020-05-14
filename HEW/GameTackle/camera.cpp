@@ -4,9 +4,9 @@
 
 	タックルのカメラに関するプログラム
 ***********************************************************************/
+#include"../Core/main.h"
 #include "../Core/input.h"
 #include "../Core/camera.h"
-#include"../Core/main.h"
 #include "../Core/debugproc.h"
 
 #include "camera.h"	

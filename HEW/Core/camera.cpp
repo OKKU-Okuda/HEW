@@ -4,6 +4,7 @@
 // Author : 
 //
 //=============================================================================
+#include "main.h"
 #include "camera.h"
 #include "input.h"
 #include "debugproc.h"
