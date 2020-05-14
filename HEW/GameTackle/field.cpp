@@ -63,7 +63,16 @@ void UpdateField()
 
 void DrawField()
 {
-	g_pOnField->pFunc->Draw(g_pOnField);
+	for (int i = 0; i < MAX_FIELD; i++)
+	{
+		if (g_Field[i].State == FSTATE_NONE)
+		{
+			continue;
+		}
+
+		// 描画
+		g_Field[i].pFunc->Draw(&g_Field[i]);
+	}
 }
 
 void InitField()
@@ -73,9 +82,18 @@ void InitField()
 	//テスト
 	g_pOnField= GetChipMemory();
 	g_pOnField->pFunc = GetFieldRoadFunc();
+	g_pOnField->State = FSTATE_READY;
 	GetMatrix(&g_pOnField->WldMat, &Vec3(FIELDCHIP_WIDTH*0.5f, 0, FIELDCHIP_WIDTH*0.5f));
 
+	g_pOnField = GetChipMemory();
+	g_pOnField->pFunc = GetFieldRoadFunc();
+	g_pOnField->State = FSTATE_READY;
+	GetMatrix(&g_pOnField->WldMat, &Vec3(FIELDCHIP_WIDTH*0.5f, 0, FIELDCHIP_WIDTH*1.5f));
 
+	// プレイヤーのところにこれを書いてもらう
+	GetPlayer()->pos.x = PLAYER_POSX;
+	GetPlayer()->pos.z = PLAYER_POSZ;
+	GetPlayer()->rot.y = D3DX_PI;
 }
 
 void UninitField()

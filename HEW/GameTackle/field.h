@@ -15,7 +15,10 @@
 
 // 道のサイズ
 #define FIELDROAD_X		(100.0f)
-#define FIELDROAD_Y		(10.0f)		
+#define FIELDROAD_Y		(10.0f)	
+
+#define PLAYER_POSX		(FIELDCHIP_WIDTH/2)
+#define PLAYER_POSZ		(FIELDCHIP_HEIGHT/2)
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言 (他cppでも使用する)
 //---------------------------------------------------------------------
