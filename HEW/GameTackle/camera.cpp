@@ -26,7 +26,7 @@
 //---------------------------------------------------------------------
 //	ƒOƒ[ƒoƒ‹•Ï”
 //---------------------------------------------------------------------
-static Vec3 OffsetCamPos(0, 0, -80.0f);
+static Vec3 OffsetCamPos(0, 10.0f, -150.0f);
 
 void TackleCameraUpdate(CAMERA* pCam)
 {
@@ -65,7 +65,7 @@ void TackleCameraUpdate(CAMERA* pCam)
 		OffsetCamPos.y -= add;
 	}
 	
-	pCam->at = player[0].pos + Vec3(0, 20.0f, 0);
+	pCam->at = player[0].pos;// +Vec3(0, 0.0f, 0);
 	pCam->pos = pCam->at + OffsetCamPos;
  
 }
