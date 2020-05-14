@@ -117,7 +117,7 @@ void InitGameTackle1(bool isFirst)
 	GetTackleEnemyFunc()->Init(false);
 
 	// フィールドのリセット処理
-//	ResetField();
+	ResetField();
 
 
 	// カメラ更新関数の設定

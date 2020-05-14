@@ -65,13 +65,13 @@ void InitFieldRoad()
 
 bool CheckHitFieldRoad(FIELD_CHIP* pData,Vec3* pPos)
 {
-	//if (pPos->x >= -FIELDROAD_X / 2 && pPos->x <= FIELDROAD_X / 2)
-	//{
-	//	return true;
-	//}
+	if (pPos->x >= -FIELDROAD_X / 2 && pPos->x <= FIELDROAD_X / 2)
+	{
+		return true;
+	}
 
-	SAFE_NUMBER(pPos->x, -FIELDROAD_X / 2, FIELDROAD_X / 2);
-	return true;
+	//SAFE_NUMBER(pPos->x, -FIELDROAD_X / 2, FIELDROAD_X / 2);
+	return false;
 }
 
 void UpdateFieldRoad(FIELD_CHIP* pData)
