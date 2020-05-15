@@ -36,6 +36,7 @@ static Texture g_texFlat;		// 真ん中のテクスチャ
 static Mesh g_meshRightWall;	// 右の壁
 static Mesh g_meshLeftWall;		// 左の壁
 
+
 /*=====================================================================
 ●●関数
 	●●する関数
