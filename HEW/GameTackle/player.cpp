@@ -24,7 +24,8 @@
 #define	PLAYER_PARENT		(0)								// 親の添え字(体)
 #define	VERTEX_MAX			(300)							// 軌跡の最大数
 #define	JUMP_HEIGHT			(8.0f)							// ジャンプの高さ
-#define	GRAVITY				(0.25f)							// 重力
+#define	JUMP_GRAVITY		(0.25f)							// 重力
+#define	GRAVITY				(10.f)							// 重力
 #define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
 #define PLAYER_POSZ			(FIELDCHIP_HEIGHT/2)
 
@@ -739,7 +740,7 @@ void UpdatePlayer(void)
 	{
 		g_Pos.y += g_Player[PLAYER_PARENT].jump_spped;
 
-		g_Player[PLAYER_PARENT].jump_spped -= GRAVITY;
+		g_Player[PLAYER_PARENT].jump_spped -= JUMP_GRAVITY;
 
 	}
 	//地面に着いたら
