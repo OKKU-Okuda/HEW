@@ -84,7 +84,6 @@ void SetField(short x,short z, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 void UpdateField()
 {
 
-	PlayerCheckHitOnField();
 }
 
 /*=====================================================================
@@ -157,12 +156,6 @@ void InitField()
 {
 	InitFieldRoad();
 
-
-
-	// ƒvƒŒƒCƒ„[‚Ì‚Æ‚±‚ë‚É‚±‚ê‚ð‘‚¢‚Ä‚à‚ç‚¤
-	GetPlayer()->pos.x = PLAYER_POSX;
-	GetPlayer()->pos.z = PLAYER_POSZ;
-	GetPlayer()->rot.y = D3DX_PI;
 }
 
 void UninitField()
