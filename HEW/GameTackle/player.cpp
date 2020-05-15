@@ -12,7 +12,9 @@
 
 #include "kiseki.h"
 #include "player.h"	
-#include "shadow.h"	
+#include "shadow.h"
+#include "field.h"	
+
 
 //*****************************************************************************
 // マクロ定義
@@ -23,6 +25,9 @@
 #define	VERTEX_MAX			(300)							// 軌跡の最大数
 #define	JUMP_HEIGHT			(8.0f)							// ジャンプの高さ
 #define	GRAVITY				(0.25f)							// 重力
+#define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
+#define PLAYER_POSZ			(FIELDCHIP_HEIGHT/2)
+
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -44,6 +49,7 @@ D3DXVECTOR3 bottom_back3[VERTEX_MAX];					//
 D3DXVECTOR3 back_pos;									// 
 
 D3DXVECTOR3 g_Pos;										// プレイヤーの位置
+D3DXVECTOR3 g_Old_Pos;									// プレイヤーの元位置
 D3DXVECTOR3 g_Rot;										// プレイヤーの向き
 
 //=============================================================================
@@ -469,9 +475,9 @@ HRESULT InitPlayer(void)
 
 	kiseki_idx = 0;
 
-	g_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	g_Rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
+	g_Pos = D3DXVECTOR3(PLAYER_POSX, 0.0f, PLAYER_POSZ);
+	g_Rot = D3DXVECTOR3(0.0f, D3DX_PI, 0.0f);
+	g_Old_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	for (int j = 0; j < VERTEX_MAX; j++)
 	{
@@ -633,10 +639,10 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
-	CAMERA *cam = GetCamera();
-
 	//移動処理
 	int		dir = 0;	// ０：向きは変えない
+
+	g_Old_Pos = g_Pos;
 
 	if (GetKeyboardPress(DIK_LEFT))
 	{
@@ -660,7 +666,7 @@ void UpdatePlayer(void)
 	}
 
 	//ジャンプ処理
-	if (GetKeyboardTrigger(DIK_SPACE))
+	if (GetKeyboardTrigger(DIK_J))
 	{
 		g_Player[PLAYER_PARENT].anim_use = PLAYER_JUMPING;
 	}
@@ -709,7 +715,7 @@ void UpdatePlayer(void)
 		break;
 
 	case 0:
-		roty = g_Rot.y - cam->rot.y;
+		roty = g_Rot.y;
 		break;
 
 	default:
@@ -723,29 +729,33 @@ void UpdatePlayer(void)
 	//{
 		// カメラに対して入力のあった方向へプレイヤーを向かせて移動させる
 	//g_Rot.y = cam->rot.y + roty;
+	g_Rot.y = roty;
+
 	//}
 
-	//移動処理
-	g_Pos.x -= sinf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
-	g_Pos.z -= cosf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
 
 	//ジャンプ処理
-	if (g_Player[PLAYER_PARENT].anim_use == 2)
+	if (g_Player[PLAYER_PARENT].anim_use == PLAYER_JUMPING)
 	{
 		g_Pos.y += g_Player[PLAYER_PARENT].jump_spped;
 
 		g_Player[PLAYER_PARENT].jump_spped -= GRAVITY;
 
-		//地面に着いたら
-		if (g_Pos.y <= 0.0f)
-		{
-			g_Pos.y = 0.0f;
+	}
+	//地面に着いたら
+	if (PlayerCheckHitOnField() == true)
+	{
+		g_Pos.y = 0.0f;
 
-			g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
+		g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
 
-			g_Player[PLAYER_PARENT].jump_spped = JUMP_HEIGHT;
-		}
+		g_Player[PLAYER_PARENT].jump_spped = JUMP_HEIGHT;
+	}
 
+	//地面についていなかったら
+	else if (PlayerCheckHitOnField() == false)
+	{
+		g_Pos.y -= GRAVITY;
 	}
 
 
@@ -805,11 +815,9 @@ void UpdatePlayer(void)
 		}
 	}
 
-	// カメラの注視点と視点を主人公に追従させる
-	cam->at.x = g_Pos.x;
-	cam->at.z = g_Pos.z;
-	cam->pos.x = cam->at.x - sinf(cam->rot.y) * cam->len;
-	cam->pos.z = cam->at.z - cosf(cam->rot.y) * cam->len;
+	//移動処理
+	g_Pos.x -= sinf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
+	g_Pos.z -= cosf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
 
 
 	g_Player[PLAYER_PARENT].spd *= 0.9f;
@@ -931,6 +939,30 @@ void DrawPlayer(void)
 PLAYER *GetPlayer(void)
 {
 	return &g_Player[0];
+}
+
+//=============================================================================
+// プレイヤー情報を取得
+//=============================================================================
+Vec3 *GetPlayerPos(void)
+{
+	return &g_Pos;
+}
+
+//=============================================================================
+// プレイヤー情報を取得
+//=============================================================================
+Vec3 *GetPlayerOld_Pos(void)
+{
+	return &g_Old_Pos;
+}
+
+//=============================================================================
+// プレイヤー情報を取得
+//=============================================================================
+Vec3 *GetPlayerRot(void)
+{
+	return &g_Rot;
 }
 
 
