@@ -102,7 +102,7 @@ typedef struct FIELD_CHIP{
 	道の障害物によってプレイヤーの位置を変えます
 
 	戻り値 : void
-	引数 : bool		true:道の中にプレイヤーがいる
+	引数 : bool		true:道とプレイヤーが設置ている
 =====================================================================*/
 bool PlayerCheckHitOnField();
 
