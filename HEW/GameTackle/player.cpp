@@ -23,7 +23,7 @@
 #define	VALUE_ROTATE		(D3DX_PI * 0.02f)				// 回転量
 #define	PLAYER_PARENT		(0)								// 親の添え字(体)
 #define	VERTEX_MAX			(300)							// 軌跡の最大数
-#define	JUMP_HEIGHT			(8.0f)							// ジャンプの高さ
+#define	JUMP_HEIGHT			(15.0f)							// ジャンプの高さ
 #define	JUMP_GRAVITY		(0.25f)							// 重力
 #define	GRAVITY				(10.0f)							// 重力
 #define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
@@ -769,8 +769,8 @@ void UpdatePlayer(void)
 		g_Player[PLAYER_PARENT].jump_spped = JUMP_HEIGHT;
 
 	}
-	//地面についていなかったら
-	else
+	//地面についていなかったら(ジャンプ以外で)
+	else if (g_Player[PLAYER_PARENT].anim_use != PLAYER_JUMPING)
 	{
 		g_Pos.y -= GRAVITY;
 	}
