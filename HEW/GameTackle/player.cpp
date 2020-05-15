@@ -25,7 +25,7 @@
 #define	VERTEX_MAX			(300)							// 軌跡の最大数
 #define	JUMP_HEIGHT			(8.0f)							// ジャンプの高さ
 #define	JUMP_GRAVITY		(0.25f)							// 重力
-#define	GRAVITY				(10.f)							// 重力
+#define	GRAVITY				(10.0f)							// 重力
 #define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
 #define PLAYER_POSZ			(FIELDCHIP_HEIGHT/2)
 
@@ -33,6 +33,7 @@
 // プロトタイプ宣言
 //*****************************************************************************
 
+static void ResetPlayerPos();	// プレイヤーを初期座標に転送
 
 //*****************************************************************************
 // グローバル変数
@@ -476,9 +477,7 @@ HRESULT InitPlayer(void)
 
 	kiseki_idx = 0;
 
-	g_Pos = D3DXVECTOR3(PLAYER_POSX, 0.0f, PLAYER_POSZ);
-	g_Rot = D3DXVECTOR3(0.0f, D3DX_PI, 0.0f);
-	g_Old_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	ResetPlayerPos();		// 場所と回転を場所にセット
 
 	for (int j = 0; j < VERTEX_MAX; j++)
 	{
@@ -678,6 +677,15 @@ void UpdatePlayer(void)
 		g_Player[PLAYER_PARENT].anim_use = PLAYER_SLIDING;
 	}
 
+#ifdef _DEBUG	
+	// デバックモードのみ座標リセット処理
+	PrintDebugProc("[debug]F5:プレイヤーを初期位置に戻す");
+	if (GetKeyboardTrigger(DIK_F5))
+	{
+		ResetPlayerPos();
+	}
+#endif
+
 	// 入力されたキーに合わせて向きを決める
 	float roty = 0.0f;
 	switch (dir)
@@ -741,9 +749,17 @@ void UpdatePlayer(void)
 		g_Pos.y += g_Player[PLAYER_PARENT].jump_spped;
 
 		g_Player[PLAYER_PARENT].jump_spped -= JUMP_GRAVITY;
-
 	}
-	//地面に着いたら
+
+
+	//移動処理[[ここでﾌﾟﾚｲﾔｰ側のポジション確定]]
+	g_Pos.x -= sinf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
+	g_Pos.z -= cosf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
+
+	g_Player[PLAYER_PARENT].spd *= 0.9f;
+
+
+	// 地面に接している場合
 	if (PlayerCheckHitOnField() == true)
 	{
 		g_Pos.y = 0.0f;
@@ -751,13 +767,14 @@ void UpdatePlayer(void)
 		g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
 
 		g_Player[PLAYER_PARENT].jump_spped = JUMP_HEIGHT;
-	}
 
+	}
 	//地面についていなかったら
-	else if (PlayerCheckHitOnField() == false)
+	else
 	{
 		g_Pos.y -= GRAVITY;
 	}
+
 
 
 	// 階層アニメーション
@@ -815,13 +832,6 @@ void UpdatePlayer(void)
 			g_Player[i].scl = g_Player[i].tbl_adr[index].scl + scl * time;
 		}
 	}
-
-	//移動処理
-	g_Pos.x -= sinf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
-	g_Pos.z -= cosf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
-
-
-	g_Player[PLAYER_PARENT].spd *= 0.9f;
 
 
 	//背中の位置
@@ -982,3 +992,13 @@ Vec3 *GetPlayerRot(void)
 //{
 //	return (Vec3*)(g_model->WldMtx.m[3]);
 //}
+
+//=============================================================================
+// プレイヤーを初期座標まで転送させる
+//=============================================================================
+void ResetPlayerPos()
+{
+	g_Pos = D3DXVECTOR3(PLAYER_POSX, 0.0f, PLAYER_POSZ);
+	g_Rot = D3DXVECTOR3(0.0f, D3DX_PI, 0.0f);
+	g_Old_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+}

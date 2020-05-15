@@ -60,3 +60,6 @@ void UninitPlayer(void);
 void UpdatePlayer(void);
 void DrawPlayer(void);
 PLAYER *GetPlayer(void);
+Vec3 *GetPlayerPos(void);
+Vec3 *GetPlayerOld_Pos(void);
+Vec3 *GetPlayerRot(void);

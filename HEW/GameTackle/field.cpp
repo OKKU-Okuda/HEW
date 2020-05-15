@@ -84,7 +84,6 @@ void SetField(short x,short z, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 void UpdateField()
 {
 
-	PlayerCheckHitOnField();
 }
 
 /*=====================================================================
@@ -93,15 +92,21 @@ void UpdateField()
 	道の障害物によってプレイヤーの位置を変えます
 
 	戻り値 : void
-	引数 : bool		true:道の中にプレイヤーがいる
+	引数 : bool		true:道とプレイヤーが設置ている
 =====================================================================*/
 bool PlayerCheckHitOnField()
 {
-	PLAYER*		player = GetPlayer();
+	//PLAYER*		player = GetPlayer();
 	CHIP_ID		id;
 	bool		ans;
 
-	id = GetFieldChipID(&player->pos);		// プレイヤーのいるチャンクID算出
+	if (GetPlayerPos()->y > 0.0f)
+	{
+		PrintDebugProc("プレイヤー浮遊中");
+		return false;
+	}
+
+	id = GetFieldChipID(GetPlayerPos());		// プレイヤーのいるチャンクID算出
 
 	if (id.bit != g_OnField.pChip->ID.bit)
 	{// 保管変数とのidが違う場合
@@ -120,15 +125,15 @@ bool PlayerCheckHitOnField()
 	}
 
 	// プレイヤーのワールド座標をCHIPで使用している座標に変換
-	D3DXVec3TransformCoord(&player->pos, &player->pos, &g_OnField.InvMat);
+	D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.InvMat);
 
 	// 当たり判定
-	ans = g_OnField.pChip->pFunc->CheckHit(g_OnField.pChip, &player->pos);
+	ans = g_OnField.pChip->pFunc->CheckHit(g_OnField.pChip, GetPlayerPos());
 
-	PrintDebugProc("プレイヤーのCHIP座標:%vec3", player->pos);
+	PrintDebugProc("プレイヤーのCHIP座標:%vec3", *GetPlayerPos());
 
 	// プレイヤーをワールド座標に戻す
-	D3DXVec3TransformCoord(&player->pos, &player->pos, &g_OnField.pChip->WldMat);
+	D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.pChip->WldMat);
 
 #ifdef _DEBUG
 	if (ans == false)
@@ -157,12 +162,6 @@ void InitField()
 {
 	InitFieldRoad();
 
-
-
-	// プレイヤーのところにこれを書いてもらう
-	GetPlayer()->pos.x = PLAYER_POSX;
-	GetPlayer()->pos.z = PLAYER_POSZ;
-	GetPlayer()->rot.y = D3DX_PI;
 }
 
 void UninitField()
