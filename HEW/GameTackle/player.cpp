@@ -23,12 +23,12 @@
 #define	VALUE_ROTATE		(D3DX_PI * 0.02f)				// 回転量
 #define	PLAYER_PARENT		(0)								// 親の添え字(体)
 #define	VERTEX_MAX			(300)							// 軌跡の最大数
-#define	JUMP_HEIGHT			(15.0f)							// ジャンプの高さ
+#define	JUMP_HEIGHT			(8.0f)							// ジャンプの高さ
 #define	JUMP_GRAVITY		(0.25f)							// 重力
-#define	GRAVITY				(10.0f)							// 重力
+#define	GRAVITY				(1.0f)							// 重力
 #define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
 #define PLAYER_POSZ			(FIELDCHIP_HEIGHT/2)
-
+#define SLIDING_CNT			(120)
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -53,6 +53,9 @@ D3DXVECTOR3 back_pos;									//
 D3DXVECTOR3 g_Pos;										// プレイヤーの位置
 D3DXVECTOR3 g_Old_Pos;									// プレイヤーの元位置
 D3DXVECTOR3 g_Rot;										// プレイヤーの向き
+
+int g_slidin_cnt;										// スライディングカウント
+float gravity;										    // 重力
 
 //=============================================================================
 // アニメーションのテーブル
@@ -477,6 +480,10 @@ HRESULT InitPlayer(void)
 
 	kiseki_idx = 0;
 
+	g_slidin_cnt = 0;										// スライディングカウント
+
+	gravity = 1.0f;
+
 	ResetPlayerPos();		// 場所と回転を場所にセット
 
 	for (int j = 0; j < VERTEX_MAX; j++)
@@ -668,13 +675,19 @@ void UpdatePlayer(void)
 	//ジャンプ処理
 	if (GetKeyboardTrigger(DIK_J))
 	{
-		g_Player[PLAYER_PARENT].anim_use = PLAYER_JUMPING;
+		if (g_Player[PLAYER_PARENT].jump_spped > 0.0f)
+		{
+			g_Player[PLAYER_PARENT].anim_use = PLAYER_JUMPING;
+		}
 	}
 
 	//スライディング処理
 	else if (GetKeyboardTrigger(DIK_K))
 	{
-		g_Player[PLAYER_PARENT].anim_use = PLAYER_SLIDING;
+		if (g_Player[PLAYER_PARENT].anim_use != PLAYER_JUMPING)
+		{
+			g_Player[PLAYER_PARENT].anim_use = PLAYER_SLIDING;
+		}
 	}
 
 #ifdef _DEBUG	
@@ -692,7 +705,6 @@ void UpdatePlayer(void)
 	{
 	case 1:	// 下向き
 		roty = 0.0f;
-		g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
 		break;
 
 	case 2:	// 上向き
@@ -749,6 +761,21 @@ void UpdatePlayer(void)
 		g_Pos.y += g_Player[PLAYER_PARENT].jump_spped;
 
 		g_Player[PLAYER_PARENT].jump_spped -= JUMP_GRAVITY;
+
+		g_slidin_cnt = 0;
+
+	}
+
+	//sliding処理
+	if (g_Player[PLAYER_PARENT].anim_use == PLAYER_SLIDING)
+	{
+		g_slidin_cnt++;
+		if (g_slidin_cnt >= SLIDING_CNT)
+		{
+			g_slidin_cnt = 0;
+
+			g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
+		}
 	}
 
 
@@ -764,7 +791,12 @@ void UpdatePlayer(void)
 	{
 		g_Pos.y = 0.0f;
 
-		g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
+		gravity = 1.0f;
+
+		if (g_Player[PLAYER_PARENT].anim_use != PLAYER_SLIDING)
+		{
+			g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
+		}
 
 		g_Player[PLAYER_PARENT].jump_spped = JUMP_HEIGHT;
 
@@ -772,10 +804,15 @@ void UpdatePlayer(void)
 	//地面についていなかったら(ジャンプ以外で)
 	else if (g_Player[PLAYER_PARENT].anim_use != PLAYER_JUMPING)
 	{
-		g_Pos.y -= GRAVITY;
+		g_Pos.y -= gravity;
+
+		gravity += GRAVITY;
+
+		g_Player[PLAYER_PARENT].anim_use = PLAYER_RUNNING;
+
+		g_Player[PLAYER_PARENT].jump_spped = 0.0f;
+
 	}
-
-
 
 	// 階層アニメーション
 	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
@@ -784,8 +821,6 @@ void UpdatePlayer(void)
 		if (g_Player[i].use == true)
 		{
 			g_Player[i].anim_use = g_Player[PLAYER_PARENT].anim_use;
-
-			g_Player[i].old_anim_use = g_Player[i].anim_use;
 
 			if (g_Player[i].anim_use == PLAYER_RUNNING)
 			{
@@ -806,6 +841,8 @@ void UpdatePlayer(void)
 			{
 				g_Player[i].move_time = 0.0f;
 			}
+			g_Player[i].old_anim_use = g_Player[i].anim_use;
+
 			// 移動処理
 			int		index = (int)g_Player[i].move_time;
 			float	time = g_Player[i].move_time - index;
@@ -871,10 +908,10 @@ void UpdatePlayer(void)
 		kiseki_idx = 0;
 	}
 
+	//ボディの情報に移動と回転を反映
+	g_Player[PLAYER_PARENT].pos += g_Pos;
 
-	g_Player[PLAYER_PARENT].pos = g_Player[PLAYER_PARENT].pos + g_Pos;
-
-	g_Player[PLAYER_PARENT].rot = g_Player[PLAYER_PARENT].rot + g_Rot;
+	g_Player[PLAYER_PARENT].rot += g_Rot;
 
 	// 影もプレイヤーの位置に合わせる
 	//D3DXVECTOR3 pos = g_Player[PLAYER_PARENT].pos;
