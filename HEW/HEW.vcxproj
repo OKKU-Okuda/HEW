@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\camera.cpp" />
+    <ClCompile Include="Core\CheckHit.cpp" />
     <ClCompile Include="Core\debugproc.cpp" />
     <ClCompile Include="Core\directx_Helper2D.cpp" />
     <ClCompile Include="Core\directx_Helper3D.cpp" />
@@ -162,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
+    <ClInclude Include="Core\CheckHit.h" />
     <ClInclude Include="Core\debugproc.h" />
     <ClInclude Include="Core\directx_Helper2D.h" />
     <ClInclude Include="Core\directx_Helper3D.h" />
