@@ -139,8 +139,8 @@
     <ClCompile Include="Core\MyList.cpp" />
     <ClCompile Include="GameKick\OrderLogo.cpp" />
     <ClCompile Include="GameTackle\camera.cpp" />
-    <ClCompile Include="GameTackle\coin.cpp" />
     <ClCompile Include="GameTackle\Field\road.cpp" />
+    <ClCompile Include="GameTackle\item.cpp" />
     <ClCompile Include="GameTackle\kiseki.cpp" />
     <ClCompile Include="GameTackle\player.cpp" />
     <ClCompile Include="GameTackle\enemy.cpp" />
@@ -172,8 +172,8 @@
     <ClInclude Include="Core\MyList.h" />
     <ClInclude Include="GameKick\OrderLogo.h" />
     <ClInclude Include="GameTackle\camera.h" />
-    <ClInclude Include="GameTackle\coin.h" />
     <ClInclude Include="GameTackle\Field\road.h" />
+    <ClInclude Include="GameTackle\item.h" />
     <ClInclude Include="GameTackle\kiseki.h" />
     <ClInclude Include="GameTackle\player.h" />
     <ClInclude Include="GameTackle\enemy.h" />
