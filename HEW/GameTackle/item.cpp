@@ -80,6 +80,7 @@ HRESULT InitItem(void)
 		g_aItem[nCntItem].nIdxShadow = -1;
 		g_aItem[nCntItem].nType = ITEMTYPE_COIN;
 		g_aItem[nCntItem].bUse = false;
+		g_aItem[nCntItem].bHit = false;
 	}
 
 	return S_OK;
@@ -119,11 +120,14 @@ void UpdateItem(void)
 {
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		g_aItem[nCntItem].bUse = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
-
 		if (g_aItem[nCntItem].bUse == true)
 		{
+			g_aItem[nCntItem].bHit = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
 
+			if (g_aItem[nCntItem].bHit == true)
+			{
+
+			}
 		}
 	}
 }
@@ -227,11 +231,11 @@ BezierCurve関数
 	引数 : ( D3DXVECTOR3* , float , D3DXVECTOR2* , D3DXVECTOR2* , D3DXVECTOR2* , D3DXVECTOR2*)
 =====================================================================*/
 D3DXVECTOR3 *BezierCurve(
-	D3DXVECTOR3* p_out,
+	D3DXVECTOR3* p_out,		// 戻り値
 	float t,				// 0から1までの時間
 	D3DXVECTOR2* p_start,	// ベジェ曲線の始点
-	D3DXVECTOR2* p_second,	// ベジェ曲線の第1影響点
-	D3DXVECTOR2* p_third,	// ベジェ曲線の第2影響点
+	D3DXVECTOR2* p_second,	// ベジェ曲線の第1制御点
+	D3DXVECTOR2* p_third,	// ベジェ曲線の第2制御点
 	D3DXVECTOR2* p_end)		// ベジェ曲線の終点
 {
 	float tp = 1 - t;
@@ -257,7 +261,7 @@ CalcScreenToWorld関数
 	引数 : 	(D3DXVECTOR3* , float , float , float , int , int , D3DXMATRIX* , D3DXMATRIX* )
 =====================================================================*/
 D3DXVECTOR3* CalcScreenToWorld(
-	D3DXVECTOR3* p_out,	
+	D3DXVECTOR3* p_out,	// 戻り値
 	float Sx,			// スクリーンX座標
 	float Sy,			// スクリーンY座標
 	float fZ,			// 射影空間でのZ値（0～1）
