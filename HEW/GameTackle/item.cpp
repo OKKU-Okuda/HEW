@@ -5,17 +5,17 @@
 //
 //=============================================================================
 #include"../Core/main.h"
-#include "item.h"	
 #include "../Core/input.h"
 #include "../Core/directx_Helper3D.h"
 #include "../Core/debugproc.h"
 #include "../Core/camera.h"
+#include "../Core/CheckHit.h"
+#include "item.h"	
+#include "player.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	VALUE_ROTATE_ITEM		(D3DX_PI * 0.025f)		// 回転速度
-#define	ITEM_RADIUS				(10.0f)					// 半径
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -119,30 +119,11 @@ void UpdateItem(void)
 {
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		if (g_aItem[nCntItem].bUse)
+		g_aItem[nCntItem].bUse = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
+
+		if (g_aItem[nCntItem].bUse == true)
 		{
-			g_aItem[nCntItem].rot.y += VALUE_ROTATE_ITEM;
-			if (g_aItem[nCntItem].rot.y > D3DX_PI)
-			{
-				g_aItem[nCntItem].rot.y -= D3DX_PI * 2.0f;
-			}
 
-			float fSizeX = 20.0f + (g_aItem[nCntItem].pos.y - 10.0f) * 0.05f;
-			if (fSizeX < 20.0f)
-			{
-				fSizeX = 20.0f;
-			}
-			float fSizeY = 20.0f + (g_aItem[nCntItem].pos.y - 10.0f) * 0.05f;
-			if (fSizeY < 20.0f)
-			{
-				fSizeY = 20.0f;
-			}
-
-			float colA = (200.0f - (g_aItem[nCntItem].pos.y - 10.0f)) / 400.0f;
-			if (colA < 0.0f)
-			{
-				colA = 0.0f;
-			}
 		}
 	}
 }

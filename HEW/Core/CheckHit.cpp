@@ -45,6 +45,7 @@ bool CheckHitBB(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, D3DXVECTOR3 size1, D3DXVECTO
 	max2.x = pos2.x + size2.x;
 	max2.y = pos2.y + size2.y;
 	max2.z = pos2.z + size2.z;
+
 	// XŽ²‚Ì”»’è
 	if (min1.x < max2.x && max1.x > min2.x)
 	{
