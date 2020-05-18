@@ -191,6 +191,8 @@ void InitTitle(bool isFirst)
 	GetControlFunc()->Init(false);
 
 	MySoundPlayEternal(g_soundBGM);	// ‰i‰“Ä¶
+
+	MySoundSetVolume(g_soundBGM, 0.5f);	// ƒTƒEƒ“ƒh‚ğ5Š„
 }
 
 /*=====================================================================

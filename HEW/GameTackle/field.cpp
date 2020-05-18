@@ -72,9 +72,12 @@ void SetField(short x,short z, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 	keep_pt->ID.vec2.z = z;
 	keep_pt->Type = type;
 
-	GetMatrix(&keep_pt->WldMat,		// ワールド行列を求める
+	GetMatrix(&keep_pt->WldMat,											// ワールド行列を求める
 		&Vec3((FIELDCHIP_WIDTH / 2) + (FIELDCHIP_WIDTH * x), 0, (FIELDCHIP_HEIGHT / 2) + (FIELDCHIP_HEIGHT * z)),
 		&Vec3(0, (D3DX_PI / 2)*(int)fdirection, 0));
+
+
+	D3DXMatrixInverse(&keep_pt->InvWldMat, NULL, &keep_pt->WldMat);		// 上記逆行列
 
 	/*ここで関数群へのアドレス分岐指定処理*/
 	keep_pt->pFunc = GetFieldRoadFunc();
@@ -100,6 +103,11 @@ bool PlayerCheckHitOnField()
 	CHIP_ID		id;
 	bool		ans;
 
+	if (GetKeyboardTrigger(DIK_F5))
+	{
+		*GetPlayerOld_Pos() = *GetPlayerPos();
+	}
+
 	if (GetPlayerPos()->y > 0.0f)
 	{
 		PrintDebugProc("プレイヤー浮遊中");
@@ -124,16 +132,21 @@ bool PlayerCheckHitOnField()
 		SetOnFieldWk(keep_pt);
 	}
 
-	// プレイヤーのワールド座標をCHIPで使用している座標に変換
-	D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.InvMat);
+	// プレイヤー(今と昔の座標)をCHIPローカル座標に変換する
+	D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.pChip->InvWldMat);
+	D3DXVec3TransformCoord(GetPlayerOld_Pos(), GetPlayerOld_Pos(), &g_OnField.pChip->InvWldMat);
 
 	// 当たり判定
-	ans = g_OnField.pChip->pFunc->CheckHit(g_OnField.pChip, GetPlayerPos());
+	ans = g_OnField.pChip->pFunc->CheckHit(g_OnField.pChip, GetPlayerPos(), GetPlayerOld_Pos());
 
-	PrintDebugProc("プレイヤーのCHIP座標:%vec3", *GetPlayerPos());
+#ifdef _DEBUG
+	PrintDebugProc("[debug:field_chip]CHIP座標 %vec3", *GetPlayerPos());
+#endif
 
-	// プレイヤーをワールド座標に戻す
+	// プレイヤー(今と昔の座標)をワールド座標に変換する
 	D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.pChip->WldMat);
+	D3DXVec3TransformCoord(GetPlayerOld_Pos(), GetPlayerOld_Pos(), &g_OnField.pChip->WldMat);
+
 
 #ifdef _DEBUG
 	if (ans == false)
@@ -267,7 +280,4 @@ void SetOnFieldWk(FIELD_CHIP* pData)
 
 	g_OnField.pChip = pData;					
 	g_OnField.pChip->State = FSTATE_ONPLAYER;	// 状態設置
-
-	// ワールド行列の逆行列算出
-	D3DXMatrixInverse(&g_OnField.InvMat, NULL, &g_OnField.pChip->WldMat);
 }

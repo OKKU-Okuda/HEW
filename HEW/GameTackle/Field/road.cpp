@@ -21,8 +21,8 @@
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos);
-static void UpdateFieldRoad(FIELD_CHIP* pData);
+static bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos);
+static void UpdateFieldRoad(FIELD_CHIP* pData, Vec3* pPos);
 static void DrawFieldRoad(FIELD_CHIP* pData);
 
 //---------------------------------------------------------------------
@@ -55,26 +55,41 @@ void InitFieldRoad()
 		&Vec3(0, 0, 0));
 
 	// 左右の壁作成
-	g_meshRightWall= Create3DBoxMesh(&Vec3(5.0f, 20.0f, FIELDCHIP_HEIGHT),
-		&Vec3(FIELDROAD_X / 2, 25.0f/3, 0));
-	g_meshLeftWall = Create3DBoxMesh(&Vec3(5.0f, 20.0f, FIELDCHIP_HEIGHT),
-		&Vec3(-FIELDROAD_X / 2, 25.0f / 3, 0));
+	g_meshRightWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
+		&Vec3((FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2), 0.0f, 0));
+	g_meshLeftWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
+		&Vec3((-FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2), 0.0f, 0));
 
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field.png", &g_texFlat);
 }
 
-bool CheckHitFieldRoad(FIELD_CHIP* pData,Vec3* pPos)
+bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 {
 	//if (pPos->x >= -FIELDROAD_X / 2 && pPos->x <= FIELDROAD_X / 2)
 	//{
 	//	return true;
 	//}
 
-	SAFE_NUMBER(pPos->x, -FIELDROAD_X / 2, FIELDROAD_X / 2);
-	return true;
+	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R)
+	{	// 前座標が内側であれば外に出ないようにする
+
+		SAFE_NUMBER(pPos->x, -FIELDROAD_X / 2,FIELDROAD_X / 2);
+		return true;
+	}
+
+	if ((pPastPos->x < -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPos->x >= -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R) ||
+		(pPastPos->x > (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R && pPos->x <= (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R))
+	{	// 左or右側：外から中に入ろうとするとブロックされる処理
+		pPos->x = pPastPos->x;
+#ifdef _DEBUG
+		PrintDebugProc("[debug:field_checkhit]：外からの侵入阻止");
+#endif
+	}
+
+	return false;
 }
 
-void UpdateFieldRoad(FIELD_CHIP* pData)
+void UpdateFieldRoad(FIELD_CHIP* pData, Vec3* pPos)
 {
 
 
