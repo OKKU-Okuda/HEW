@@ -1,8 +1,8 @@
 /**********************************************************************
-[[直進道ヘッダー(GameTackle/Field/road.h)]]
+[[直進道ヘッダー(GameTackle/Field/void.h)]]
 	作者：奥田　真規
 
-	GameTackle/Field/road.cppに関するヘッダー
+	GameTackle/Field/void.cppに関するヘッダー
 ***********************************************************************/
 #pragma once
 
@@ -19,8 +19,8 @@
 /*=====================================================================
 直線道独自関数アドレス取得関数
 =====================================================================*/
-FIELD_OBJFUNC* GetFieldRoadFunc();
+FIELD_OBJFUNC* GetFieldVoidFunc();
 
 // 関数群
-void InitFieldRoad();
-void UninitFieldRoad();
+void InitFieldVoid();
+void UninitFieldVoid();

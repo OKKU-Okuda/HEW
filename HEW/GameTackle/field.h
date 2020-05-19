@@ -17,8 +17,13 @@
 #define FIELDROAD_X		(100.0f)
 #define FIELDROAD_Y		(10.0f)	
 
-#define PLAYER_POSX		(FIELDCHIP_WIDTH/2)
-#define PLAYER_POSZ		(FIELDCHIP_HEIGHT/2)
+// 道の壁のサイズ
+#define ROADWALL_SIZEX	(5.0f)
+#define ROADWALL_SIZEY	(20.0f)
+
+// プレイヤーの足元半径
+#define PLAYER_FIELDSIZE_R		(ROADWALL_SIZEX)
+
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言 (他cppでも使用する)
 //---------------------------------------------------------------------
@@ -35,6 +40,7 @@ enum FIELD_DIRECTION {
 
 // フィールドタイプ列挙
 enum FIELD_TYPE {
+	FTYPE_VOID,			// 奈落（何もない)
 	FTYPE_ROAD,			// 一本道
 	FTYPE_CLIFFR,		// 右半分崖の道：未実装
 	FTYPE_CLIFFL,		// 左半分崖の道：未実装
@@ -66,8 +72,19 @@ typedef struct {
 // フィールド独自関数構造体
 struct FIELD_CHIP;	// 前方宣言
 typedef struct {
-	bool(*CheckHit)(FIELD_CHIP*,Vec3*);		// Vec3はプレイヤーのCHIP座標が入っている
-	void(*Update)(FIELD_CHIP*);
+
+	// CHIP当たり判定関数
+	// 戻り値：bool     true:道に接してるか
+	// Vec3*now		:現在のプレイヤーCHIP座標
+	// Vec3*past	:1フレーム前のプレイヤーCHIP座標
+	bool(*CheckHit)(FIELD_CHIP*, Vec3*now, Vec3*past);
+
+
+	// CHIP更新関数
+	// Vec3*now		:現在のプレイヤーCHIP座標
+	void(*Update)(FIELD_CHIP*, Vec3*now);
+
+	// CHIP描画関数
 	void(*Draw)(FIELD_CHIP*);
 }FIELD_OBJFUNC;
 
@@ -89,7 +106,7 @@ typedef struct FIELD_CHIP{
 	FIELD_OBJFUNC*	pFunc;		// 道ごとに異なる更新関数等取得関数ポインタ
 
 	Matrix			WldMat;		// 当フィールドのワールド行列
-
+	Matrix			InvWldMat;	// 上記逆行列
 }FIELD_CHIP;
 
 //---------------------------------------------------------------------
@@ -106,6 +123,27 @@ typedef struct FIELD_CHIP{
 =====================================================================*/
 bool PlayerCheckHitOnField();
 
+/*=====================================================================
+フィールド設置関数
+	戻り値 : void
+	引数 :
+	short x,						:チャンク場所xの指定
+	short z,						:同上ｚ
+	FIELD_TYPE type,				:設置フィールドタイプ
+	FIELD_DIRECTION fdirection		:方向
+=====================================================================*/
+void SetField(short x, short z, FIELD_TYPE type, FIELD_DIRECTION fdirection);
+
+
+/*=====================================================================
+最新設置識別ID取得関数
+=====================================================================*/
+CHIP_ID GetLatestChipID();
+
+/*=====================================================================
+フィールド方向取得関数
+=====================================================================*/
+FIELD_DIRECTION GetPlayerFieldDirection();
 
 // フィールド基本関数群
 void InitField();

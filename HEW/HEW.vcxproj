@@ -141,6 +141,7 @@
     <ClCompile Include="GameKick\OrderLogo.cpp" />
     <ClCompile Include="GameTackle\camera.cpp" />
     <ClCompile Include="GameTackle\Field\road.cpp" />
+    <ClCompile Include="GameTackle\Field\void.cpp" />
     <ClCompile Include="GameTackle\item.cpp" />
     <ClCompile Include="GameTackle\kiseki.cpp" />
     <ClCompile Include="GameTackle\player.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="GameKick\OrderLogo.h" />
     <ClInclude Include="GameTackle\camera.h" />
     <ClInclude Include="GameTackle\Field\road.h" />
+    <ClInclude Include="GameTackle\Field\void.h" />
     <ClInclude Include="GameTackle\item.h" />
     <ClInclude Include="GameTackle\kiseki.h" />
     <ClInclude Include="GameTackle\player.h" />
