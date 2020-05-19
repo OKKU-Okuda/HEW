@@ -11,6 +11,8 @@
 #include "player.h"
 
 #include "Field/road.h"
+#include "Field/void.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -78,8 +80,8 @@ void DrawField()
 =====================================================================*/
 void InitField()
 {
+	InitFieldVoid();
 	InitFieldRoad();
-
 }
 
 /*=====================================================================
@@ -87,6 +89,7 @@ void InitField()
 =====================================================================*/
 void UninitField()
 {
+	UninitFieldVoid();
 	UninitFieldRoad();
 }
 
@@ -116,10 +119,9 @@ void ResetField()
 
 	// ここからテスト
 	SetField(0, 1, FTYPE_ROAD, FDIRECTION_0ZP);
-	// ここからテスト
 	SetField(0, 2, FTYPE_ROAD, FDIRECTION_0ZP);
-	// ここからテスト
 	SetField(0, 3, FTYPE_ROAD, FDIRECTION_0ZP);
+	SetField(1, 1, FTYPE_VOID, FDIRECTION_0ZP);
 
 
 	// ここからテスト
@@ -276,6 +278,9 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type)
 {
 	switch (type)
 	{
+	case FTYPE_VOID:
+		return GetFieldVoidFunc();
+
 	case FTYPE_ROAD:
 		return GetFieldRoadFunc();
 
@@ -297,8 +302,8 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type)
 		break;
 	}
 
-	// デフォルトとして直線道を設置
-	return GetFieldRoadFunc();
+	// デフォルトとして奈落を設置
+	return GetFieldVoidFunc();
 }
 
 CHIP_ID GetFieldChipID(Vec3* pos)

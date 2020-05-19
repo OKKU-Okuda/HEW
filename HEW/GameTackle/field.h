@@ -40,6 +40,7 @@ enum FIELD_DIRECTION {
 
 // フィールドタイプ列挙
 enum FIELD_TYPE {
+	FTYPE_VOID,			// 奈落（何もない)
 	FTYPE_ROAD,			// 一本道
 	FTYPE_CLIFFR,		// 右半分崖の道：未実装
 	FTYPE_CLIFFL,		// 左半分崖の道：未実装
