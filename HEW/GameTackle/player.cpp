@@ -1037,5 +1037,5 @@ void ResetPlayerPos()
 {
 	g_Pos = D3DXVECTOR3(PLAYER_POSX, 0.0f, PLAYER_POSZ);
 	g_Rot = D3DXVECTOR3(0.0f, D3DX_PI, 0.0f);
-	g_Old_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	g_Old_Pos = g_Pos;
 }
