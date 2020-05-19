@@ -38,15 +38,9 @@ static Mesh g_meshRightWall;	// 右の壁
 static Mesh g_meshLeftWall;		// 左の壁
 
 
-
-
 /*=====================================================================
-●●関数
-	●●する関数
-	戻り値 : void
-	引数 : void
+直線道当たり判定関数
 =====================================================================*/
-
 bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 {
 
@@ -70,12 +64,18 @@ bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 	return false;
 }
 
+/*=====================================================================
+直線道更新関数
+=====================================================================*/
 void UpdateFieldRoad(FIELD_CHIP* pData, Vec3* pPos)
 {
 
 
 }
 
+/*=====================================================================
+直線道描画関数
+=====================================================================*/
 void DrawFieldRoad(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
@@ -91,11 +91,9 @@ void DrawFieldRoad(FIELD_CHIP* pData)
 	g_meshLeftWall->DrawSubset(0);
 }
 
-FIELD_OBJFUNC* GetFieldRoadFunc()
-{
-	return &g_Func;
-}
-
+/*=====================================================================
+直線道初期化関数
+=====================================================================*/
 void InitFieldRoad()
 {
 	D3DDEVICE;
@@ -113,6 +111,9 @@ void InitFieldRoad()
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field.png", &g_texFlat);
 }
 
+/*=====================================================================
+直線道終了化関数
+=====================================================================*/
 void UninitFieldRoad()
 {
 	// リソースの開放
@@ -120,4 +121,12 @@ void UninitFieldRoad()
 	SAFE_RELEASE(g_meshLeftWall);
 	SAFE_RELEASE(g_meshRightWall);
 	SAFE_RELEASE(g_texFlat);
+}
+
+/*=====================================================================
+直線道独自関数アドレス取得関数
+=====================================================================*/
+FIELD_OBJFUNC* GetFieldRoadFunc()
+{
+	return &g_Func;
 }

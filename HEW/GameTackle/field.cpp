@@ -46,12 +46,99 @@ static struct {
 
 static FIELD_DIRECTION	g_fdir;			// 現在の方向
 static CHIP_ID			g_latestid;		// 一番最近設置したチャンク
-										
+	
+
 /*=====================================================================
-●●関数
-	●●する関数
+フィールド更新関数
+=====================================================================*/
+void UpdateField()
+{
+
+}
+
+/*=====================================================================
+フィールド描画関数
+=====================================================================*/
+void DrawField()
+{
+	for (int i = 0; i < MAX_FIELD; i++)
+	{
+		if (g_Field[i].State == FSTATE_NONE)
+		{
+			continue;
+		}
+
+		// 描画
+		g_Field[i].pFunc->Draw(&g_Field[i]);
+	}
+}
+
+/*=====================================================================
+フィールド初期化関数
+=====================================================================*/
+void InitField()
+{
+	InitFieldRoad();
+
+}
+
+/*=====================================================================
+フィールド終了化関数
+=====================================================================*/
+void UninitField()
+{
+	UninitFieldRoad();
+}
+
+/*=====================================================================
+フィールドゲームリセット関数関数
+=====================================================================*/
+void ResetField()
+{
+	CHIP_ID id;
+
+	for (int i = 0; i < MAX_FIELD; i++)
+	{
+		// 未使用状態
+		g_Field[i].State = FSTATE_NONE;
+	}
+
+	ZeroMemory(&g_OnField, sizeof(g_OnField));
+
+	// 方向の初期化
+	g_fdir = FDIRECTION_0ZP;
+
+	// 0,0にonField
+	SetField(0, 0, FTYPE_ROAD, FDIRECTION_0ZP);
+	id.vec2.x = 0;
+	id.vec2.z = 0;
+	SetOnFieldWk(SearchChipID(id));
+
+	// ここからテスト
+	SetField(0, 1, FTYPE_ROAD, FDIRECTION_0ZP);
+	// ここからテスト
+	SetField(0, 2, FTYPE_ROAD, FDIRECTION_0ZP);
+	// ここからテスト
+	SetField(0, 3, FTYPE_ROAD, FDIRECTION_0ZP);
+
+
+	// ここからテスト
+//	SetField(0, 1, FTYPE_ROAD, FDIRECTION_1XP);
+	// ここからテスト
+//	SetField(0, 2, FTYPE_ROAD, FDIRECTION_2ZM);
+	// ここからテスト
+//	SetField(0, 3, FTYPE_ROAD, FDIRECTION_3XM);
+
+}
+
+/*=====================================================================
+フィールド設置関数
 	戻り値 : void
-	引数 : void
+	引数 : 
+	short x,						:チャンク場所xの指定
+	short z,						:同上ｚ
+	FIELD_TYPE type,				:設置フィールドタイプ
+	FIELD_DIRECTION fdirection		:方向
 =====================================================================*/
 void SetField(short x, short z, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 {
@@ -96,11 +183,6 @@ void SetField(short x, short z, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 		&Vec3(0, (D3DX_PI / 2)*(int)fdirection, 0));
 
 	D3DXMatrixInverse(&keep_pt->InvWldMat, NULL, &keep_pt->WldMat);		// 上記逆行列
-
-}
-
-void UpdateField()
-{
 
 }
 
@@ -171,67 +253,20 @@ bool PlayerCheckHitOnField()
 	return ans;
 }
 
-void DrawField()
+/*=====================================================================
+最新設置識別ID取得関数
+=====================================================================*/
+CHIP_ID GetLatestChipID()
 {
-	for (int i = 0; i < MAX_FIELD; i++)
-	{
-		if (g_Field[i].State == FSTATE_NONE)
-		{
-			continue;
-		}
-
-		// 描画
-		g_Field[i].pFunc->Draw(&g_Field[i]);
-	}
+	return g_latestid;
 }
 
-void InitField()
+/*=====================================================================
+フィールド方向取得関数
+=====================================================================*/
+FIELD_DIRECTION GetPlayerFieldDirection()
 {
-	InitFieldRoad();
-
-}
-
-void UninitField()
-{
-	UninitFieldRoad();
-}
-
-void ResetField()
-{
-	CHIP_ID id;
-
-	for (int i = 0; i < MAX_FIELD; i++)
-	{
-		// 未使用状態
-		g_Field[i].State = FSTATE_NONE;
-	}
-
-	ZeroMemory(&g_OnField, sizeof(g_OnField));
-
-	// 方向の初期化
-	g_fdir = FDIRECTION_0ZP;
-
-	// 0,0にonField
-	SetField(0, 0, FTYPE_ROAD, FDIRECTION_0ZP);
-	id.vec2.x = 0;
-	id.vec2.z = 0;
-	SetOnFieldWk(SearchChipID(id));
-
-	// ここからテスト
-	SetField(0, 1, FTYPE_ROAD, FDIRECTION_0ZP);
-	// ここからテスト
-	SetField(0, 2, FTYPE_ROAD, FDIRECTION_0ZP);
-	// ここからテスト
-	SetField(0, 3, FTYPE_ROAD, FDIRECTION_0ZP);
-
-
-	// ここからテスト
-//	SetField(0, 1, FTYPE_ROAD, FDIRECTION_1XP);
-	// ここからテスト
-//	SetField(0, 2, FTYPE_ROAD, FDIRECTION_2ZM);
-	// ここからテスト
-//	SetField(0, 3, FTYPE_ROAD, FDIRECTION_3XM);
-
+	return g_fdir;
 }
 
 /*=====================================================================
