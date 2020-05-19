@@ -140,6 +140,7 @@
     <ClCompile Include="Core\MyList.cpp" />
     <ClCompile Include="GameKick\OrderLogo.cpp" />
     <ClCompile Include="GameTackle\camera.cpp" />
+    <ClCompile Include="GameTackle\Field\jump.cpp" />
     <ClCompile Include="GameTackle\Field\road.cpp" />
     <ClCompile Include="GameTackle\Field\void.cpp" />
     <ClCompile Include="GameTackle\item.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="Core\MyList.h" />
     <ClInclude Include="GameKick\OrderLogo.h" />
     <ClInclude Include="GameTackle\camera.h" />
+    <ClInclude Include="GameTackle\Field\jump.h" />
     <ClInclude Include="GameTackle\Field\road.h" />
     <ClInclude Include="GameTackle\Field\void.h" />
     <ClInclude Include="GameTackle\item.h" />
