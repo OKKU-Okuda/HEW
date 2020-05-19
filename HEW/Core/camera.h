@@ -18,7 +18,6 @@ typedef struct {
 	float len;		// カメラの視点と注視点の距離
 	float rotXZ;	// XZ面回転
 	float length;	// 視点注視点間距離
-
 	float angle;	// 視野角
 	float aspect;	// アスペクト比	(横/縦)
 	float nearZ;	// ビュー平面のNearZ値

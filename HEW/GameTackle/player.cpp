@@ -671,6 +671,17 @@ void UpdatePlayer(void)
 		dir |= 1;
 		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
 	}
+	if (GetKeyboardPress(DIK_UP))
+	{
+		dir |= 2;
+		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
+	}
+	if (GetKeyboardPress(DIK_DOWN))
+	{
+		dir |= 1;
+		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
+	}
+
 
 	//ジャンプ処理
 	if (GetKeyboardTrigger(DIK_J))
@@ -748,7 +759,7 @@ void UpdatePlayer(void)
 	//	// Key入力があったら移動処理する
 	//if (dir > 0)
 	//{
-		// カメラに対して入力のあった方向へプレイヤーを向かせて移動させる
+	// カメラに対して入力のあった方向へプレイヤーを向かせて移動させる
 	//g_Rot.y = cam->rot.y + roty;
 	g_Rot.y = roty;
 
@@ -778,12 +789,11 @@ void UpdatePlayer(void)
 		}
 	}
 
-
 	//移動処理[[ここでﾌﾟﾚｲﾔｰ側のポジション確定]]
 	g_Pos.x -= sinf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
 	g_Pos.z -= cosf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
 
-	g_Player[PLAYER_PARENT].spd *= 0.9f;
+	//g_Player[PLAYER_PARENT].spd *= 0.9f;
 
 
 	// 地面に接している場合
@@ -914,9 +924,9 @@ void UpdatePlayer(void)
 	g_Player[PLAYER_PARENT].rot += g_Rot;
 
 	// 影もプレイヤーの位置に合わせる
-	//D3DXVECTOR3 pos = g_Player[PLAYER_PARENT].pos;
-	//pos.y = 0.0f;
-	//SetPositionShadow(g_Player[PLAYER_PARENT].shadowIdx, pos, g_Player[PLAYER_PARENT].scl);
+	D3DXVECTOR3 pos = g_Player[PLAYER_PARENT].pos;
+	pos.y = 0.0f;
+	SetPositionShadow(g_Player[PLAYER_PARENT].shadowIdx, pos, g_Player[PLAYER_PARENT].scl);
 
 
 
