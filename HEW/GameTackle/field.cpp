@@ -12,6 +12,7 @@
 
 #include "Field/road.h"
 #include "Field/void.h"
+#include "Field/jump.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -82,6 +83,7 @@ void InitField()
 {
 	InitFieldVoid();
 	InitFieldRoad();
+	InitFieldJump();
 }
 
 /*=====================================================================
@@ -91,6 +93,7 @@ void UninitField()
 {
 	UninitFieldVoid();
 	UninitFieldRoad();
+	UninitFieldJump();
 }
 
 /*=====================================================================
@@ -118,10 +121,12 @@ void ResetField()
 	SetOnFieldWk(SearchChipID(id));
 
 	// ここからテスト
-	SetField(0, 1, FTYPE_ROAD, FDIRECTION_0ZP);
+	SetField(0, 1, FTYPE_JUMP, FDIRECTION_0ZP);
 	SetField(0, 2, FTYPE_ROAD, FDIRECTION_0ZP);
 	SetField(0, 3, FTYPE_ROAD, FDIRECTION_0ZP);
 	SetField(1, 1, FTYPE_VOID, FDIRECTION_0ZP);
+
+	//SetField(0, 0, FTYPE_JUMP, FDIRECTION_0ZP);
 
 
 	// ここからテスト
@@ -201,57 +206,62 @@ bool PlayerCheckHitOnField()
 	CHIP_ID		id;
 	bool		ans;
 
-	if (GetKeyboardTrigger(DIK_F5))
-	{
-		*GetPlayerOld_Pos() = *GetPlayerPos();
-	}
-
 	if (GetPlayerPos()->y > 0.0f)
 	{
 		PrintDebugProc("プレイヤー浮遊中");
 		return false;
 	}
 
-	id = GetFieldChipID(GetPlayerPos());		// プレイヤーのいるチャンクID算出
+	if (GetPlayerPos()->y >= FIELD_FAILED_Y)
+	{// 床面座標域にいる場合
 
-	if (id.bit != g_OnField.pChip->ID.bit)
-	{// 保管変数とのidが違う場合
-		FIELD_CHIP* keep_pt;
+		id = GetFieldChipID(GetPlayerPos());		// プレイヤーのいるチャンクID算出
 
-		keep_pt = SearchChipID(id);
+		if (id.bit != g_OnField.pChip->ID.bit)
+		{// 保管変数とのidが違う場合
+			FIELD_CHIP* keep_pt;
 
-		if (keep_pt == NULL)
-		{// 検索にヒットしない場合はここで帰還する
+			keep_pt = SearchChipID(id);
 
-			PrintDebugProc("[ERROR]プレイヤーに干渉させるチャンクが存在しません(ID:%d-%d)", id.vec2.x, id.vec2.z);
-			return true;
+			if (keep_pt == NULL)
+			{// 検索にヒットしない場合はここで帰還する
+
+				PrintDebugProc("[ERROR]プレイヤーに干渉させるチャンクが存在しません(ID:%d-%d)", id.vec2.x, id.vec2.z);
+				return true;
+			}
+
+			SetOnFieldWk(keep_pt);
 		}
 
-		SetOnFieldWk(keep_pt);
-	}
+		// プレイヤー(今と昔の座標)をCHIPローカル座標に変換する
+		D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.pChip->InvWldMat);
+		D3DXVec3TransformCoord(GetPlayerOld_Pos(), GetPlayerOld_Pos(), &g_OnField.pChip->InvWldMat);
 
-	// プレイヤー(今と昔の座標)をCHIPローカル座標に変換する
-	D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.pChip->InvWldMat);
-	D3DXVec3TransformCoord(GetPlayerOld_Pos(), GetPlayerOld_Pos(), &g_OnField.pChip->InvWldMat);
-
-	// 当たり判定
-	ans = g_OnField.pChip->pFunc->CheckHit(g_OnField.pChip, GetPlayerPos(), GetPlayerOld_Pos());
+		// 当たり判定
+		ans = g_OnField.pChip->pFunc->CheckHit(g_OnField.pChip, GetPlayerPos(), GetPlayerOld_Pos());
 
 #ifdef _DEBUG
-	PrintDebugProc("[debug:field_chip]CHIP座標 %vec3", *GetPlayerPos());
+		PrintDebugProc("[debug:field_chip]CHIP座標 %vec3", *GetPlayerPos());
 #endif
 
-	// プレイヤー(今と昔の座標)をワールド座標に変換する
-	D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.pChip->WldMat);
-	D3DXVec3TransformCoord(GetPlayerOld_Pos(), GetPlayerOld_Pos(), &g_OnField.pChip->WldMat);
-
+		// プレイヤー(今と昔の座標)をワールド座標に変換する
+		D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_OnField.pChip->WldMat);
+		D3DXVec3TransformCoord(GetPlayerOld_Pos(), GetPlayerOld_Pos(), &g_OnField.pChip->WldMat);
+	}
+	else
+	{// 落下中       
+	
+		// 横位置固定
+		GetPlayerPos()->x = GetPlayerOld_Pos()->x;
+		GetPlayerPos()->z = GetPlayerOld_Pos()->z;
 
 #ifdef _DEBUG
-	if (ans == false)
-	{
-		PrintDebugProc("[ERROR]プレイヤーが道の外にいます！落ちる！");
-	}
+		PrintDebugProc("[debug:field_chip]y軸判定による落下確定処理 %vec3", *GetPlayerPos());
 #endif
+
+		ans = false;
+	}
+
 	return ans;
 }
 
@@ -288,8 +298,10 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type)
 		break;
 	case FTYPE_CLIFFL:
 		break;
+
 	case FTYPE_JUMP:
-		break;
+		return GetFieldJumpFunc();
+
 	case FTYPE_TURNLR:
 		break;
 	case FTYPE_TURNR:

@@ -50,6 +50,16 @@ bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 		return true;
 	}
 
+	if ((pPastPos->x < -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPos->x >= -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R) ||
+		(pPastPos->x > (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R && pPos->x <= (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R))
+	{	// 左or右側：外から中に入ろうとするとブロックされる処理
+		pPos->x = pPastPos->x;
+
+#ifdef _DEBUG
+		PrintDebugProc("[debug:field_checkhit]：外からの侵入阻止");
+#endif
+	}
+
 	return false;
 }
 

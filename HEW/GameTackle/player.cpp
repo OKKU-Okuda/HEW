@@ -690,14 +690,6 @@ void UpdatePlayer(void)
 		}
 	}
 
-#ifdef _DEBUG	
-	// デバックモードのみ座標リセット処理
-	PrintDebugProc("[debug]F5:プレイヤーを初期位置に戻す");
-	if (GetKeyboardTrigger(DIK_F5))
-	{
-		ResetPlayerPos();
-	}
-#endif
 
 	// 入力されたキーに合わせて向きを決める
 	float roty = 0.0f;
@@ -785,6 +777,14 @@ void UpdatePlayer(void)
 
 	g_Player[PLAYER_PARENT].spd *= 0.9f;
 
+#ifdef _DEBUG	
+	// デバックモードのみ座標リセット処理
+	PrintDebugProc("[debug]F5:プレイヤーを初期位置に戻す");
+	if (GetKeyboardTrigger(DIK_F5))
+	{
+		ResetPlayerPos();
+	}
+#endif
 
 	// 地面に接している場合
 	if (PlayerCheckHitOnField() == true)

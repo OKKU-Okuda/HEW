@@ -24,6 +24,8 @@
 // プレイヤーの足元半径
 #define PLAYER_FIELDSIZE_R		(ROADWALL_SIZEX)
 
+// 
+#define FIELD_FAILED_Y			(-30.0f)
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言 (他cppでも使用する)
 //---------------------------------------------------------------------
@@ -44,7 +46,7 @@ enum FIELD_TYPE {
 	FTYPE_ROAD,			// 一本道
 	FTYPE_CLIFFR,		// 右半分崖の道：未実装
 	FTYPE_CLIFFL,		// 左半分崖の道：未実装
-	FTYPE_JUMP,			// イッツアジャンプワールド：未実装
+	FTYPE_JUMP,			// イッツアジャンプワールド
 	FTYPE_TURNLR,		// 左右分岐点の道：未実装
 	FTYPE_TURNR,		// 右に曲がる道：未実装
 	FTYPE_TURNL,		// 左に曲がる道：未実装
