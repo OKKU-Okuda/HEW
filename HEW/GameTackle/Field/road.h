@@ -21,5 +21,5 @@ typedef struct {
 
 // ŠÖ”ŒQ
 void InitFieldRoad();
-
+void UninitFieldRoad();
 FIELD_OBJFUNC* GetFieldRoadFunc();

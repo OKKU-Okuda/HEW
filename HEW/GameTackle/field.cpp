@@ -24,12 +24,14 @@
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
 
-CHIP_ID GetFieldChipID(Vec3* pos);
+static CHIP_ID GetFieldChipID(Vec3* pos);						// 3次元ワールド座標からIDを算出する
 
-FIELD_CHIP* SearchChipID(CHIP_ID id);
-FIELD_CHIP* GetChipMemory();
+static FIELD_CHIP* SearchChipID(CHIP_ID id);					// 使用CHIPの中からIDを検索してアドレスを返す
+static FIELD_CHIP* GetChipMemory();								// 空きCHIPを探してアドレスを返すだけ
 
-void SetOnFieldWk(FIELD_CHIP* pData);		// g_OnFieldのステータスを設置
+static void SetOnFieldWk(FIELD_CHIP* pData);					// g_OnFieldのステータスを設置
+static FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type);		// typeから独自関数構造体アドレスを検索する
+
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
@@ -37,25 +39,38 @@ static FIELD_CHIP		g_Field[MAX_FIELD];
 		
 static struct {
 	FIELD_CHIP* pChip;		// プレイヤー上に乗っていると思われるCHIPアドレス
-	Matrix		InvMat;		// ワールド行列の逆行列
+
+	/*機能追加時使用*/
+
 }g_OnField;		// フィールドワーク
 
 static FIELD_DIRECTION	g_fdir;			// 現在の方向
-
+static CHIP_ID			g_latestid;		// 一番最近設置したチャンク
+										
 /*=====================================================================
 ●●関数
 	●●する関数
 	戻り値 : void
 	引数 : void
 =====================================================================*/
-void SetField(short x,short z, FIELD_TYPE type, FIELD_DIRECTION fdirection)
+void SetField(short x, short z, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 {
 	FIELD_CHIP* keep_pt = NULL;
+	CHIP_ID		id;
 
-	keep_pt = GetChipMemory();
-	if (keep_pt == NULL)
-	{// 確保できない場合
-		return;
+	id.vec2.x = x;
+	id.vec2.z = z;
+
+	keep_pt = SearchChipID(id);
+
+	if (SearchChipID(id) == NULL)
+	{// 引数箇所にチャンクが存在しない場合
+
+		keep_pt = GetChipMemory();
+		if (keep_pt == NULL)
+		{// 確保できない場合
+			return;
+		}
 	}
 
 	if (fdirection == g_fdir)
@@ -68,19 +83,19 @@ void SetField(short x,short z, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 	}
 
 	// 数値代入
-	keep_pt->ID.vec2.x = x;
-	keep_pt->ID.vec2.z = z;
-	keep_pt->Type = type;
+	keep_pt->ID			= id;
+	keep_pt->Type		= type;
+	keep_pt->pFunc		= SearchFieldObjFunc(type);
 
+	// グローバル変数更新
+	g_latestid			= id;
+
+	// 算出
 	GetMatrix(&keep_pt->WldMat,											// ワールド行列を求める
 		&Vec3((FIELDCHIP_WIDTH / 2) + (FIELDCHIP_WIDTH * x), 0, (FIELDCHIP_HEIGHT / 2) + (FIELDCHIP_HEIGHT * z)),
 		&Vec3(0, (D3DX_PI / 2)*(int)fdirection, 0));
 
-
 	D3DXMatrixInverse(&keep_pt->InvWldMat, NULL, &keep_pt->WldMat);		// 上記逆行列
-
-	/*ここで関数群へのアドレス分岐指定処理*/
-	keep_pt->pFunc = GetFieldRoadFunc();
 
 }
 
@@ -99,7 +114,6 @@ void UpdateField()
 =====================================================================*/
 bool PlayerCheckHitOnField()
 {
-	//PLAYER*		player = GetPlayer();
 	CHIP_ID		id;
 	bool		ans;
 
@@ -179,7 +193,7 @@ void InitField()
 
 void UninitField()
 {
-
+	UninitFieldRoad();
 }
 
 void ResetField()
@@ -194,6 +208,9 @@ void ResetField()
 
 	ZeroMemory(&g_OnField, sizeof(g_OnField));
 
+	// 方向の初期化
+	g_fdir = FDIRECTION_0ZP;
+
 	// 0,0にonField
 	SetField(0, 0, FTYPE_ROAD, FDIRECTION_0ZP);
 	id.vec2.x = 0;
@@ -201,13 +218,52 @@ void ResetField()
 	SetOnFieldWk(SearchChipID(id));
 
 	// ここからテスト
-	SetField(0, 1, FTYPE_ROAD, FDIRECTION_1XP);
+	SetField(0, 1, FTYPE_ROAD, FDIRECTION_0ZP);
 	// ここからテスト
-	SetField(0, 2, FTYPE_ROAD, FDIRECTION_2ZM);
+	SetField(0, 2, FTYPE_ROAD, FDIRECTION_0ZP);
 	// ここからテスト
-	SetField(0, 3, FTYPE_ROAD, FDIRECTION_3XM);
+	SetField(0, 3, FTYPE_ROAD, FDIRECTION_0ZP);
 
 
+	// ここからテスト
+//	SetField(0, 1, FTYPE_ROAD, FDIRECTION_1XP);
+	// ここからテスト
+//	SetField(0, 2, FTYPE_ROAD, FDIRECTION_2ZM);
+	// ここからテスト
+//	SetField(0, 3, FTYPE_ROAD, FDIRECTION_3XM);
+
+}
+
+/*=====================================================================
+	cpp内関数
+=====================================================================*/
+FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type)
+{
+	switch (type)
+	{
+	case FTYPE_ROAD:
+		return GetFieldRoadFunc();
+
+	case FTYPE_CLIFFR:
+		break;
+	case FTYPE_CLIFFL:
+		break;
+	case FTYPE_JUMP:
+		break;
+	case FTYPE_TURNLR:
+		break;
+	case FTYPE_TURNR:
+		break;
+	case FTYPE_TURNL:
+		break;
+	case MAX_FIELDTYPE:
+		break;
+	default:
+		break;
+	}
+
+	// デフォルトとして直線道を設置
+	return GetFieldRoadFunc();
 }
 
 CHIP_ID GetFieldChipID(Vec3* pos)
@@ -281,3 +337,4 @@ void SetOnFieldWk(FIELD_CHIP* pData)
 	g_OnField.pChip = pData;					
 	g_OnField.pChip->State = FSTATE_ONPLAYER;	// 状態設置
 }
+

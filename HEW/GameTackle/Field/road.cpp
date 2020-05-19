@@ -46,29 +46,9 @@ static Mesh g_meshLeftWall;		// 左の壁
 	戻り値 : void
 	引数 : void
 =====================================================================*/
-void InitFieldRoad()
-{
-	D3DDEVICE;
-
-	// 道の床部分作成
-	g_meshFlat = Create3DBoxMesh(&Vec3(FIELDROAD_X, FIELDROAD_Y, FIELDCHIP_HEIGHT),
-		&Vec3(0, 0, 0));
-
-	// 左右の壁作成
-	g_meshRightWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
-		&Vec3((FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2), 0.0f, 0));
-	g_meshLeftWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
-		&Vec3((-FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2), 0.0f, 0));
-
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field.png", &g_texFlat);
-}
 
 bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 {
-	//if (pPos->x >= -FIELDROAD_X / 2 && pPos->x <= FIELDROAD_X / 2)
-	//{
-	//	return true;
-	//}
 
 	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R)
 	{	// 前座標が内側であれば外に出ないようにする
@@ -81,6 +61,7 @@ bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 		(pPastPos->x > (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R && pPos->x <= (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R))
 	{	// 左or右側：外から中に入ろうとするとブロックされる処理
 		pPos->x = pPastPos->x;
+
 #ifdef _DEBUG
 		PrintDebugProc("[debug:field_checkhit]：外からの侵入阻止");
 #endif
@@ -113,4 +94,30 @@ void DrawFieldRoad(FIELD_CHIP* pData)
 FIELD_OBJFUNC* GetFieldRoadFunc()
 {
 	return &g_Func;
+}
+
+void InitFieldRoad()
+{
+	D3DDEVICE;
+
+	// 道の床部分作成
+	g_meshFlat = Create3DBoxMesh(&Vec3(FIELDROAD_X, FIELDROAD_Y, FIELDCHIP_HEIGHT),
+		&Vec3(0, 0, 0));
+
+	// 左右の壁作成
+	g_meshRightWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
+		&Vec3((FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), 0));
+	g_meshLeftWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
+		&Vec3((-FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), 0));
+
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field.png", &g_texFlat);
+}
+
+void UninitFieldRoad()
+{
+	// リソースの開放
+	SAFE_RELEASE(g_meshFlat);
+	SAFE_RELEASE(g_meshLeftWall);
+	SAFE_RELEASE(g_meshRightWall);
+	SAFE_RELEASE(g_texFlat);
 }
