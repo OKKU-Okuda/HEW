@@ -69,7 +69,6 @@ bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 void UpdateFieldRoad(FIELD_CHIP* pData, Vec3* pPos)
 {
 
-
 }
 
 /*=====================================================================
