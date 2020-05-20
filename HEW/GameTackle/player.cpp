@@ -57,6 +57,10 @@ D3DXVECTOR3 g_Rot;										// プレイヤーの向き
 int g_slidin_cnt;										// スライディングカウント
 float gravity;										    // 重力
 
+#ifdef _DEBUG
+static bool g_isDebugControl = true;					// (debug)操作に減速を付けて自由に操作できるようにする
+#endif
+
 //=============================================================================
 // アニメーションのテーブル
 //=============================================================================
@@ -785,15 +789,30 @@ void UpdatePlayer(void)
 	g_Pos.x -= sinf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
 	g_Pos.z -= cosf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
 
-	//g_Player[PLAYER_PARENT].spd *= 0.9f;
 
 #ifdef _DEBUG	
 	// デバックモードのみ座標リセット処理
-	PrintDebugProc("[debug]F5:プレイヤーを初期位置に戻す");
+	PrintDebugProc("[debug_player]F5:プレイヤーを初期位置に戻す");
 	if (GetKeyboardTrigger(DIK_F5))
 	{
 		ResetPlayerPos();
 	}
+
+	else if (GetKeyboardTrigger(DIK_F6))
+	{// コントロールモード反転
+		g_isDebugControl = !g_isDebugControl;
+	}
+
+	if (g_isDebugControl == true)
+	{// 減速
+		PrintDebugProc("[debug_player]F6:デバックコントロールを無効にする(現在有効)");
+		g_Player[PLAYER_PARENT].spd *= 0.9f;
+	}
+	else
+	{
+		PrintDebugProc("[debug_player]F6:デバックコントロールを有効にする(現在無効)");
+	}
+
 #endif
 
 	// 地面に接している場合
