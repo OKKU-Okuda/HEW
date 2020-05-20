@@ -63,3 +63,5 @@ PLAYER *GetPlayer(void);
 Vec3 *GetPlayerPos(void);
 Vec3 *GetPlayerOld_Pos(void);
 Vec3 *GetPlayerRot(void);
+void ResetPlayerPos();	// プレイヤーを初期座標に転送
+
