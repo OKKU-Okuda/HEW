@@ -33,7 +33,6 @@
 // プロトタイプ宣言
 //*****************************************************************************
 
-static void ResetPlayerPos();	// プレイヤーを初期座標に転送
 
 //*****************************************************************************
 // グローバル変数
@@ -155,10 +154,10 @@ INTERPOLATION_DATA stop_tbl_left_foot[] = {	// pos, rot, scl, frame
 //=============================================================================
 
 INTERPOLATION_DATA dash_tbl_body[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 25.0f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
 
 };
 

@@ -14,6 +14,7 @@
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
+#define	VALUE_ROTATE_CAMERA	(D3DX_PI * 0.01f)							// カメラの回転量
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -34,6 +35,7 @@ void TackleCameraUpdate(CAMERA* pCam)
 
 	PLAYER *player = GetPlayer();
 	
+
 	// キー操作でのカメラ移動
 	if (GetKeyboardPress(DIK_W))
 	{
@@ -64,12 +66,14 @@ void TackleCameraUpdate(CAMERA* pCam)
 	{
 		OffsetCamPos.y -= add;
 	}
-	
+
+
 	pCam->at = *GetPlayerPos();// +Vec3(0, 0.0f, 0);
 
-	pCam->pos = *GetPlayerPos() + OffsetCamPos;
+	// カメラの注視点と視点を主人公に追従させる
+	pCam->pos.x = pCam->at.x + sinf(pCam->rot.y) + OffsetCamPos.x;
+	pCam->pos.z = pCam->at.z + cosf(pCam->rot.y) + OffsetCamPos.z;
 
-	//D3DXVec3TransformCoord(&pCam->pos, &OffsetCamPos, &GetPlayer()->mtxWorld);
+	
 
- 
 }
