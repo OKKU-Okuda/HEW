@@ -9,7 +9,6 @@
 #include "../../Core/CheckHit.h"
 
 #include "../field.h"
-#include "../player.h"
 #include "jump.h"
 //---------------------------------------------------------------------
 //	É}ÉNÉçíËã`(ìØcppì‡å¿íË)
@@ -93,7 +92,6 @@ void DrawFieldJump(FIELD_CHIP* pData)
 void InitFieldJump()
 {
 	D3DDEVICE;
-	JUMPVOID_ITV;
 
 	const float sizeZ = (FIELDCHIP_HEIGHT - JUMPVOID_ITV) / 2;
 	const float posZ = (JUMPVOID_ITV / 2) + (sizeZ / 2);
