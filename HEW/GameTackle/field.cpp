@@ -12,6 +12,8 @@
 
 #include "Field/road.h"
 #include "Field/void.h"
+#include "Field/cliffR.h"
+#include "Field/cliffL.h"
 #include "Field/jump.h"
 
 //---------------------------------------------------------------------
@@ -83,6 +85,8 @@ void InitField()
 {
 	InitFieldVoid();
 	InitFieldRoad();
+	InitFieldCliffR();
+	InitFieldCliffL();
 	InitFieldJump();
 }
 
@@ -93,6 +97,8 @@ void UninitField()
 {
 	UninitFieldVoid();
 	UninitFieldRoad();
+	UninitFieldCliffR();
+	UninitFieldCliffL();
 	UninitFieldJump();
 }
 
@@ -121,9 +127,9 @@ void ResetField()
 	SetOnFieldWk(SearchChipID(id));
 
 	// ここからテスト
-	SetField(0, 1, FTYPE_JUMP, FDIRECTION_0ZP);
-	SetField(0, 2, FTYPE_ROAD, FDIRECTION_0ZP);
-	SetField(0, 3, FTYPE_ROAD, FDIRECTION_0ZP);
+	SetField(0, 1, FTYPE_CLIFFR, FDIRECTION_0ZP);
+	SetField(0, 2, FTYPE_CLIFFL, FDIRECTION_0ZP);
+	SetField(0, 3, FTYPE_JUMP, FDIRECTION_0ZP);
 	SetField(1, 1, FTYPE_VOID, FDIRECTION_0ZP);
 
 	//SetField(0, 0, FTYPE_JUMP, FDIRECTION_0ZP);
@@ -207,8 +213,7 @@ bool PlayerCheckHitOnField()
 	bool		ans;
 
 	if (GetPlayerPos()->y > 0.0f)
-	{
-		PrintDebugProc("プレイヤー浮遊中");
+	{// 浮遊中は無条件で判定しない
 		return false;
 	}
 
@@ -226,7 +231,7 @@ bool PlayerCheckHitOnField()
 			if (keep_pt == NULL)
 			{// 検索にヒットしない場合はここで帰還する
 
-				PrintDebugProc("[ERROR]プレイヤーに干渉させるチャンクが存在しません(ID:%d-%d)", id.vec2.x, id.vec2.z);
+				PrintDebugProc("[ERROR]プレイヤーに干渉させるチャンクが存在しません(ID:%d,%d)", id.vec2.x, id.vec2.z);
 				return true;
 			}
 
@@ -249,7 +254,7 @@ bool PlayerCheckHitOnField()
 		D3DXVec3TransformCoord(GetPlayerOld_Pos(), GetPlayerOld_Pos(), &g_OnField.pChip->WldMat);
 	}
 	else
-	{// 落下中       
+	{// 落下中  (床下にいる)     
 	
 		// 横位置固定
 		GetPlayerPos()->x = GetPlayerOld_Pos()->x;
@@ -295,9 +300,10 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type)
 		return GetFieldRoadFunc();
 
 	case FTYPE_CLIFFR:
-		break;
+		return GetFieldCliffRFunc();
+
 	case FTYPE_CLIFFL:
-		break;
+		return GetFieldCliffLFunc();
 
 	case FTYPE_JUMP:
 		return GetFieldJumpFunc();

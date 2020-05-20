@@ -7,7 +7,6 @@
 #include "../../Core/main.h"
 #include "../../Core/debugproc.h"
 #include "../field.h"
-#include "../player.h"
 #include "void.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -36,6 +35,7 @@ static FIELD_OBJFUNC g_Func = { CheckHitFieldVoid,UpdateFieldVoid,DrawFieldVoid 
 static Mesh g_meshBorder;		// 道の境界線がわかるメッシュ(デバッグのみ）
 static Texture g_texBorder;		// 境界テクスチャ(デバッグのみ）
 #endif
+
 /*=====================================================================
 直線道当たり判定関数
 =====================================================================*/
@@ -43,7 +43,6 @@ bool CheckHitFieldVoid(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 {
 #ifdef _DEBUG
 	PrintDebugProc("[debug:field_checkhit]：奈落の為無条件で落とします");
-
 #endif
 	return false;
 

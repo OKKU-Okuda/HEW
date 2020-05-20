@@ -1,5 +1,5 @@
 /**********************************************************************
-[[直進道プログラム(GameTackle/Field/road.cpp)]]
+[[右崖道プログラム(GameTackle/Field/cliffR.cpp)]]
 	作者：奥田　真規
 
 	直進道に関するプログラム
@@ -7,7 +7,7 @@
 #include "../../Core/main.h"
 #include "../../Core/debugproc.h"
 #include "../field.h"
-#include "road.h"
+#include "cliffR.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -20,32 +20,35 @@
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-static bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos);
-static void UpdateFieldRoad(FIELD_CHIP* pData, Vec3* pPos);
-static void DrawFieldRoad(FIELD_CHIP* pData);
+static bool CheckHitFieldCliffR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos);
+static void UpdateFieldCliffR(FIELD_CHIP* pData, Vec3* pPos);
+static void DrawFieldCliffR(FIELD_CHIP* pData);
 
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
 
-static FIELD_OBJFUNC g_Func = { CheckHitFieldRoad,UpdateFieldRoad,DrawFieldRoad };	// 道独自の関数
+static FIELD_OBJFUNC g_Func = { CheckHitFieldCliffR,UpdateFieldCliffR,DrawFieldCliffR };	// 道独自の関数
 
 static Mesh g_meshFlat;			// 道の真ん中
 static Texture g_texFlat;		// 真ん中のテクスチャ
 
-static Mesh g_meshRightWall;	// 右の壁
 static Mesh g_meshLeftWall;		// 左の壁
 
 /*=====================================================================
-直線道当たり判定関数
+右崖道当たり判定関数
 =====================================================================*/
-bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
+bool CheckHitFieldCliffR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 {
 
-	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R)
-	{	// 前座標が内側であれば外に出ないようにする
+	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < PLAYER_FIELDSIZE_R)
+	{	// 前座標が内側であれば外に出ないようにする(右側は半分奈落の為出る）
 
-		SAFE_NUMBER(pPos->x, -FIELDROAD_X / 2,FIELDROAD_X / 2);
+		if (pPos->x < -FIELDROAD_X / 2)
+		{
+			pPos->x = -FIELDROAD_X / 2;
+		}
+
 		return true;
 	}
 
@@ -53,17 +56,17 @@ bool CheckHitFieldRoad(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 }
 
 /*=====================================================================
-直線道更新関数
+右崖道更新関数
 =====================================================================*/
-void UpdateFieldRoad(FIELD_CHIP* pData, Vec3* pPos)
+void UpdateFieldCliffR(FIELD_CHIP* pData, Vec3* pPos)
 {
 
 }
 
 /*=====================================================================
-直線道描画関数
+右崖道描画関数
 =====================================================================*/
-void DrawFieldRoad(FIELD_CHIP* pData)
+void DrawFieldCliffR(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
 
@@ -74,24 +77,21 @@ void DrawFieldRoad(FIELD_CHIP* pData)
 
 	g_meshFlat->DrawSubset(0);
 
-	g_meshRightWall->DrawSubset(0);
 	g_meshLeftWall->DrawSubset(0);
 }
 
 /*=====================================================================
-直線道初期化関数
+右崖道初期化関数
 =====================================================================*/
-void InitFieldRoad()
+void InitFieldCliffR()
 {
 	D3DDEVICE;
 
 	// 道の床部分作成
-	g_meshFlat = Create3DBoxMesh(&Vec3(FIELDROAD_X, FIELDROAD_Y, FIELDCHIP_HEIGHT),
-		&Vec3(0, 0, 0));
+	g_meshFlat = Create3DBoxMesh(&Vec3(FIELDROAD_X / 2, FIELDROAD_Y, FIELDCHIP_HEIGHT),
+		&Vec3(-FIELDROAD_X / 4, 0, 0));
 
 	// 左右の壁作成
-	g_meshRightWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
-		&Vec3((FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), 0));
 	g_meshLeftWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
 		&Vec3((-FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), 0));
 
@@ -99,21 +99,20 @@ void InitFieldRoad()
 }
 
 /*=====================================================================
-直線道終了化関数
+右崖道終了化関数
 =====================================================================*/
-void UninitFieldRoad()
+void UninitFieldCliffR()
 {
 	// リソースの開放
 	SAFE_RELEASE(g_meshFlat);
 	SAFE_RELEASE(g_meshLeftWall);
-	SAFE_RELEASE(g_meshRightWall);
 	SAFE_RELEASE(g_texFlat);
 }
 
 /*=====================================================================
-直線道独自関数アドレス取得関数
+右崖道独自関数アドレス取得関数
 =====================================================================*/
-FIELD_OBJFUNC* GetFieldRoadFunc()
+FIELD_OBJFUNC* GetFieldCliffRFunc()
 {
 	return &g_Func;
 }
