@@ -75,12 +75,15 @@ HRESULT InitItem(void)
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
 		g_aItem[nCntItem].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aItem[nCntItem].firstpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aItem[nCntItem].endpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].fRadius = 0.0f;
 		g_aItem[nCntItem].nIdxShadow = -1;
 		g_aItem[nCntItem].nType = ITEMTYPE_COIN;
 		g_aItem[nCntItem].bUse = false;
 		g_aItem[nCntItem].bHit = false;
+		g_aItem[nCntItem].time = 0.0f;
 	}
 
 	return S_OK;
@@ -126,8 +129,17 @@ void UpdateItem(void)
 
 			if (g_aItem[nCntItem].bHit == true)
 			{
+				g_aItem[nCntItem].time += ADD_ITEM_TIME;
+				CalcScreenToWorld(&g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
 
+				BezierCurve(&g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].pos, &g_aItem[nCntItem].pos, &g_aItem[nCntItem].endpos);
 			}
+			else
+			{
+				g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
+			}
+
+
 		}
 	}
 }
@@ -228,15 +240,15 @@ ITEM *GetItem(void)
 BezierCurve関数
 	ベジェ曲線の処理する関数
 	戻り値 : D3DXVECTOR3*
-	引数 : ( D3DXVECTOR3* , float , D3DXVECTOR2* , D3DXVECTOR2* , D3DXVECTOR2* , D3DXVECTOR2*)
+	引数 : ( D3DXVECTOR3* , float , D3DXVECTOR3* , D3DXVECTOR3* , D3DXVECTOR3* , D3DXVECTOR3*)
 =====================================================================*/
 D3DXVECTOR3 *BezierCurve(
 	D3DXVECTOR3* p_out,		// 戻り値
 	float t,				// 0から1までの時間
-	D3DXVECTOR2* p_start,	// ベジェ曲線の始点
-	D3DXVECTOR2* p_second,	// ベジェ曲線の第1制御点
-	D3DXVECTOR2* p_third,	// ベジェ曲線の第2制御点
-	D3DXVECTOR2* p_end)		// ベジェ曲線の終点
+	D3DXVECTOR3* p_start,	// ベジェ曲線の始点
+	D3DXVECTOR3* p_second,	// ベジェ曲線の第1制御点
+	D3DXVECTOR3* p_third,	// ベジェ曲線の第2制御点
+	D3DXVECTOR3* p_end)		// ベジェ曲線の終点
 {
 	float tp = 1 - t;
 	float a, b, c, d;
