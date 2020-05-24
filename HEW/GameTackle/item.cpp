@@ -129,13 +129,15 @@ void UpdateItem(void)
 
 			if (g_aItem[nCntItem].bHit == true)
 			{
-				g_aItem[nCntItem].time += ADD_ITEM_TIME;
 
-				if (g_aItem[nCntItem].time > 1.0f)
+				if (g_aItem[nCntItem].time < 1.0f)
+				{
+					g_aItem[nCntItem].time += ADD_ITEM_TIME;
+				}
+				else
 				{
 					g_aItem[nCntItem].time = 1.0f;
 				}
-
 
 				CalcScreenToWorld(&g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
 
