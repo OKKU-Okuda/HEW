@@ -69,10 +69,10 @@ void TackleCameraUpdate(CAMERA* pCam)
 
 
 	pCam->at = *GetPlayerPos();// +Vec3(0, 0.0f, 0);
-
+	pCam->pos = *GetPlayerPos() + OffsetCamPos;
 	// カメラの注視点と視点を主人公に追従させる
-	pCam->pos.x = pCam->at.x + sinf(pCam->rot.y) + OffsetCamPos.x;
-	pCam->pos.z = pCam->at.z + cosf(pCam->rot.y) + OffsetCamPos.z;
+	//pCam->pos.x = pCam->at.x + sinf(pCam->rot.y) + OffsetCamPos.x;
+	//pCam->pos.z = pCam->at.z + cosf(pCam->rot.y) + OffsetCamPos.z;
 
 	
 
