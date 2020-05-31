@@ -143,7 +143,9 @@
     <ClCompile Include="GameTackle\Field\cliffL.cpp" />
     <ClCompile Include="GameTackle\Field\cliffR.cpp" />
     <ClCompile Include="GameTackle\Field\jump.cpp" />
+    <ClCompile Include="GameTackle\Field\ResourceManager.cpp" />
     <ClCompile Include="GameTackle\Field\road.cpp" />
+    <ClCompile Include="GameTackle\Field\turnLR.cpp" />
     <ClCompile Include="GameTackle\Field\void.cpp" />
     <ClCompile Include="GameTackle\item.cpp" />
     <ClCompile Include="GameTackle\kiseki.cpp" />
@@ -181,7 +183,9 @@
     <ClInclude Include="GameTackle\Field\cliffL.h" />
     <ClInclude Include="GameTackle\Field\cliffR.h" />
     <ClInclude Include="GameTackle\Field\jump.h" />
+    <ClInclude Include="GameTackle\Field\ResourceManager.h" />
     <ClInclude Include="GameTackle\Field\road.h" />
+    <ClInclude Include="GameTackle\Field\turnLR.h" />
     <ClInclude Include="GameTackle\Field\void.h" />
     <ClInclude Include="GameTackle\item.h" />
     <ClInclude Include="GameTackle\kiseki.h" />

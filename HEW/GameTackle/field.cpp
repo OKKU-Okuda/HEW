@@ -10,11 +10,14 @@
 #include "field.h"
 #include "player.h"
 
+#include "Field/ResourceManager.h"
 #include "Field/road.h"
 #include "Field/void.h"
 #include "Field/cliffR.h"
 #include "Field/cliffL.h"
 #include "Field/jump.h"
+#include "Field/turnLR.h"
+
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -83,11 +86,13 @@ void DrawField()
 =====================================================================*/
 void InitField()
 {
+	InitFieldResource();
 	InitFieldVoid();
 	InitFieldRoad();
 	InitFieldCliffR();
 	InitFieldCliffL();
 	InitFieldJump();
+	InitFieldTurnLR();
 }
 
 /*=====================================================================
@@ -95,11 +100,14 @@ void InitField()
 =====================================================================*/
 void UninitField()
 {
+	UninitFieldResource();
 	UninitFieldVoid();
 	UninitFieldRoad();
 	UninitFieldCliffR();
 	UninitFieldCliffL();
 	UninitFieldJump();
+	UninitFieldTurnLR();
+
 }
 
 /*=====================================================================
@@ -126,13 +134,11 @@ void ResetField()
 	id.vec2.z = 0;
 	SetOnFieldWk(SearchChipID(id));
 
-	// ここからテスト
-	SetField(0, 1, FTYPE_CLIFFR, FDIRECTION_0ZP);
-	SetField(0, 2, FTYPE_CLIFFL, FDIRECTION_0ZP);
-	SetField(0, 3, FTYPE_JUMP, FDIRECTION_0ZP);
-	SetField(1, 1, FTYPE_VOID, FDIRECTION_0ZP);
 
-	//SetField(0, 0, FTYPE_JUMP, FDIRECTION_0ZP);
+	SetField(0, 1, FTYPE_TURNLR, FDIRECTION_3XM);
+	SetField(0, 2, FTYPE_TURNLR, FDIRECTION_0ZP);
+	SetField(1, 2, FTYPE_TURNLR, FDIRECTION_1XP);
+	SetField(1, 1, FTYPE_TURNLR, FDIRECTION_2ZM);
 
 
 	// ここからテスト
@@ -309,7 +315,8 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type)
 		return GetFieldJumpFunc();
 
 	case FTYPE_TURNLR:
-		break;
+		return GetFieldTurnLRFunc();
+
 	case FTYPE_TURNR:
 		break;
 	case FTYPE_TURNL:
