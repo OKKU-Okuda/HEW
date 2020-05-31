@@ -9,6 +9,7 @@
 #include "../../Core/CheckHit.h"
 
 #include "../field.h"
+#include "ResourceManager.h"
 #include "jump.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -36,7 +37,6 @@ static FIELD_OBJFUNC g_Func = { CheckHitFieldJump,UpdateFieldJump,DrawFieldJump 
 
 // もでるを2つにして間を奈落にする(0手前、1奥)
 static Mesh g_meshFlat[2];		// 道の真ん中
-static Texture g_texFlat;		// 真ん中のテクスチャ
 
 static Mesh g_meshRightWall[2];	// 右の壁
 static Mesh g_meshLeftWall[2];	// 左の壁
@@ -72,7 +72,7 @@ void DrawFieldJump(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
 
-	pDevice->SetTexture(0, g_texFlat);
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &pData->WldMat);
@@ -114,8 +114,6 @@ void InitFieldJump()
 	g_meshLeftWall[1] = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, sizeZ),
 		&Vec3((-FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -posZ));
 
-
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field.png", &g_texFlat);
 }
 
 /*=====================================================================
@@ -130,8 +128,6 @@ void UninitFieldJump()
 		SAFE_RELEASE(g_meshLeftWall[i]);
 		SAFE_RELEASE(g_meshRightWall[i]);
 	}
-
-	SAFE_RELEASE(g_texFlat);
 }
 
 /*=====================================================================

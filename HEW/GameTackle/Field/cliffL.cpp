@@ -7,6 +7,7 @@
 #include "../../Core/main.h"
 #include "../../Core/debugproc.h"
 #include "../field.h"
+#include "ResourceManager.h"
 #include "cliffL.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -30,10 +31,7 @@ static void DrawFieldCliffL(FIELD_CHIP* pData);
 
 static FIELD_OBJFUNC g_Func = { CheckHitFieldCliffL,UpdateFieldCliffL,DrawFieldCliffL };	// 道独自の関数
 
-static Mesh g_meshFlat;			// 道の真ん中
-static Texture g_texFlat;		// 真ん中のテクスチャ
-
-static Mesh g_meshRightWall;	// 右の壁
+static Mesh g_meshFlat;	// 中央の板
 
 /*=====================================================================
 左崖道当たり判定関数
@@ -70,14 +68,14 @@ void DrawFieldCliffL(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
 
-	pDevice->SetTexture(0, g_texFlat);
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &pData->WldMat);
 
 	g_meshFlat->DrawSubset(0);
 
-	g_meshRightWall->DrawSubset(0);
+	GetFieldShareMesh(FMESH_LONGWALLRIGHT)->DrawSubset(0);
 }
 
 /*=====================================================================
@@ -90,12 +88,6 @@ void InitFieldCliffL()
 	// 道の床部分作成
 	g_meshFlat = Create3DBoxMesh(&Vec3(FIELDROAD_X / 2, FIELDROAD_Y, FIELDCHIP_HEIGHT),
 		&Vec3(FIELDROAD_X / 4, 0, 0));
-
-	// 左左の壁作成
-	g_meshRightWall = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
-		&Vec3((FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), 0));
-
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field.png", &g_texFlat);
 }
 
 /*=====================================================================
@@ -105,8 +97,6 @@ void UninitFieldCliffL()
 {
 	// リソースの開放
 	SAFE_RELEASE(g_meshFlat);
-	SAFE_RELEASE(g_meshRightWall);
-	SAFE_RELEASE(g_texFlat);
 }
 
 /*=====================================================================
