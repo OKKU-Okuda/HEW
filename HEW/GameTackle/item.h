@@ -12,17 +12,17 @@
 #define	MAX_ITEM				(128)						// アイテム最大数
 #define	VALUE_ROTATE_ITEM		(D3DX_PI * 0.025f)			// 回転速度
 #define	ITEM_RADIUS				(10.0f)						// 半径
-#define ITEM_EFECT_TIME			(1.0f)						// アイテムのエフェクトに掛かる時間
+#define ITEM_EFECT_TIME			(2.0f)						// アイテムのエフェクトに掛かる時間
 #define ADD_ITEM_TIME			(1.0f/(ITEM_EFECT_TIME*60))	// エフェクトに掛かる時間の計算用(1フレームごとに加算する量)
-#define ITEM_SIZE_X				(100.0f)					// アイテムの当たり判定のサイズ
-#define ITEM_SIZE_Y				(100.0f)					// アイテムの当たり判定のサイズ
-#define ITEM_SIZE_Z				(100.0f)					// アイテムの当たり判定のサイズ
+#define ITEM_SIZE_X				(10.0f)					// アイテムの当たり判定のサイズ
+#define ITEM_SIZE_Y				(10.0f)					// アイテムの当たり判定のサイズ
+#define ITEM_SIZE_Z				(10.0f)					// アイテムの当たり判定のサイズ
+								  
+#define PLAYER_SIZE_X			(10.0f)					// プレイヤーの当たり判定のサイズ
+#define PLAYER_SIZE_Y			(10.0f)					// プレイヤーの当たり判定のサイズ
+#define PLAYER_SIZE_Z			(10.0f)					// プレイヤーの当たり判定のサイズ
 
-#define PLAYER_SIZE_X			(100.0f)					// プレイヤーの当たり判定のサイズ
-#define PLAYER_SIZE_Y			(100.0f)					// プレイヤーの当たり判定のサイズ
-#define PLAYER_SIZE_Z			(100.0f)					// プレイヤーの当たり判定のサイズ
-
-#define ITEM_UI_POS_X			(800.0f)					// アイテムのUIのスクリーン座標X
+#define ITEM_UI_POS_X			(1000.0f)					// アイテムのUIのスクリーン座標X
 #define ITEM_UI_POS_Y			(100.0f)					// アイテムのUIのスクリーン座標Y
 
 //**************************************
@@ -43,6 +43,8 @@ typedef struct
 	D3DXVECTOR3 firstpos;	// アイテムが当たった位置
 	D3DXVECTOR3 endpos;		// アイテムの終点
 	D3DXVECTOR3 rot;		// 現在の向き
+	D3DXVECTOR3 control_F;	// 一つ目の制御点
+	D3DXVECTOR3 control_S;	// 二つ目の制御点
 	float fRadius;			// 半径
 	float time;				// アイテムのエフェクトに掛かる時間
 	int nIdxShadow;			// 影ID
