@@ -12,7 +12,7 @@
 #define	MAX_ITEM				(128)						// アイテム最大数
 #define	VALUE_ROTATE_ITEM		(D3DX_PI * 0.025f)			// 回転速度
 #define	ITEM_RADIUS				(10.0f)						// 半径
-#define ITEM_EFECT_TIME			(2.0f)						// アイテムのエフェクトに掛かる時間
+#define ITEM_EFECT_TIME			(0.5f)						// アイテムのエフェクトに掛かる時間
 #define ADD_ITEM_TIME			(1.0f/(ITEM_EFECT_TIME*60))	// エフェクトに掛かる時間の計算用(1フレームごとに加算する量)
 #define ITEM_SIZE_X				(10.0f)					// アイテムの当たり判定のサイズ
 #define ITEM_SIZE_Y				(10.0f)					// アイテムの当たり判定のサイズ
@@ -22,8 +22,8 @@
 #define PLAYER_SIZE_Y			(10.0f)					// プレイヤーの当たり判定のサイズ
 #define PLAYER_SIZE_Z			(10.0f)					// プレイヤーの当たり判定のサイズ
 
-#define ITEM_UI_POS_X			(1000.0f)					// アイテムのUIのスクリーン座標X
-#define ITEM_UI_POS_Y			(100.0f)					// アイテムのUIのスクリーン座標Y
+#define ITEM_UI_POS_X			(1200.0f)					// アイテムのUIのスクリーン座標X
+#define ITEM_UI_POS_Y			(50.0f)					// アイテムのUIのスクリーン座標Y
 
 //**************************************
 // 種類

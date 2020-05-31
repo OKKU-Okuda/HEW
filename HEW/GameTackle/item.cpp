@@ -156,6 +156,12 @@ void UpdateItem(void)
 				CalcScreenToWorld( &g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
 
 				D3DXVECTOR3 Vec = D3DXVECTOR3( g_aItem[nCntItem].endpos.x - g_aItem[nCntItem].firstpos.x, g_aItem[nCntItem].endpos.y - g_aItem[nCntItem].firstpos.y, g_aItem[nCntItem].endpos.z - g_aItem[nCntItem].firstpos.z);
+				
+				//g_aItem[nCntItem].endpos.x *= 2;
+				//g_aItem[nCntItem].endpos.y *= 3;
+
+				//g_aItem[nCntItem].endpos.z = g_aItem[nCntItem].pos.z;
+
 
 				// ëÊàÍêßå‰ì_ÇÃåvéZ
 				g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4) + 10);
@@ -172,8 +178,6 @@ void UpdateItem(void)
 				g_aItem[nCntItem].bHit = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
 				g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
 			}
-
-
 		}
 	}
 }
