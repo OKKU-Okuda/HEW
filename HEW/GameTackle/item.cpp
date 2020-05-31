@@ -38,6 +38,7 @@ const char *c_aFileNameItem[ITEMTYPE_MAX] =
 	"data/MODEL/item000.x",		// コイン
 };
 
+int g_ItemPoint;
 //=============================================================================
 // 初期化処理
 //=============================================================================
@@ -74,10 +75,12 @@ HRESULT InitItem(void)
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		g_aItem[nCntItem].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aItem[nCntItem].pos = D3DXVECTOR3(500.0f, 0.0f, 600.0f);
 		g_aItem[nCntItem].firstpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].endpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aItem[nCntItem].control_F = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aItem[nCntItem].control_S = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].fRadius = 0.0f;
 		g_aItem[nCntItem].nIdxShadow = -1;
 		g_aItem[nCntItem].nType = ITEMTYPE_COIN;
@@ -85,6 +88,11 @@ HRESULT InitItem(void)
 		g_aItem[nCntItem].bHit = false;
 		g_aItem[nCntItem].time = 0.0f;
 	}
+
+	g_aItem[0].bUse = true;
+
+	g_ItemPoint = 0;
+
 
 	return S_OK;
 }
@@ -125,26 +133,43 @@ void UpdateItem(void)
 	{
 		if (g_aItem[nCntItem].bUse == true)
 		{
-			g_aItem[nCntItem].bHit = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
 
 			if (g_aItem[nCntItem].bHit == true)
 			{
+				//*************************************
+				// ここからベジェ曲線に必要な処理 
+				//*************************************
 
+				// 0～1までの時間の処理
 				if (g_aItem[nCntItem].time < 1.0f)
 				{
 					g_aItem[nCntItem].time += ADD_ITEM_TIME;
 				}
 				else
-				{
+				{	// 1を超えたら処理を終了
 					g_aItem[nCntItem].time = 1.0f;
+					g_ItemPoint++;
+					g_aItem[nCntItem].bUse = false;
 				}
 
-				CalcScreenToWorld(&g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
+				// アイテムのUIがあるスクリーン座標をワールド座標に変換する(終点の処理)
+				CalcScreenToWorld( &g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
 
-				BezierCurve(&g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].pos, &g_aItem[nCntItem].pos, &g_aItem[nCntItem].endpos);
+				D3DXVECTOR3 Vec = D3DXVECTOR3( g_aItem[nCntItem].endpos.x - g_aItem[nCntItem].firstpos.x, g_aItem[nCntItem].endpos.y - g_aItem[nCntItem].firstpos.y, g_aItem[nCntItem].endpos.z - g_aItem[nCntItem].firstpos.z);
+
+				// 第一制御点の計算
+				g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4) + 10);
+
+				// 第二制御点の計算
+				g_aItem[nCntItem].control_S = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 3), g_aItem[nCntItem].firstpos.y + (Vec.y / 3), g_aItem[nCntItem].firstpos.z + (Vec.z / 3) + 10);
+
+				// ベジェ曲線の関数
+				BezierCurve( &g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
+
 			}
 			else
 			{
+				g_aItem[nCntItem].bHit = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
 				g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
 			}
 
@@ -163,7 +188,7 @@ void DrawItem(void)
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		if (g_aItem[nCntItem].bUse)
+		if (g_aItem[nCntItem].bUse == true)
 		{
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_mtxWorldItem);
@@ -270,7 +295,7 @@ D3DXVECTOR3 *BezierCurve(
 
 	p_out->x = (a * p_end->x) + (b * p_third->x) + (c * p_second->x) + (d * p_start->x);
 	p_out->y = (a * p_end->y) + (b * p_third->y) + (c * p_second->y) + (d * p_start->y);
-	p_out->z = 0;
+	p_out->z = (a * p_end->z) + (b * p_third->z) + (c * p_second->z) + (d * p_start->z);
 
 	return p_out;
 }
