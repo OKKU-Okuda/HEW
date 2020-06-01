@@ -155,6 +155,9 @@ void UpdateItem(void)
 				// アイテムのUIがあるスクリーン座標をワールド座標に変換する(終点の処理)
 				CalcScreenToWorld( &g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
 
+
+
+
 				D3DXVECTOR3 Vec = D3DXVECTOR3( g_aItem[nCntItem].endpos.x - g_aItem[nCntItem].firstpos.x, g_aItem[nCntItem].endpos.y - g_aItem[nCntItem].firstpos.y, g_aItem[nCntItem].endpos.z - g_aItem[nCntItem].firstpos.z);
 				
 				//g_aItem[nCntItem].endpos.x *= 2;
