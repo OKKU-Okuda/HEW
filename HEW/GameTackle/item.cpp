@@ -159,10 +159,10 @@ void UpdateItem(void)
 				D3DXVECTOR3 Vec = D3DXVECTOR3( g_aItem[nCntItem].endpos.x - g_aItem[nCntItem].firstpos.x, g_aItem[nCntItem].endpos.y - g_aItem[nCntItem].firstpos.y, g_aItem[nCntItem].endpos.z - g_aItem[nCntItem].firstpos.z);
 
 				// 第一制御点の計算
-				g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4) + 10);
+				g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4));
 
 				// 第二制御点の計算
-				g_aItem[nCntItem].control_S = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 3), g_aItem[nCntItem].firstpos.y + (Vec.y / 3), g_aItem[nCntItem].firstpos.z + (Vec.z / 3) + 10);
+				g_aItem[nCntItem].control_S = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 3), g_aItem[nCntItem].firstpos.y + (Vec.y / 3), g_aItem[nCntItem].firstpos.z + (Vec.z / 3));
 
 				// ベジェ曲線の関数
 				BezierCurve( &g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
