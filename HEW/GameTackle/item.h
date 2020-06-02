@@ -40,6 +40,7 @@ enum
 typedef struct
 {
 	D3DXVECTOR3 pos;		// 現在の位置
+	D3DXVECTOR3 scl;		// アイテムのスケール調整
 	D3DXVECTOR3 firstpos;	// アイテムが当たった位置
 	D3DXVECTOR3 endpos;		// アイテムの終点
 	D3DXVECTOR3 rot;		// 現在の向き
