@@ -273,12 +273,12 @@ ITEM *GetItem(void)
 	return &g_aItem[0];
 }
 
-/*=====================================================================
+/*=============================================================================================
 BezierCurve関数
 	ベジェ曲線の処理する関数
 	戻り値 : D3DXVECTOR3*
 	引数 : ( D3DXVECTOR3* , float , D3DXVECTOR3* , D3DXVECTOR3* , D3DXVECTOR3* , D3DXVECTOR3*)
-=====================================================================*/
+==============================================================================================*/
 D3DXVECTOR3 *BezierCurve(
 	D3DXVECTOR3* p_out,		// 戻り値
 	float t,				// 0から1までの時間
@@ -287,6 +287,7 @@ D3DXVECTOR3 *BezierCurve(
 	D3DXVECTOR3* p_third,	// ベジェ曲線の第2制御点
 	D3DXVECTOR3* p_end)		// ベジェ曲線の終点
 {
+	// わかりやすくするための変数
 	float tp = 1 - t;
 	float a, b, c, d;
 
@@ -296,6 +297,7 @@ D3DXVECTOR3 *BezierCurve(
 	c = 3 * t * tp * tp;
 	d = tp * tp * tp;
 
+	// 戻り値
 	p_out->x = (a * p_end->x) + (b * p_third->x) + (c * p_second->x) + (d * p_start->x);
 	p_out->y = (a * p_end->y) + (b * p_third->y) + (c * p_second->y) + (d * p_start->y);
 	p_out->z = (a * p_end->z) + (b * p_third->z) + (c * p_second->z) + (d * p_start->z);
@@ -303,12 +305,12 @@ D3DXVECTOR3 *BezierCurve(
 	return p_out;
 }
 
-/*=====================================================================
+/*=============================================================================================
 CalcScreenToWorld関数
 	スクリーン座標をワールド座標に変換する関数
 	戻り値 : D3DXVECTOR3*
 	引数 : 	(D3DXVECTOR3* , float , float , float , int , int , D3DXMATRIX* , D3DXMATRIX* )
-=====================================================================*/
+==============================================================================================*/
 D3DXVECTOR3* CalcScreenToWorld(
 	D3DXVECTOR3* p_out,	// 戻り値
 	float Sx,			// スクリーンX座標
