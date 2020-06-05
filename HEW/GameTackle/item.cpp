@@ -76,7 +76,7 @@ HRESULT InitItem(void)
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
 		g_aItem[nCntItem].pos = D3DXVECTOR3(500.0f, 10.0f, 600.0f + (nCntItem * 30));
-		g_aItem[nCntItem].scl = D3DXVECTOR3(0.4f, 0.4f, 0.4f);
+		g_aItem[nCntItem].scl = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
 		g_aItem[nCntItem].firstpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].endpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -160,7 +160,7 @@ void UpdateItem(void)
 				}
 
 				// アイテムのUIがあるスクリーン座標をワールド座標に変換する(終点の処理)
-				CalcScreenToWorld( &g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.9f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
+				CalcScreenToWorld( &g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.95f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
 
 				D3DXVECTOR3 Vec = D3DXVECTOR3( g_aItem[nCntItem].endpos.x - g_aItem[nCntItem].firstpos.x, g_aItem[nCntItem].endpos.y - g_aItem[nCntItem].firstpos.y, g_aItem[nCntItem].endpos.z - g_aItem[nCntItem].firstpos.z);
 
@@ -172,7 +172,7 @@ void UpdateItem(void)
 
 				// ベジェ曲線の関数
 				BezierCurve( &g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
-
+			
 			}
 			else
 			{

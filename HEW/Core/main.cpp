@@ -241,8 +241,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 		switch(wParam)
 		{
-		case VK_ESCAPE:					// [ESC]キーが押された
-			DestroyWindow(hWnd);		// ウィンドウを破棄するよう指示する
+		case VK_ESCAPE:				// [ESC]キーが押された
+			DestroyWindow(hWnd);	// ウィンドウを破棄するよう指示する
 			break;
 		}
 		break;
@@ -276,26 +276,26 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	// デバイスのプレゼンテーションパラメータの設定
-	ZeroMemory(&d3dpp, sizeof(d3dpp));							// ワークをゼロクリア
+	ZeroMemory(&d3dpp, sizeof(d3dpp));				// ワークをゼロクリア
 	d3dpp.BackBufferCount = 1;						// バックバッファの数
-	d3dpp.BackBufferWidth = SCREEN_WIDTH;				// ゲーム画面サイズ(幅)
+	d3dpp.BackBufferWidth = SCREEN_WIDTH;			// ゲーム画面サイズ(幅)
 	d3dpp.BackBufferHeight = SCREEN_HEIGHT;			// ゲーム画面サイズ(高さ)
-	d3dpp.BackBufferFormat = d3ddm.Format;				// バックバッファフォーマットはディスプレイモードに合わせて使う
-	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;	// 映像信号に同期してフリップする
-	d3dpp.Windowed = bWindow;					// ウィンドウモード
-	d3dpp.EnableAutoDepthStencil = TRUE;						// デプスバッファ（Ｚバッファ）とステンシルバッファを作成
-	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;				// デプスバッファとして16bitを使う
+	d3dpp.BackBufferFormat = d3ddm.Format;			// バックバッファフォーマットはディスプレイモードに合わせて使う
+	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;		// 映像信号に同期してフリップする
+	d3dpp.Windowed = bWindow;						// ウィンドウモード
+	d3dpp.EnableAutoDepthStencil = TRUE;			// デプスバッファ（Ｚバッファ）とステンシルバッファを作成
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;	// デプスバッファとして24bitを使う
 
 	if (bWindow)
 	{// ウィンドウモード
-		d3dpp.FullScreen_RefreshRateInHz = 0;								// リフレッシュレート
+		d3dpp.FullScreen_RefreshRateInHz = 0;						// リフレッシュレート
 		d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;	// インターバル
 	}
 	else
 	{// フルスクリーンモード
 		d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;					// バックバッファ
-		d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;			// リフレッシュレート
-		d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;		// インターバル
+		d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;	// リフレッシュレート
+		d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;	// インターバル
 	}
 
 
@@ -344,9 +344,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	g_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);	// テクスチャ拡大フィルタモードを設定
 
 	// テクスチャステージステートパラメータの設定
-	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);		// アルファブレンディング処理
-	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);		// 最初のアルファ引数
-	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);		// ２番目のアルファ引数
+	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);	// アルファブレンディング処理
+	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);	// 最初のアルファ引数
+	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);	// ２番目のアルファ引数
 
 	// 入力処理の初期化
 	InitInput(hInstance, hWnd);
