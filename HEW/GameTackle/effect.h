@@ -18,6 +18,6 @@ void UninitEffect(void);
 void UpdateEffect(void);
 void DrawEffect(void);
 
-int SetEffect(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nType = EFFECTTYPE_BULLET_PLAYER);
+int SetEffect(D3DXVECTOR3 pos, float fSizeX, float fSizeY);
 
 #endif

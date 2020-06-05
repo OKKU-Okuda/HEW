@@ -5,7 +5,6 @@
 //
 //=============================================================================
 #include "effect.h"
-#include "camera.h"
 #include "shadow.h"
 
 //*****************************************************************************
@@ -108,7 +107,7 @@ void UninitEffect(void)
 //=============================================================================
 void UpdateEffect(void)
 {
-	D3DXVECTOR3 *rotCamera = GetRotCamera();
+	//D3DXVECTOR3 *rotCamera = GetRotCamera();
 
 
 	for(int nCntEffect = 0; nCntEffect < MAX_EFFECT; nCntEffect++)
@@ -174,17 +173,17 @@ void DrawEffect(void)
 			D3DXMatrixIdentity(&g_mtxWorldEffect);
 
 			// ビューマトリックスを取得
-			mtxView = GetMtxView();
+			//mtxView = GetMtxView();
 
-			g_mtxWorldEffect._11 = mtxView._11;
-			g_mtxWorldEffect._12 = mtxView._21;
-			g_mtxWorldEffect._13 = mtxView._31;
-			g_mtxWorldEffect._21 = mtxView._12;
-			g_mtxWorldEffect._22 = mtxView._22;
-			g_mtxWorldEffect._23 = mtxView._32;
-			g_mtxWorldEffect._31 = mtxView._13;
-			g_mtxWorldEffect._32 = mtxView._23;
-			g_mtxWorldEffect._33 = mtxView._33;
+			//g_mtxWorldEffect._11 = mtxView._11;
+			//g_mtxWorldEffect._12 = mtxView._21;
+			//g_mtxWorldEffect._13 = mtxView._31;
+			//g_mtxWorldEffect._21 = mtxView._12;
+			//g_mtxWorldEffect._22 = mtxView._22;
+			//g_mtxWorldEffect._23 = mtxView._32;
+			//g_mtxWorldEffect._31 = mtxView._13;
+			//g_mtxWorldEffect._32 = mtxView._23;
+			//g_mtxWorldEffect._33 = mtxView._33;
 
 			// スケールを反映
 			D3DXMatrixScaling(&mtxScale, g_aEffect[nCntEffect].scale.x, g_aEffect[nCntEffect].scale.y, g_aEffect[nCntEffect].scale.z);
@@ -356,7 +355,7 @@ void SetTextureEffect(int nIdxEffect, int nPattern)
 //=============================================================================
 // 頂点情報の作成
 //=============================================================================
-int SetEffect(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nType)
+int SetEffect(D3DXVECTOR3 pos, float fSizeX, float fSizeY)
 {
 	int nIdxEffect = -1;
 
