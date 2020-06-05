@@ -22,6 +22,7 @@
 #include "../GameTackle/kiseki.h"
 #include "../GameTackle/item.h"
 #include "../GameTackle/effect.h"
+#include "../GameTackle/UI.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -76,7 +77,8 @@ void UpdateGameTackle1()
 	// エフェクトの更新
 	UpdateEffect();
 
-
+	// UIの更新
+	UpdateUI();
 }
 
 /*=====================================================================
@@ -106,6 +108,8 @@ void DrawGameTackle1()
 	// エフェクトの描画
 	DrawEffect();
 
+	// UIの描画
+	DrawUI();
 
 }
 
@@ -144,6 +148,9 @@ void InitGameTackle1(bool isFirst)
 
 		// エフェクトの初期化
 		InitEffect(0);
+
+		// UIの初期化
+		InitUI(0);
 
 
 		// エネミーの読み込み
@@ -209,6 +216,9 @@ void UninitGameTackle1(bool isEnd)
 
 	// エフェクトの終了処理
 	UninitEffect();
+
+	// UIの終了処理
+	UninitUI();
 
 }
 
