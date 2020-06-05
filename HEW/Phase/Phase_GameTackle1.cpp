@@ -21,6 +21,7 @@
 #include "../GameTackle/shadow.h"
 #include "../GameTackle/kiseki.h"
 #include "../GameTackle/item.h"
+#include "../GameTackle/effect.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -72,6 +73,10 @@ void UpdateGameTackle1()
 	// アイテムの更新
 	UpdateItem();
 
+	// エフェクトの更新
+	UpdateEffect();
+
+
 }
 
 /*=====================================================================
@@ -98,6 +103,9 @@ void DrawGameTackle1()
 	// エネミーの描画
 	GetTackleEnemyFunc()->Draw();
 
+	// エフェクトの描画
+	DrawEffect();
+
 
 }
 
@@ -122,7 +130,7 @@ void InitGameTackle1(bool isFirst)
 		//影の初期化
 		InitShadow();
 
-	// プレイヤーの初期化
+		// プレイヤーの初期化
 		InitPlayer();
 
 		//軌跡の初期化
@@ -133,6 +141,10 @@ void InitGameTackle1(bool isFirst)
 
 		// アイテムの初期化
 		InitItem();
+
+		// エフェクトの初期化
+		InitEffect(0);
+
 
 		// エネミーの読み込み
 		GetTackleEnemyFunc()->Init(true);
@@ -194,6 +206,10 @@ void UninitGameTackle1(bool isEnd)
 
 	// フィールドの終了化
 	UninitField();
+
+	// エフェクトの終了処理
+	UninitEffect();
+
 }
 
 /*=====================================================================
