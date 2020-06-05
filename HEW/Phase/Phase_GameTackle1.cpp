@@ -20,6 +20,7 @@
 #include "../GameTackle/field.h"
 #include "../GameTackle/shadow.h"
 #include "../GameTackle/kiseki.h"
+#include "../GameTackle/UI.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -67,6 +68,9 @@ void UpdateGameTackle1()
 
 	// フィールドの更新
 	UpdateField();
+
+	// UIの更新
+	UpdateUI();
 }
 
 /*=====================================================================
@@ -86,6 +90,9 @@ void DrawGameTackle1()
 
 	// 軌跡の描画
 	DrawKiseki();
+
+	// UIの描画
+	DrawUI();
 
 	// エネミーの描画
 	GetTackleEnemyFunc()->Draw();
@@ -119,6 +126,9 @@ void InitGameTackle1(bool isFirst)
 
 		//軌跡の初期化
 		InitKiseki(0);
+
+		// UIの初期化
+		InitUI(0);
 
 		// フィールドの初期化
 		InitField();
