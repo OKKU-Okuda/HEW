@@ -75,8 +75,8 @@ HRESULT InitItem(void)
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		g_aItem[nCntItem].pos = D3DXVECTOR3(500.0f, 10.0f, 600.0f);
-		g_aItem[nCntItem].scl = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		g_aItem[nCntItem].pos = D3DXVECTOR3(500.0f, 10.0f, 600.0f + (nCntItem * 30));
+		g_aItem[nCntItem].scl = D3DXVECTOR3(0.4f, 0.4f, 0.4f);
 		g_aItem[nCntItem].firstpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].endpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -91,6 +91,11 @@ HRESULT InitItem(void)
 	}
 
 	g_aItem[0].bUse = true;
+	g_aItem[1].bUse = true;
+	g_aItem[2].bUse = true;
+	g_aItem[3].bUse = true;
+	g_aItem[4].bUse = true;
+	g_aItem[5].bUse = true;
 
 	g_ItemPoint = 0;
 
@@ -134,6 +139,7 @@ void UpdateItem(void)
 	{
 		if (g_aItem[nCntItem].bUse == true)
 		{
+			g_aItem[nCntItem].rot.y += 0.05f;
 
 			if (g_aItem[nCntItem].bHit == true)
 			{
@@ -231,6 +237,11 @@ void DrawItem(void)
 		mat.MatD3D.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 
 		pDevice->SetMaterial(&mat.MatD3D);
+	}
+
+	if (GetKeyboardPress(DIK_R))
+	{
+		InitItem();
 	}
 }
 
