@@ -5,18 +5,17 @@
 //
 //=============================================================================
 #include "effect.h"
-#include "shadow.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	TEXTURE_EFFECT						"data/TEXTURE/effect.png"	// 読み込むテクスチャファイル名
-#define	BULLET_SIZE_X							(50.0f)							// ビルボードの幅
-#define	BULLET_SIZE_Y							(50.0f)							// ビルボードの高さ
+#define	TEXTURE_EFFECT						"data/TEXTURE/explosion000.png"	// 読み込むテクスチャファイル名
+#define	BULLET_SIZE_X						(50.0f)							// ビルボードの幅
+#define	BULLET_SIZE_Y						(50.0f)							// ビルボードの高さ
 #define	VALUE_MOVE_EFFECT					(2.0f)							// 移動速度
 #define	MAX_EFFECT							(128)							// ビルボード最大数
-#define EFFECT_TEXTURE_PATTERN_DIVIDE_X		(5)                             // テクスチャX分割数
-#define EFFECT_TEXTURE_PATTERN_DIVIDE_Y		(2)                             // テクスチャY分割数
+#define EFFECT_TEXTURE_PATTERN_DIVIDE_X		(8)                             // テクスチャX分割数
+#define EFFECT_TEXTURE_PATTERN_DIVIDE_Y		(1)                             // テクスチャY分割数
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************

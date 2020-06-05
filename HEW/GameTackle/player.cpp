@@ -14,6 +14,7 @@
 #include "player.h"	
 #include "shadow.h"
 #include "field.h"	
+#include "effect.h"	
 
 
 //*****************************************************************************
@@ -883,6 +884,7 @@ void UpdatePlayer(void)
 			{
 				g_Player[i].move_time = 0.0f;
 				index = 0;
+				SetEffect(D3DXVECTOR3(g_Player[i].pos.x, 0.0f, g_Player[i].pos.z),5.0f,5.0f);
 			}
 			// ç¿ïWÇãÅÇﬂÇÈ	X = StartX + (EndX - StartX) * ç°ÇÃéûä‘
 			D3DXVECTOR3 vec = g_Player[i].tbl_adr[index + 1].pos - g_Player[i].tbl_adr[index].pos;
