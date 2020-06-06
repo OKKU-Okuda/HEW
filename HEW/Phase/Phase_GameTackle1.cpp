@@ -21,6 +21,7 @@
 #include "../GameTackle/shadow.h"
 #include "../GameTackle/kiseki.h"
 #include "../GameTackle/item.h"
+#include "../GameTackle/player_control.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -53,6 +54,9 @@ void UpdateGameTackle1()
 	{	// タックル2
 		GoNextPhase(GetPhaseGameTackle2Func());
 	}
+
+	// プレイヤーの位置制御
+	UpdatePlayerControl();
 
 	// プレイヤーの更新処理
 	UpdatePlayer();
@@ -151,6 +155,8 @@ void InitGameTackle1(bool isFirst)
 	// フィールドのリセット処理
 	ResetField();
 
+	// プレイヤーコントロールの書き換え処理
+	ResetPlayerControl();
 
 	// カメラ更新関数の設定
 	GetCamera()->length = 30.0f;

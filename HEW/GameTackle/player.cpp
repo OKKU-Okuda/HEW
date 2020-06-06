@@ -19,7 +19,6 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	VALUE_MOVE			(5.0f)							// 移動量
 #define	VALUE_ROTATE		(D3DX_PI * 0.02f)				// 回転量
 #define	PLAYER_PARENT		(0)								// 親の添え字(体)
 #define	VERTEX_MAX			(300)							// 軌跡の最大数
@@ -56,9 +55,6 @@ D3DXVECTOR3 g_Rot;										// プレイヤーの向き
 int g_slidin_cnt;										// スライディングカウント
 float gravity;										    // 重力
 
-#ifdef _DEBUG
-static bool g_isDebugControl = true;					// (debug)操作に減速を付けて自由に操作できるようにする
-#endif
 
 //=============================================================================
 // アニメーションのテーブル
@@ -508,7 +504,7 @@ HRESULT InitPlayer(void)
 
 		g_Player[i].jump_spped = JUMP_HEIGHT;
 
-		g_Player[i].spd = VALUE_MOVE;		// 移動スピードクリア
+		//g_Player[i].spd = VALUE_MOVE;		// 移動スピードクリア
 
 		g_Player[i].anim_use = PLAYER_STOP;		// 移動スピードクリア
 		g_Player[i].old_anim_use = PLAYER_STOP;		// 移動スピードクリア
@@ -649,42 +645,7 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
-	//移動処理
-	int		dir = 0;	// ０：向きは変えない
-
 	g_Old_Pos = g_Pos;
-
-	if (GetKeyboardPress(DIK_LEFT))
-	{
-		dir |= 8;
-		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
-	}
-	if (GetKeyboardPress(DIK_RIGHT))
-	{
-		dir |= 4;
-		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
-	}
-	if (GetKeyboardPress(DIK_UP))
-	{
-		dir |= 2;
-		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
-	}
-	if (GetKeyboardPress(DIK_DOWN))
-	{
-		dir |= 1;
-		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
-	}
-	if (GetKeyboardPress(DIK_UP))
-	{
-		dir |= 2;
-		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
-	}
-	if (GetKeyboardPress(DIK_DOWN))
-	{
-		dir |= 1;
-		g_Player[PLAYER_PARENT].spd = VALUE_MOVE;
-	}
-
 
 	//ジャンプ処理
 	if (GetKeyboardTrigger(DIK_J))
@@ -703,62 +664,6 @@ void UpdatePlayer(void)
 			g_Player[PLAYER_PARENT].anim_use = PLAYER_SLIDING;
 		}
 	}
-
-
-	// 入力されたキーに合わせて向きを決める
-	float roty = 0.0f;
-	switch (dir)
-	{
-	case 1:	// 下向き
-		roty = 0.0f;
-		break;
-
-	case 2:	// 上向き
-		roty = D3DX_PI;
-		break;
-
-	case 4:	// 右向き
-		roty = -D3DX_PI / 2;
-		break;
-
-	case 8:	// 左向き
-		roty = D3DX_PI / 2;
-		break;
-
-	case 5:	// 右下向き
-		roty = -D3DX_PI / 4;
-		break;
-
-	case 6:	// 右上向き
-		roty = -D3DX_PI / 4 * 3;
-		break;
-
-	case 9:	// 左下向き
-		roty = D3DX_PI / 4;
-		break;
-
-	case 10: // 左上向き
-		roty = D3DX_PI / 4 * 3;
-		break;
-
-	case 0:
-		roty = g_Rot.y;
-		break;
-
-	default:
-		break;
-
-
-	}
-
-	//	// Key入力があったら移動処理する
-	//if (dir > 0)
-	//{
-	// カメラに対して入力のあった方向へプレイヤーを向かせて移動させる
-	//g_Rot.y = cam->rot.y + roty;
-	g_Rot.y = roty;
-
-	//}
 
 
 	//ジャンプ処理
@@ -784,32 +689,12 @@ void UpdatePlayer(void)
 		}
 	}
 
-	//移動処理[[ここでﾌﾟﾚｲﾔｰ側のポジション確定]]
-	g_Pos.x -= sinf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
-	g_Pos.z -= cosf(g_Rot.y) * g_Player[PLAYER_PARENT].spd;
-
-
 #ifdef _DEBUG	
 	// デバックモードのみ座標リセット処理
 	PrintDebugProc("[debug_player]F5:プレイヤーを初期位置に戻す");
 	if (GetKeyboardTrigger(DIK_F5))
 	{
 		ResetPlayerPos();
-	}
-
-	else if (GetKeyboardTrigger(DIK_F6))
-	{// コントロールモード反転
-		g_isDebugControl = !g_isDebugControl;
-	}
-
-	if (g_isDebugControl == true)
-	{// 減速
-		PrintDebugProc("[debug_player]F6:デバックコントロールを無効にする(現在有効)");
-		g_Player[PLAYER_PARENT].spd *= 0.9f;
-	}
-	else
-	{
-		PrintDebugProc("[debug_player]F6:デバックコントロールを有効にする(現在無効)");
 	}
 
 #endif
