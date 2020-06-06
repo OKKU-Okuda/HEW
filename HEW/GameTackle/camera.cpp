@@ -37,35 +37,35 @@ void TackleCameraUpdate(CAMERA* pCam)
 	
 
 	// ƒL[‘€ì‚Å‚ÌƒJƒƒ‰ˆÚ“®
-	if (GetKeyboardPress(DIK_W))
-	{
-		OffsetCamPos.z -= add;
-	}
+	//if (GetKeyboardPress(DIK_W))
+	//{
+	//	OffsetCamPos.z -= add;
+	//}
 
-	if (GetKeyboardPress(DIK_S))
-	{
-		OffsetCamPos.z += add;
-	}
+	//if (GetKeyboardPress(DIK_S))
+	//{
+	//	OffsetCamPos.z += add;
+	//}
 
-	if (GetKeyboardPress(DIK_A))
-	{
-		OffsetCamPos.x -= add;
-	}
+	//if (GetKeyboardPress(DIK_A))
+	//{
+	//	OffsetCamPos.x -= add;
+	//}
 
-	if (GetKeyboardPress(DIK_D))
-	{
-		OffsetCamPos.x += add;
-	}
+	//if (GetKeyboardPress(DIK_D))
+	//{
+	//	OffsetCamPos.x += add;
+	//}
 
-	if (GetKeyboardPress(DIK_SPACE))
-	{
-		OffsetCamPos.y += add;
-	}
+	//if (GetKeyboardPress(DIK_SPACE))
+	//{
+	//	OffsetCamPos.y += add;
+	//}
 
-	if (GetKeyboardPress(DIK_LSHIFT))
-	{
-		OffsetCamPos.y -= add;
-	}
+	//if (GetKeyboardPress(DIK_LSHIFT))
+	//{
+	//	OffsetCamPos.y -= add;
+	//}
 
 
 	pCam->at = *GetPlayerPos();// +Vec3(0, 0.0f, 0);

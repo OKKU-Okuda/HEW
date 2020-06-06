@@ -23,6 +23,10 @@
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
+#define foreach(val,arr)	\
+int size = sizeof(arr) / sizeof(arr[0]);	\
+val = &arr[0];								\
+for(int i = 0; i < size; i++, val++)
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -61,7 +65,22 @@ static CHIP_ID			g_latestid;		// 一番最近設置したチャンク
 =====================================================================*/
 void UpdateField()
 {
+	for (int i = 0; i < MAX_FIELD; i++)
+	{
+		if (g_Field[i].State == FSTATE_READY ||
+			g_Field[i].State == FSTATE_ONPLAYER)
+		{// プレイヤーの直線状にいる場合のみ更新する
 
+			// プレイヤーワールド->CHIPローカル
+			D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_Field[i].InvWldMat);
+
+			g_Field[i].pFunc->Update(&g_Field[i],GetPlayerPos());
+
+			// CHIPローカル->プレイヤーワールド
+			D3DXVec3TransformCoord(GetPlayerPos(), GetPlayerPos(), &g_Field[i].WldMat);
+
+		}
+	}
 }
 
 /*=====================================================================
@@ -292,6 +311,54 @@ FIELD_DIRECTION GetPlayerFieldDirection()
 	return g_fdir;
 }
 
+/*=====================================================================
+プレイヤーに接しているフィールドチャンク取得関数
+=====================================================================*/
+FIELD_CHIP* GetFieldOnPlayer()
+{
+	return g_OnField.pChip;
+}
+
+/*=====================================================================
+基本ベクトル取得関数
+=====================================================================*/
+Vec3 GetFieldVector(FIELD_DIRECTION fdir)
+{
+	Vec3 ans(0, 0, 0);		// 戻り値算出用
+	DWORD bit = fdir;		// 列挙型ビット演算
+
+	if (bit & 0x00000001)
+	{// 最下位ビットに１があれば横移動
+		ans.x = 1.0f;
+	}
+	else
+	{// 0であれば縦
+		ans.z = 1.0f;
+	}
+
+	if (bit & 0x00000002)
+	{// 2以上の場合は方向反転
+		ans *= -1.0f;
+	}
+
+	return ans;
+}
+
+/*=====================================================================
+フィールド方向加算関数
+=====================================================================*/
+FIELD_DIRECTION AddFieldDirection(FIELD_DIRECTION fdir, int add)
+{
+	int ans = fdir + add;
+
+	if (ans < 0)
+	{// 負の数は正の数に戻してから計算
+		ans += MAX_FIELDDIRECTION * (ans / MAX_FIELDDIRECTION + 1);
+	}
+
+	ans %= MAX_FIELDDIRECTION;
+	return (FIELD_DIRECTION)ans;
+}
 /*=====================================================================
 	cpp内関数
 =====================================================================*/

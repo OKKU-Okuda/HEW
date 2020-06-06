@@ -372,6 +372,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// 一番最初のフェーズはmainで初期化
 	g_Phase.Init(false);	
 
+	// 乱数の初期化
+	srand(timeGetTime());
+
 #if USE_TIMESTOPMODE
 	// 時間の停止初期化
 	g_isTimeStop = false;	

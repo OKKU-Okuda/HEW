@@ -148,11 +148,13 @@
     <ClCompile Include="GameTackle\Field\road.cpp" />
     <ClCompile Include="GameTackle\Field\turnLR.cpp" />
     <ClCompile Include="GameTackle\Field\void.cpp" />
+    <ClCompile Include="GameTackle\field_control.cpp" />
     <ClCompile Include="GameTackle\item.cpp" />
     <ClCompile Include="GameTackle\kiseki.cpp" />
     <ClCompile Include="GameTackle\player.cpp" />
     <ClCompile Include="GameTackle\enemy.cpp" />
     <ClCompile Include="GameTackle\field.cpp" />
+    <ClCompile Include="GameTackle\player_control.cpp" />
     <ClCompile Include="GameTackle\shadow.cpp" />
     <ClCompile Include="GameTackle\UI.cpp" />
     <ClCompile Include="Phase\Phase_GameKick.cpp" />
@@ -190,11 +192,13 @@
     <ClInclude Include="GameTackle\Field\road.h" />
     <ClInclude Include="GameTackle\Field\turnLR.h" />
     <ClInclude Include="GameTackle\Field\void.h" />
+    <ClInclude Include="GameTackle\field_control.h" />
     <ClInclude Include="GameTackle\item.h" />
     <ClInclude Include="GameTackle\kiseki.h" />
     <ClInclude Include="GameTackle\player.h" />
     <ClInclude Include="GameTackle\enemy.h" />
     <ClInclude Include="GameTackle\field.h" />
+    <ClInclude Include="GameTackle\player_control.h" />
     <ClInclude Include="GameTackle\shadow.h" />
     <ClInclude Include="GameTackle\UI.h" />
     <ClInclude Include="Phase\Phase_GameKick.h" />
