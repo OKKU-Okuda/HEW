@@ -129,10 +129,17 @@
     <ClCompile Include="GameTackle\Field\turnLR.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+
     <ClCompile Include="GameTackle\field_control.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameTackle\player_control.cpp">
+
+    <ClCompile Include="GameTackle\effect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTackle\UI.cpp">
+
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -251,10 +258,17 @@
     <ClInclude Include="GameTackle\Field\turnLR.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+
     <ClInclude Include="GameTackle\field_control.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameTackle\player_control.h">
+
+    <ClInclude Include="GameTackle\effect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTackle\UI.h">
+
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

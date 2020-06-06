@@ -75,7 +75,8 @@ HRESULT InitItem(void)
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		g_aItem[nCntItem].pos = D3DXVECTOR3(500.0f, 0.0f, 600.0f);
+		g_aItem[nCntItem].pos = D3DXVECTOR3(500.0f, 10.0f, 600.0f + (nCntItem * 30));
+		g_aItem[nCntItem].scl = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
 		g_aItem[nCntItem].firstpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].endpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -90,6 +91,11 @@ HRESULT InitItem(void)
 	}
 
 	g_aItem[0].bUse = true;
+	g_aItem[1].bUse = true;
+	g_aItem[2].bUse = true;
+	g_aItem[3].bUse = true;
+	g_aItem[4].bUse = true;
+	g_aItem[5].bUse = true;
 
 	g_ItemPoint = 0;
 
@@ -133,6 +139,7 @@ void UpdateItem(void)
 	{
 		if (g_aItem[nCntItem].bUse == true)
 		{
+			g_aItem[nCntItem].rot.y += 0.05f;
 
 			if (g_aItem[nCntItem].bHit == true)
 			{
@@ -153,28 +160,19 @@ void UpdateItem(void)
 				}
 
 				// アイテムのUIがあるスクリーン座標をワールド座標に変換する(終点の処理)
-				CalcScreenToWorld( &g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
-
-
-
+				CalcScreenToWorld( &g_aItem[nCntItem].endpos, ITEM_UI_POS_X, ITEM_UI_POS_Y, 0.95f, SCREEN_WIDTH, SCREEN_HEIGHT, GetMtxView(), GetMtxProjection());
 
 				D3DXVECTOR3 Vec = D3DXVECTOR3( g_aItem[nCntItem].endpos.x - g_aItem[nCntItem].firstpos.x, g_aItem[nCntItem].endpos.y - g_aItem[nCntItem].firstpos.y, g_aItem[nCntItem].endpos.z - g_aItem[nCntItem].firstpos.z);
-				
-				//g_aItem[nCntItem].endpos.x *= 2;
-				//g_aItem[nCntItem].endpos.y *= 3;
-
-				//g_aItem[nCntItem].endpos.z = g_aItem[nCntItem].pos.z;
-
 
 				// 第一制御点の計算
-				g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4) + 10);
+				g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4));
 
 				// 第二制御点の計算
-				g_aItem[nCntItem].control_S = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 3), g_aItem[nCntItem].firstpos.y + (Vec.y / 3), g_aItem[nCntItem].firstpos.z + (Vec.z / 3) + 10);
+				g_aItem[nCntItem].control_S = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 3), g_aItem[nCntItem].firstpos.y + (Vec.y / 3), g_aItem[nCntItem].firstpos.z + (Vec.z / 3));
 
 				// ベジェ曲線の関数
 				BezierCurve( &g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
-
+			
 			}
 			else
 			{
@@ -191,7 +189,7 @@ void UpdateItem(void)
 void DrawItem(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-	D3DXMATRIX mtxRot, mtxTranslate;
+	D3DXMATRIX mtxRot, mtxTranslate, mtxScl;
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
@@ -199,6 +197,10 @@ void DrawItem(void)
 		{
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_mtxWorldItem);
+
+			// スケールを反映
+			D3DXMatrixScaling(&mtxScl, g_aItem[nCntItem].scl.x, g_aItem[nCntItem].scl.y, g_aItem[nCntItem].scl.z);
+			D3DXMatrixMultiply(&g_mtxWorldItem, &g_mtxWorldItem, &mtxScl);
 
 			// 回転を反映
 			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aItem[nCntItem].rot.y, g_aItem[nCntItem].rot.x, g_aItem[nCntItem].rot.z);
@@ -235,6 +237,11 @@ void DrawItem(void)
 		mat.MatD3D.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 
 		pDevice->SetMaterial(&mat.MatD3D);
+	}
+
+	if (GetKeyboardPress(DIK_R))
+	{
+		InitItem();
 	}
 }
 
@@ -277,12 +284,12 @@ ITEM *GetItem(void)
 	return &g_aItem[0];
 }
 
-/*=====================================================================
+/*=============================================================================================
 BezierCurve関数
 	ベジェ曲線の処理する関数
 	戻り値 : D3DXVECTOR3*
 	引数 : ( D3DXVECTOR3* , float , D3DXVECTOR3* , D3DXVECTOR3* , D3DXVECTOR3* , D3DXVECTOR3*)
-=====================================================================*/
+==============================================================================================*/
 D3DXVECTOR3 *BezierCurve(
 	D3DXVECTOR3* p_out,		// 戻り値
 	float t,				// 0から1までの時間
@@ -291,6 +298,7 @@ D3DXVECTOR3 *BezierCurve(
 	D3DXVECTOR3* p_third,	// ベジェ曲線の第2制御点
 	D3DXVECTOR3* p_end)		// ベジェ曲線の終点
 {
+	// わかりやすくするための変数
 	float tp = 1 - t;
 	float a, b, c, d;
 
@@ -300,6 +308,7 @@ D3DXVECTOR3 *BezierCurve(
 	c = 3 * t * tp * tp;
 	d = tp * tp * tp;
 
+	// 戻り値
 	p_out->x = (a * p_end->x) + (b * p_third->x) + (c * p_second->x) + (d * p_start->x);
 	p_out->y = (a * p_end->y) + (b * p_third->y) + (c * p_second->y) + (d * p_start->y);
 	p_out->z = (a * p_end->z) + (b * p_third->z) + (c * p_second->z) + (d * p_start->z);
@@ -307,12 +316,12 @@ D3DXVECTOR3 *BezierCurve(
 	return p_out;
 }
 
-/*=====================================================================
+/*=============================================================================================
 CalcScreenToWorld関数
 	スクリーン座標をワールド座標に変換する関数
 	戻り値 : D3DXVECTOR3*
 	引数 : 	(D3DXVECTOR3* , float , float , float , int , int , D3DXMATRIX* , D3DXMATRIX* )
-=====================================================================*/
+==============================================================================================*/
 D3DXVECTOR3* CalcScreenToWorld(
 	D3DXVECTOR3* p_out,	// 戻り値
 	float Sx,			// スクリーンX座標

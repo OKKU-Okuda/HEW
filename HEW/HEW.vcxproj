@@ -140,6 +140,7 @@
     <ClCompile Include="Core\MyList.cpp" />
     <ClCompile Include="GameKick\OrderLogo.cpp" />
     <ClCompile Include="GameTackle\camera.cpp" />
+    <ClCompile Include="GameTackle\effect.cpp" />
     <ClCompile Include="GameTackle\Field\cliffL.cpp" />
     <ClCompile Include="GameTackle\Field\cliffR.cpp" />
     <ClCompile Include="GameTackle\Field\jump.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="GameTackle\field.cpp" />
     <ClCompile Include="GameTackle\player_control.cpp" />
     <ClCompile Include="GameTackle\shadow.cpp" />
+    <ClCompile Include="GameTackle\UI.cpp" />
     <ClCompile Include="Phase\Phase_GameKick.cpp" />
     <ClCompile Include="Phase\Phase_GameTackle1.cpp" />
     <ClCompile Include="Phase\Phase_GameTackle2.cpp" />
@@ -182,6 +184,7 @@
     <ClInclude Include="Core\MyList.h" />
     <ClInclude Include="GameKick\OrderLogo.h" />
     <ClInclude Include="GameTackle\camera.h" />
+    <ClInclude Include="GameTackle\effect.h" />
     <ClInclude Include="GameTackle\Field\cliffL.h" />
     <ClInclude Include="GameTackle\Field\cliffR.h" />
     <ClInclude Include="GameTackle\Field\jump.h" />
@@ -197,6 +200,7 @@
     <ClInclude Include="GameTackle\field.h" />
     <ClInclude Include="GameTackle\player_control.h" />
     <ClInclude Include="GameTackle\shadow.h" />
+    <ClInclude Include="GameTackle\UI.h" />
     <ClInclude Include="Phase\Phase_GameKick.h" />
     <ClInclude Include="Phase\Phase_GameTackle1.h" />
     <ClInclude Include="Phase\Phase_GameTackle2.h" />
