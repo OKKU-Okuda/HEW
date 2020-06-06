@@ -7,6 +7,8 @@
 #include "../Core/main.h"
 #include "../Core/debugproc.h"
 
+#include "../Core/camera.h"
+#include "camera.h"
 #include "player.h"
 #include "field.h"
 #include "player_control.h"
@@ -17,7 +19,7 @@
 #define	VALUE_MOVE			(5.0f)							// 移動量
 
 #define ADDROT	(0.1f)				// 回転量
-#define ADDPOS	(2.0f)				// 移動量
+#define ADDPOS	(8.0f)				// 移動量
 #define ADDXPOS		(3.0f)			// 横移動
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -75,6 +77,22 @@ void SetPlayerDirection(FIELD_DIRECTION fdir)
 {
 	g_dirPlayer = fdir;
 	g_isRotation = true;	// 回転flagを立てる
+}
+
+/*=====================================================================
+プレイヤー方向取得関数
+=====================================================================*/
+FIELD_DIRECTION GetPlayerDirection()
+{
+	return g_dirPlayer;
+}
+
+/*=====================================================================
+プレイヤー回転状態取得関数
+=====================================================================*/
+bool IsPlayerRotation()
+{
+	return g_isRotation;
 }
 
 /*=====================================================================
@@ -154,24 +172,33 @@ void UpdatePlayerTranslation()
 #ifdef _DEBUG
 	if (GetKeyboardTrigger(DIK_F6))
 	{// コントロールモード反転
-		g_isDebugControl = !g_isDebugControl;
 		g_isRotation = true;
+
+		if (g_isDebugControl == true)
+		{// 通常に戻す
+			g_isDebugControl = false;
+			SetCameraFunc(TackleCameraUpdate);
+		}
+		else
+		{// デバッグ化
+			g_isDebugControl = true;
+			SetCameraFunc(DebugCameraUpdate);
+		}
 	}
 
 	if (g_isDebugControl == true)
 	{
 		PrintDebugProc("[debug_player]F6:デバックコントロールを無効にする(現在有効)");
-		
+		PrintDebugProc("[debug_player]↑↓←→キー:十字移動");
+
 		UpdatePlayerDebug();
 		return;
 	}
 
 	PrintDebugProc("[debug_player]F6:デバックコントロールを有効にする(現在無効)");
-	
-#endif
+	PrintDebugProc("[debug_player]Aキー、Dキー:横移動");
 
-	// 奥移動移動
-	*GetPlayerPos() += GetFieldVector(g_dirPlayer) * ADDPOS;
+#endif
 
 	// 横移動処理
 	if (GetKeyboardPress(DIK_A))
@@ -183,6 +210,9 @@ void UpdatePlayerTranslation()
 	{
 		*GetPlayerPos() += GetFieldVector(AddFieldDirection(g_dirPlayer, 1)) * ADDXPOS;
 	}
+
+	// 奥移動移動
+	*GetPlayerPos() += GetFieldVector(g_dirPlayer) * ADDPOS;
 
 }
 

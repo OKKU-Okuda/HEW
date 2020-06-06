@@ -14,8 +14,12 @@
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
-#define	VALUE_ROTATE_CAMERA	(D3DX_PI * 0.01f)							// カメラの回転量
 
+#define CAMERA_ATOFFSET	(Vec3(0,20,0))	// 注視点のプレイヤー座標からの3次元オフセット(y以外はいじるとやばい）
+#define CAMERA_RANGE	(90.0f)		// プレイヤーからのレンジ
+#define CAMERA_OFFSETY	(50.0f)		// 注視点からの視点オフセットｙ
+
+#define CAMERA_DEBUGOFFSET		(Vec3(0, 55.0f, -180.0f))		// デバッグ用カメラの3次元オフセット
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
@@ -27,53 +31,27 @@
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
-static Vec3 OffsetCamPos(0, 55.0f, -180.0f);
+//static Vec3 OffsetCamPos(0, 55.0f, -180.0f);
 
+/*=====================================================================
+メインカメラ関数
+=====================================================================*/
 void TackleCameraUpdate(CAMERA* pCam)
-{
-	const float add = 2.0f;
-
-	PLAYER *player = GetPlayer();
-	
-
-	// キー操作でのカメラ移動
-	//if (GetKeyboardPress(DIK_W))
-	//{
-	//	OffsetCamPos.z -= add;
-	//}
-
-	//if (GetKeyboardPress(DIK_S))
-	//{
-	//	OffsetCamPos.z += add;
-	//}
-
-	//if (GetKeyboardPress(DIK_A))
-	//{
-	//	OffsetCamPos.x -= add;
-	//}
-
-	//if (GetKeyboardPress(DIK_D))
-	//{
-	//	OffsetCamPos.x += add;
-	//}
-
-	//if (GetKeyboardPress(DIK_SPACE))
-	//{
-	//	OffsetCamPos.y += add;
-	//}
-
-	//if (GetKeyboardPress(DIK_LSHIFT))
-	//{
-	//	OffsetCamPos.y -= add;
-	//}
-
-
-	pCam->at = *GetPlayerPos();// +Vec3(0, 0.0f, 0);
-	pCam->pos = *GetPlayerPos() + OffsetCamPos;
+{	
+	pCam->at = *GetPlayerPos() + CAMERA_ATOFFSET;
+	//pCam->pos = *GetPlayerPos() + OffsetCamPos;
 	// カメラの注視点と視点を主人公に追従させる
-	//pCam->pos.x = pCam->at.x + sinf(pCam->rot.y) + OffsetCamPos.x;
-	//pCam->pos.z = pCam->at.z + cosf(pCam->rot.y) + OffsetCamPos.z;
+	pCam->pos.x = sinf(GetPlayerRot()->y) * CAMERA_RANGE + pCam->at.x ; //+ OffsetCamPos.x;
+	pCam->pos.z = cosf(GetPlayerRot()->y) * CAMERA_RANGE + pCam->at.z ; //+ OffsetCamPos.z;
+	pCam->pos.y = pCam->at.y + CAMERA_OFFSETY;
 
-	
+}
 
+/*=====================================================================
+デバッグカメラ関数(固定）
+=====================================================================*/
+void DebugCameraUpdate(CAMERA* pCam)
+{
+	pCam->at = *GetPlayerPos() + CAMERA_ATOFFSET;
+	pCam->pos = *GetPlayerPos() + CAMERA_DEBUGOFFSET;
 }

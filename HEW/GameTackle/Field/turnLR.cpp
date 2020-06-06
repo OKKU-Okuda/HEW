@@ -8,15 +8,25 @@
 #include "../../Core/debugproc.h"
 #include "../field.h"
 #include "ResourceManager.h"
+#include "../field_control.h"
+#include "../player_control.h"
 #include "turnLR.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
+#define RANGE_INPUTLR	(FIELDCHIP_WIDTH*0.75f)		// 中心までのinput読み込みエリア
+
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
 
+// 
+enum TURNLR_QTETYPE {
+	QTE_NOINPUT = 0,
+	QTE_LEFT,
+	QTE_RIGHT
+};
 
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
@@ -30,6 +40,7 @@ static void DrawFieldTurnLR(FIELD_CHIP* pData);
 //---------------------------------------------------------------------
 
 static FIELD_OBJFUNC g_Func = { CheckHitFieldTurnLR,UpdateFieldTurnLR,DrawFieldTurnLR };	// 道独自の関数
+static TURNLR_QTETYPE g_QTEState = QTE_NOINPUT;
 
 static Mesh g_meshWallLeftFront = NULL;
 static Mesh g_meshWallRightFront = NULL;
@@ -41,6 +52,7 @@ static Mesh g_meshWallRightCenter = NULL;
 static Mesh g_meshFlatFront = NULL;
 static Mesh g_meshFlatLeft = NULL;
 static Mesh g_meshFlatRight = NULL;
+
 
 /*=====================================================================
 左右分岐道道当たり判定関数
@@ -104,7 +116,54 @@ bool CheckHitFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 =====================================================================*/
 void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 {
+	const float maxIptPosZ = -FIELDROAD_X / 2 - PLAYER_FIELDSIZE_R;		// 入力受付のｚ最大値
+	const float minIptPosZ = maxIptPosZ - RANGE_INPUTLR;				//　同上最小値
 
+	const float maxRotPosZ = FIELDROAD_X / 5;						// 回転のｚ最大値
+	const float minRotPosZ = -FIELDROAD_X / 5;						// 同上最小値
+
+
+	if (pPos->z <= maxIptPosZ && pPos->z >= minIptPosZ && g_QTEState == QTE_NOINPUT)
+	{// 未入力状態で左右キーを押すとCURVE予約
+#ifdef _DEBUG
+		PrintDebugProc("[debug_TurnLR]Qキー、Eキー:CURVE");
+#endif
+		if (GetKeyboardTrigger(DIK_Q))
+		{
+			g_QTEState = QTE_LEFT;
+		}
+		else if (GetKeyboardTrigger(DIK_E))
+		{
+			g_QTEState = QTE_RIGHT;
+		}
+	}
+	else if (g_QTEState != QTE_NOINPUT && pPos->z <= maxRotPosZ && pPos->z >= minRotPosZ)
+	{// 回転エリアに到着すると予約通りの回転を行う
+		FIELD_CHIP*	pDelChip = NULL;			// CURVEとは反対側にある道
+		CHIP_ID id_start;// 続く道のid
+
+		if (g_QTEState == QTE_LEFT)
+		{
+			SetPlayerDirection(AddFieldDirection(GetPlayerDirection(), -1));
+		}
+		else if (g_QTEState == QTE_RIGHT)
+		{
+			SetPlayerDirection(AddFieldDirection(GetPlayerDirection(), 1));
+		}
+
+		// 反対側の道を消す処理
+		pDelChip = SearchChipID(AddFieldID(pData->ID, GetFieldIDVector(AddFieldDirection(GetPlayerDirection(), 2))));
+		if (pDelChip != NULL)
+		{
+			pDelChip->State = FSTATE_NONE;
+		}
+
+		g_QTEState = QTE_NOINPUT;
+
+		id_start = AddFieldID(pData->ID, GetFieldIDVector(GetPlayerDirection()));
+		SpawnField(id_start);
+
+	}
 }
 
 /*=====================================================================

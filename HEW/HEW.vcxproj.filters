@@ -1,276 +1,92 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="Core\camera.cpp" />
+    <ClCompile Include="Core\CheckHit.cpp" />
+    <ClCompile Include="Core\debugproc.cpp" />
+    <ClCompile Include="Core\directx_Helper2D.cpp" />
+    <ClCompile Include="Core\directx_Helper3D.cpp" />
+    <ClCompile Include="Core\fade.cpp" />
+    <ClCompile Include="Core\input.cpp" />
+    <ClCompile Include="Core\light.cpp" />
+    <ClCompile Include="Core\main.cpp" />
+    <ClCompile Include="Core\MyList.cpp" />
+    <ClCompile Include="GameKick\OrderLogo.cpp" />
+    <ClCompile Include="GameTackle\camera.cpp" />
+    <ClCompile Include="GameTackle\effect.cpp" />
+    <ClCompile Include="GameTackle\Field\cliffL.cpp" />
+    <ClCompile Include="GameTackle\Field\cliffR.cpp" />
+    <ClCompile Include="GameTackle\Field\jump.cpp" />
+    <ClCompile Include="GameTackle\Field\ResourceManager.cpp" />
+    <ClCompile Include="GameTackle\Field\road.cpp" />
+    <ClCompile Include="GameTackle\Field\turnLR.cpp" />
+    <ClCompile Include="GameTackle\Field\void.cpp" />
+    <ClCompile Include="GameTackle\field_control.cpp" />
+    <ClCompile Include="GameTackle\item.cpp" />
+    <ClCompile Include="GameTackle\kiseki.cpp" />
+    <ClCompile Include="GameTackle\player.cpp" />
+    <ClCompile Include="GameTackle\enemy.cpp" />
+    <ClCompile Include="GameTackle\field.cpp" />
+    <ClCompile Include="GameTackle\player_control.cpp" />
+    <ClCompile Include="GameTackle\shadow.cpp" />
+    <ClCompile Include="GameTackle\UI.cpp" />
+    <ClCompile Include="Phase\Phase_GameKick.cpp" />
+    <ClCompile Include="Phase\Phase_GameTackle1.cpp" />
+    <ClCompile Include="Phase\Phase_GameTackle2.cpp" />
+    <ClCompile Include="Phase\Phase_GameTackle3.cpp" />
+    <ClCompile Include="Phase\Phase_Result.cpp" />
+    <ClCompile Include="Phase\Phase_Title.cpp" />
+    <ClCompile Include="Core\sound.cpp" />
+    <ClCompile Include="Title\bottons.cpp" />
+    <ClCompile Include="Title\control.cpp" />
+    <ClCompile Include="Title\effect.cpp" />
+    <ClCompile Include="Title\Logo.cpp" />
+    <ClCompile Include="Title\player.cpp" />
+    <ClCompile Include="Title\select.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core\camera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\input.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\light.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\sound.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\fade.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\MyList.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Phase\Phase_Title.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Phase\Phase_GameKick.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Phase\Phase_GameTackle1.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Phase\Phase_GameTackle2.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Phase\Phase_GameTackle3.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Phase\Phase_Result.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\debugproc.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\directx_Helper3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Title\effect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Title\Logo.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Title\player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Title\bottons.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\directx_Helper2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Title\select.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Title\control.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameKick\OrderLogo.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\enemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\camera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\field.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\Field\road.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\shadow.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\kiseki.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\item.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\CheckHit.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\Field\void.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\Field\jump.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\Field\cliffR.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\Field\cliffL.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\Field\ResourceManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\Field\turnLR.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-
-    <ClCompile Include="GameTackle\field_control.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\player_control.cpp">
-
-    <ClCompile Include="GameTackle\effect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTackle\UI.cpp">
-
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Core\camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\input.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\light.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\sound.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\fade.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\MyList.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Phase\Phase_Title.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Phase\Phase_GameTackle1.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Phase\Phase_GameKick.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Phase\Phase_GameTackle2.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Phase\Phase_GameTackle3.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Phase\Phase_Result.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\debugproc.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\directx_Helper3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Title\effect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Title\Logo.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Title\player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Title\bottons.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\directx_Helper2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Title\select.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Title\control.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameKick\OrderLogo.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\field.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\Field\road.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\kiseki.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\shadow.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\item.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\CheckHit.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\Field\void.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\Field\jump.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\Field\cliffR.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\Field\cliffL.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\Field\ResourceManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\Field\turnLR.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-
-    <ClInclude Include="GameTackle\field_control.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\player_control.h">
-
-    <ClInclude Include="GameTackle\effect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTackle\UI.h">
-
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
+    <ClInclude Include="Core\camera.h" />
+    <ClInclude Include="Core\CheckHit.h" />
+    <ClInclude Include="Core\debugproc.h" />
+    <ClInclude Include="Core\directx_Helper2D.h" />
+    <ClInclude Include="Core\directx_Helper3D.h" />
+    <ClInclude Include="Core\fade.h" />
+    <ClInclude Include="Core\input.h" />
+    <ClInclude Include="Core\light.h" />
+    <ClInclude Include="Core\main.h" />
+    <ClInclude Include="Core\MyList.h" />
+    <ClInclude Include="GameKick\OrderLogo.h" />
+    <ClInclude Include="GameTackle\camera.h" />
+    <ClInclude Include="GameTackle\effect.h" />
+    <ClInclude Include="GameTackle\Field\cliffL.h" />
+    <ClInclude Include="GameTackle\Field\cliffR.h" />
+    <ClInclude Include="GameTackle\Field\jump.h" />
+    <ClInclude Include="GameTackle\Field\ResourceManager.h" />
+    <ClInclude Include="GameTackle\Field\road.h" />
+    <ClInclude Include="GameTackle\Field\turnLR.h" />
+    <ClInclude Include="GameTackle\Field\void.h" />
+    <ClInclude Include="GameTackle\field_control.h" />
+    <ClInclude Include="GameTackle\item.h" />
+    <ClInclude Include="GameTackle\kiseki.h" />
+    <ClInclude Include="GameTackle\player.h" />
+    <ClInclude Include="GameTackle\enemy.h" />
+    <ClInclude Include="GameTackle\field.h" />
+    <ClInclude Include="GameTackle\player_control.h" />
+    <ClInclude Include="GameTackle\shadow.h" />
+    <ClInclude Include="GameTackle\UI.h" />
+    <ClInclude Include="Phase\Phase_GameKick.h" />
+    <ClInclude Include="Phase\Phase_GameTackle1.h" />
+    <ClInclude Include="Phase\Phase_GameTackle2.h" />
+    <ClInclude Include="Phase\Phase_GameTackle3.h" />
+    <ClInclude Include="Phase\Phase_Result.h" />
+    <ClInclude Include="Phase\Phase_Title.h" />
+    <ClInclude Include="Core\sound.h" />
+    <ClInclude Include="Title\bottons.h" />
+    <ClInclude Include="Title\control.h" />
+    <ClInclude Include="Title\effect.h" />
+    <ClInclude Include="Title\Logo.h" />
+    <ClInclude Include="Title\player.h" />
+    <ClInclude Include="Title\select.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HEW.exe" />
