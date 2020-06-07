@@ -537,3 +537,22 @@ DWORD GetCount()
 {
 	return g_cntUpdate;
 }
+
+/*=====================================================================
+割合指定ランダム取得関数
+戻り値：bool			true:割合でtrueにする
+引数：　float rate			:0~1f　　trueを返す割合を指定
+=====================================================================*/
+bool CheckRand(float rate)
+{
+	int value = rand();
+
+	int valmax = (int)(RAND_MAX * rate);
+
+	if (abs(value) <= valmax)
+	{// 許容範囲内であればtrue
+		return true;
+	}
+	return false;
+}
+

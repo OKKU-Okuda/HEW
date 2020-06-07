@@ -9,6 +9,8 @@
 #include "../field.h"
 #include "ResourceManager.h"
 #include "road.h"
+#include "../item.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -71,6 +73,33 @@ void DrawFieldRoad(FIELD_CHIP* pData)
 	GetFieldShareMesh(FMESH_LONGWALLLEFT)->DrawSubset(0);
 	GetFieldShareMesh(FMESH_LONGWALLRIGHT)->DrawSubset(0);
 
+}
+
+/*=====================================================================
+直線道Awake関数
+=====================================================================*/
+void AwakeFieldRoad(FIELD_CHIP* pData)
+{
+	if (CheckRand(0.2f) == true)
+	{// コインの設置
+		const int numCoin = 20;													// コインの設置数
+		const float itv_coin = FIELDCHIP_HEIGHT / (numCoin + 1);				// コイン設置間隔
+		const float PosX = rand() % (int)FIELDROAD_X - (FIELDROAD_X / 2);		// コイン設置列
+
+		for (int i = 0; i < numCoin; i++)
+		{
+			Vec3 pos(PosX, POSY_COIN, -FIELDCHIP_CENTER_Z + (i * itv_coin));		// 設置位置
+
+			D3DXVec3TransformCoord(&pos, &pos, &pData->WldMat);			// 位置をワールド座標に変換
+
+			SetItem(pData, pos, Vec3(0, 0, 0));							// コイン設置
+		}
+
+	}
+//	else if (CheckRand(0.3f) == true)
+	{// GIMMICKの設置
+
+	}
 }
 
 /*=====================================================================

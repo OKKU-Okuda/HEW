@@ -10,6 +10,7 @@
 #include "../Core/debugproc.h"
 #include "../Core/camera.h"
 #include "../Core/CheckHit.h"
+#include "field.h"
 #include "item.h"	
 #include "player.h"
 
@@ -88,14 +89,8 @@ HRESULT InitItem(void)
 		g_aItem[nCntItem].bUse = false;
 		g_aItem[nCntItem].bHit = false;
 		g_aItem[nCntItem].time = 0.0f;
+		g_aItem[nCntItem].pParent = NULL;
 	}
-
-	g_aItem[0].bUse = true;
-	g_aItem[1].bUse = true;
-	g_aItem[2].bUse = true;
-	g_aItem[3].bUse = true;
-	g_aItem[4].bUse = true;
-	g_aItem[5].bUse = true;
 
 	g_ItemPoint = 0;
 
@@ -135,10 +130,18 @@ void UninitItem(void)
 //=============================================================================
 void UpdateItem(void)
 {
+#ifdef _DEBUG
+	int numActiveItem = 0;
+#endif // _DEBUG
+
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
 		if (g_aItem[nCntItem].bUse == true)
 		{
+#ifdef _DEBUG
+			numActiveItem++;
+#endif
+
 			g_aItem[nCntItem].rot.y += 0.05f;
 
 			if (g_aItem[nCntItem].bHit == true)
@@ -173,14 +176,27 @@ void UpdateItem(void)
 				// ベジェ曲線の関数
 				BezierCurve( &g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
 			
+				continue;
 			}
-			else
-			{
-				g_aItem[nCntItem].bHit = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
-				g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
+
+
+			// 非接触時の処理
+
+			g_aItem[nCntItem].bHit = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
+				
+			g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
+
+			if (g_aItem[nCntItem].ID_Parent.bit != g_aItem[nCntItem].pParent->ID.bit || g_aItem[nCntItem].pParent->State == FSTATE_NONE)
+			{// 所属フィールドが息してない場合は消す
+				DeleteItem(nCntItem);	
 			}
+
 		}
 	}
+
+#ifdef _DEBUG
+	PrintDebugProc("[debug_item]Active %d (MAX%d)", numActiveItem, MAX_ITEM);
+#endif
 }
 
 //=============================================================================
@@ -248,7 +264,7 @@ void DrawItem(void)
 //=============================================================================
 // アイテムの設定
 //=============================================================================
-void SetItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
+void SetItem(FIELD_CHIP* pParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
 {
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
@@ -258,6 +274,8 @@ void SetItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
 			g_aItem[nCntItem].rot = rot;
 			g_aItem[nCntItem].fRadius = ITEM_RADIUS;
 			g_aItem[nCntItem].nType = nType;
+			g_aItem[nCntItem].pParent = pParent;
+			g_aItem[nCntItem].ID_Parent = pParent->ID;
 			g_aItem[nCntItem].bUse = true;
 
 			break;
@@ -273,7 +291,17 @@ void DeleteItem(int nIdxItem)
 	if (nIdxItem >= 0 && nIdxItem < MAX_ITEM)
 	{
 		g_aItem[nIdxItem].bUse = false;
+		g_aItem[nIdxItem].pParent = NULL;		// 念のためnull_ptr
+		g_aItem[nIdxItem].ID_Parent = GetChipID(0, 0);
 	}
+}
+
+//=============================================================================
+// item配列のゼロクリア
+//=============================================================================
+void ResetItem()
+{
+	ZeroMemory(g_aItem, sizeof(g_aItem));		
 }
 
 //=============================================================================

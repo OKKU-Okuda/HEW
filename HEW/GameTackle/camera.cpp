@@ -15,9 +15,9 @@
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
-#define CAMERA_ATOFFSET	(Vec3(0,20,0))	// 注視点のプレイヤー座標からの3次元オフセット(y以外はいじるとやばい）
-#define CAMERA_RANGE	(90.0f)		// プレイヤーからのレンジ
-#define CAMERA_OFFSETY	(50.0f)		// 注視点からの視点オフセットｙ
+#define CAMERA_ATOFFSET	(30)	// 注視点のプレイヤー座標からの3次元オフセット(y以外はいじるとやばい）
+#define CAMERA_RANGE	(150.0f)		// プレイヤーからのレンジ
+#define CAMERA_OFFSETY	(70.0f)		// 注視点からの視点オフセットｙ
 
 #define CAMERA_DEBUGOFFSET		(Vec3(0, 55.0f, -180.0f))		// デバッグ用カメラの3次元オフセット
 //---------------------------------------------------------------------
@@ -38,7 +38,10 @@
 =====================================================================*/
 void TackleCameraUpdate(CAMERA* pCam)
 {	
-	pCam->at = *GetPlayerPos() + CAMERA_ATOFFSET;
+	Vec3 at = *GetPlayerPos();
+
+	at.y = CAMERA_ATOFFSET;
+	pCam->at = at;
 	//pCam->pos = *GetPlayerPos() + OffsetCamPos;
 	// カメラの注視点と視点を主人公に追従させる
 	pCam->pos.x = sinf(GetPlayerRot()->y) * CAMERA_RANGE + pCam->at.x ; //+ OffsetCamPos.x;

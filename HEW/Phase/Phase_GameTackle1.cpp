@@ -13,6 +13,7 @@
 
 #include "Phase_GameTackle1.h"	
 #include "Phase_GameTackle2.h"
+#include "Phase_Title.h"
 
 #include "../GameTackle/player.h"
 #include "../GameTackle/enemy.h"
@@ -231,6 +232,14 @@ void UninitGameTackle1(bool isEnd)
 	// UIの終了処理
 	UninitUI();
 
+}
+
+/*=====================================================================
+GameTackle1ゲームエンド関数
+=====================================================================*/
+void GameTackle1End()
+{
+	GoNextPhase(GetPhaseTitleFunc());
 }
 
 /*=====================================================================

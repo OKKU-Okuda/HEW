@@ -9,7 +9,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MAX_ITEM				(128)						// アイテム最大数
+#define	MAX_ITEM				(512)						// アイテム最大数
 #define	VALUE_ROTATE_ITEM		(D3DX_PI * 0.025f)			// 回転速度
 #define	ITEM_RADIUS				(10.0f)						// 半径
 #define ITEM_EFECT_TIME			(0.5f)						// アイテムのエフェクトに掛かる秒数
@@ -50,6 +50,8 @@ typedef struct
 	float time;				// アイテムのエフェクトに掛かる時間
 	int nIdxShadow;			// 影ID
 	int nType;				// 種類
+	FIELD_CHIP*		pParent;// 所属している親のフィールド先
+	CHIP_ID			ID_Parent;	// フィールド先の識別チェック用
 	bool bUse;				// 使用しているかどうか
 	bool bHit;				// 当たり判定
 } ITEM;
@@ -61,8 +63,14 @@ HRESULT InitItem(void);
 void UninitItem(void);
 void UpdateItem(void);
 void DrawItem(void);
-void SetItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType = ITEMTYPE_COIN);
+
+//=============================================================================
+// アイテムの設定
+//=============================================================================
+void SetItem(FIELD_CHIP* pParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType = ITEMTYPE_COIN);
+
 void DeleteItem(int nIdxItem);
+void ResetItem();
 ITEM *GetItem(void);
 
 D3DXVECTOR3 *BezierCurve(
