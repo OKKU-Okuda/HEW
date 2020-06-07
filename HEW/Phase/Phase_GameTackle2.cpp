@@ -40,7 +40,7 @@ void UpdateGameTackle2()
 	PrintDebugProc("タックル2フェーズ");
 
 	// 次のフェーズに行く
-	if (GetKeyboardTrigger(DIK_RETURN) || IsButtonTriggered(0, BUTTON_C))
+	if (GetKeyboardTrigger(DIK_RETURN))
 	{	// タックル3
 		GoNextPhase(GetPhaseGameTackle3Func());
 	}
