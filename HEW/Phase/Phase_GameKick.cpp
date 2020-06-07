@@ -43,7 +43,7 @@ void UpdateGameKick()
 	PrintDebugProc("最後のキックフェーズ");
 
 	// 次のフェーズに行く
-	if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN) || IsButtonTriggered(0, BUTTON_C))
 	{	// リザルト
 		GoNextPhase(GetPhaseResultFunc());
 	}

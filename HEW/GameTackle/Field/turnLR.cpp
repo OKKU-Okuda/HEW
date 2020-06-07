@@ -128,11 +128,11 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 #ifdef _DEBUG
 		PrintDebugProc("[debug_TurnLR]Qキー、Eキー:CURVE");
 #endif
-		if (GetKeyboardTrigger(DIK_Q))
+		if (GetKeyboardTrigger(DIK_Q) || IsButtonTriggered(0, BUTTON_Y))
 		{
 			g_QTEState = QTE_LEFT;
 		}
-		else if (GetKeyboardTrigger(DIK_E))
+		else if (GetKeyboardTrigger(DIK_E) || IsButtonTriggered(0, BUTTON_Z))
 		{
 			g_QTEState = QTE_RIGHT;
 		}

@@ -649,7 +649,7 @@ void UpdatePlayer(void)
 	g_Old_Pos = g_Pos;
 
 	//ジャンプ処理
-	if (GetKeyboardTrigger(DIK_J))
+	if (GetKeyboardTrigger(DIK_J) || IsButtonTriggered(0, BUTTON_B))
 	{
 		if (g_Player[PLAYER_PARENT].jump_spped > 0.0f)
 		{
@@ -658,7 +658,7 @@ void UpdatePlayer(void)
 	}
 
 	//スライディング処理
-	else if (GetKeyboardTrigger(DIK_K))
+	else if (GetKeyboardTrigger(DIK_K) || IsButtonTriggered(0, BUTTON_C))
 	{
 		if (g_Player[PLAYER_PARENT].anim_use != PLAYER_JUMPING)
 		{

@@ -60,14 +60,14 @@ void UpdateSelect()
 {
 
 	// 上下の選択
-	if (GetKeyboardTrigger(DIK_UP))
+	if (GetKeyboardTrigger(DIK_UP) || IsButtonTriggered(0, BUTTON_UP))
 	{
 		g_Select = (g_Select - 1) % MAX_TITLESELECT;
 		SetTitle3DRot(true);
 		SetBottonScaleChanged();
 		SetSelectEffectActive();
 	}
-	else if (GetKeyboardTrigger(DIK_DOWN))
+	else if (GetKeyboardTrigger(DIK_DOWN) || IsButtonTriggered(0, BUTTON_DOWN))
 	{
 		g_Select = (g_Select + 1) % MAX_TITLESELECT;
 		SetTitle3DRot(false);
@@ -76,7 +76,7 @@ void UpdateSelect()
 	}
 
 	// 選択ボタンによって変わる処理
-	if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN) || IsButtonTriggered(0, BUTTON_C))
 	{
 		switch (g_Select)
 		{
