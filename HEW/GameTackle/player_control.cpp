@@ -201,12 +201,12 @@ void UpdatePlayerTranslation()
 #endif
 
 	// â°à⁄ìÆèàóù
-	if (GetKeyboardPress(DIK_A))
+	if (GetKeyboardPress(DIK_A) || IsButtonPressed(0, BUTTON_LEFT))
 	{
 		*GetPlayerPos() += GetFieldVector(AddFieldDirection(g_dirPlayer, -1)) * ADDXPOS;
 	}
 
-	if (GetKeyboardPress(DIK_D))
+	if (GetKeyboardPress(DIK_D) || IsButtonPressed(0, BUTTON_RIGHT))
 	{
 		*GetPlayerPos() += GetFieldVector(AddFieldDirection(g_dirPlayer, 1)) * ADDXPOS;
 	}

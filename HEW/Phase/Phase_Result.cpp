@@ -40,7 +40,7 @@ void UpdateResult()
 	PrintDebugProc("リザルトフェーズ");
 
 	// 次のフェーズに行く
-	if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN) || IsButtonTriggered(0, BUTTON_C))
 	{	// タックル１
 		GoNextPhase(GetPhaseTitleFunc());
 	}
