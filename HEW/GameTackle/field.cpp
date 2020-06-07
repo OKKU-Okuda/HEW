@@ -11,6 +11,7 @@
 #include "player.h"
 #include "player_control.h"
 #include "field_control.h"
+#include "item.h"
 
 #include "Field/ResourceManager.h"
 #include "Field/road.h"
@@ -20,6 +21,7 @@
 #include "Field/jump.h"
 #include "Field/turnLR.h"
 
+#include "../Phase/Phase_GameTackle1.h"
 
 //---------------------------------------------------------------------
 //	ƒ}ƒNƒ’è‹`(“¯cpp“àŒÀ’è)
@@ -47,7 +49,7 @@ static CHIP_ID GetFieldChipID(Vec3* pos);						// 3ŸŒ³ƒ[ƒ‹ƒhÀ•W‚©‚çID‚ğZo‚
 static FIELD_CHIP* GetChipMemory();								// ‹ó‚«CHIP‚ğ’T‚µ‚ÄƒAƒhƒŒƒX‚ğ•Ô‚·‚¾‚¯
 
 static void SetOnFieldWk(FIELD_CHIP* pData);					// g_OnField‚ÌƒXƒe[ƒ^ƒX‚ğİ’u
-static FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type);		// type‚©‚ç“Æ©ŠÖ”\‘¢‘ÌƒAƒhƒŒƒX‚ğŒŸõ‚·‚é
+static FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type, FIELD_CHIP* pData);// type‚©‚ç“Æ©ŠÖ”\‘¢‘ÌƒAƒhƒŒƒX‚ğŒŸõ‚·‚é
 static void SwapAllChipState(FIELD_STATE fst_target, FIELD_STATE fst_set);	// ó‘Ô‚ğ•Ê‚Ìó‘Ô‚É•ÏŠ·‚·‚éi‚·‚×‚Äj
 
 //---------------------------------------------------------------------
@@ -168,7 +170,6 @@ void UninitField()
 =====================================================================*/
 void ResetField()
 {
-
 	for (int i = 0; i < MAX_FIELD; i++)
 	{
 		// –¢g—pó‘Ô
@@ -217,19 +218,18 @@ FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 
 	keep_pt->State = FSTATE_READY;
 
-
-	// ”’l‘ã“ü
-	keep_pt->ID			= id;
-	keep_pt->Dir		= fdirection;
-	keep_pt->Type		= type;
-	keep_pt->pFunc		= SearchFieldObjFunc(type);
-
 	// Zo
 	GetMatrix(&keep_pt->WldMat,											// ƒ[ƒ‹ƒhs—ñ‚ğ‹‚ß‚é
 		&Vec3((FIELDCHIP_WIDTH / 2) + (FIELDCHIP_WIDTH * id.vec2.x), 0, (FIELDCHIP_HEIGHT / 2) + (FIELDCHIP_HEIGHT * id.vec2.z)),
 		&Vec3(0, (D3DX_PI / 2)*(int)fdirection, 0));
 
 	D3DXMatrixInverse(&keep_pt->InvWldMat, NULL, &keep_pt->WldMat);		// ã‹L‹ts—ñ
+
+		// ”’l‘ã“ü
+	keep_pt->ID = id;
+	keep_pt->Dir = fdirection;
+	keep_pt->Type = type;
+	keep_pt->pFunc = SearchFieldObjFunc(type, keep_pt);
 
 	return keep_pt;
 }
@@ -308,6 +308,7 @@ bool PlayerCheckHitOnField()
 #ifdef _DEBUG
 		PrintDebugProc("[debug:field_chip]y²”»’è‚É‚æ‚é—‰ºŠm’èˆ— %vec3", *GetPlayerPos());
 #endif
+		GameTackle1End();
 
 		ans = false;
 	}
@@ -439,7 +440,7 @@ FIELD_CHIP* SearchChipID(CHIP_ID id)
 /*=====================================================================
 	cpp“àŠÖ”
 =====================================================================*/
-FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type)
+FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type,FIELD_CHIP* pData)
 {
 	switch (type)
 	{
@@ -447,6 +448,7 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type)
 		return GetFieldVoidFunc();
 
 	case FTYPE_ROAD:
+		AwakeFieldRoad(pData);
 		return GetFieldRoadFunc();
 
 	case FTYPE_CLIFFR:
