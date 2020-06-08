@@ -23,7 +23,7 @@
 #define	VALUE_ROTATE		(D3DX_PI * 0.02f)				// ‰ñ“]—Ê
 #define	PLAYER_PARENT		(0)								// e‚Ì“Y‚¦Žš(‘Ì)
 #define	VERTEX_MAX			(300)							// ‹OÕ‚ÌÅ‘å”
-#define	JUMP_HEIGHT			(8.0f)							// ƒWƒƒƒ“ƒv‚Ì‚‚³
+#define	JUMP_HEIGHT			(6.0f)							// ƒWƒƒƒ“ƒv‚Ì‚‚³
 #define	JUMP_GRAVITY		(0.25f)							// d—Í
 #define	GRAVITY				(1.0f)							// d—Í
 #define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
@@ -151,79 +151,79 @@ INTERPOLATION_DATA stop_tbl_left_foot[] = {	// pos, rot, scl, frame
 //=============================================================================
 
 INTERPOLATION_DATA dash_tbl_body[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 8, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 8, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 8, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(0.0f, 23.5f, 0.0f),  D3DXVECTOR3(-D3DX_PI / 8, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 
 };
 
 INTERPOLATION_DATA dash_tbl_head[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(0.0f, 12.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f),  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 
 };
 
 INTERPOLATION_DATA dash_tbl_right_shoulder[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(-D3DX_PI / 8, D3DX_PI / 4, -D3DX_PI / 8),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(-D3DX_PI / 8, D3DX_PI / 4, -D3DX_PI / 8),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 4, D3DX_PI / 4, D3DX_PI / 4),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
-	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 4, D3DX_PI / 4, D3DX_PI / 4),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 4, D3DX_PI / 4, D3DX_PI / 4),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(-8.1f, 8.9f, 2.3f),  D3DXVECTOR3(-D3DX_PI / 8, D3DX_PI / 4, -D3DX_PI / 8),	D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1},
 
 };
 
 INTERPOLATION_DATA dash_tbl_right_arm[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(-2.0f, -5.2f, 2.7f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 
 };
 
 INTERPOLATION_DATA dash_tbl_left_shoulder[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 4, -D3DX_PI / 4, -D3DX_PI / 4),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 4, -D3DX_PI / 4, -D3DX_PI / 4),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(-D3DX_PI / 8, -D3DX_PI / 4, D3DX_PI / 8),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
-	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(-D3DX_PI / 8, -D3DX_PI / 4, D3DX_PI / 8),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(-D3DX_PI / 8, -D3DX_PI / 4, D3DX_PI / 8),   D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(8.1f, 8.9f, 2.3f),  D3DXVECTOR3(D3DX_PI / 4, -D3DX_PI / 4, -D3DX_PI / 4),	  D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
 
 };
 
 INTERPOLATION_DATA dash_tbl_left_arm[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
-	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
+	{ D3DXVECTOR3(3.0f, -5.2f, 1.8f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 };
 
 INTERPOLATION_DATA dash_tbl_right_thigh[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
-	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
 };
 
 INTERPOLATION_DATA dash_tbl_right_foot[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 2, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 2, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
-	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(-0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 2, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
 
 };
 
 INTERPOLATION_DATA dash_tbl_left_thigh[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f),       D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
-	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f),       D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(D3DX_PI / 2, 0.0f, 0.0f),       D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(2.0f, 0.0f, 0.0f), D3DXVECTOR3(-D3DX_PI / 12, 0.0f, 0.0f),      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
 
 };
 
 INTERPOLATION_DATA dash_tbl_left_foot[] = {	// pos, rot, scl, frame
-	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),        D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),        D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 2, 0.0f, 0.0f),       D3DXVECTOR3(1.0f, 1.0f, 1.0f),1 },
-	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 2, 0.0f, 0.0f),        D3DXVECTOR3(1.0f, 1.0f, 1.0f), 20 },
+	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 2, 0.0f, 0.0f),        D3DXVECTOR3(1.0f, 1.0f, 1.0f), 15 },
 	{ D3DXVECTOR3(0.3f, -10.2f, 1.0f), D3DXVECTOR3(-D3DX_PI / 3, 0.0f, 0.0f),	      D3DXVECTOR3(1.0f, 1.0f, 1.0f), 1 },
 
 };
@@ -785,34 +785,36 @@ void UpdatePlayer(void)
 		}
 	}
 
+	//((float)(rand() % 50) - 25.0f)
+	float randX=((float)(rand()%2)+3);
+	float randX2 = ((float)(rand() % 2)+3);
+
 
 	//”w’†‚ÌˆÊ’u
-	D3DXVec3TransformCoord(&back_pos, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), &g_Player[0].mtxWorld);
+	D3DXVec3TransformCoord(&up_back[kiseki_idx], &D3DXVECTOR3(randX, 5.0f, 1.0f), &g_Player[0].mtxWorld);
 
-	up_back[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 15.0f, 0.0f);
+	D3DXVec3TransformCoord(&bottom_back[kiseki_idx], &D3DXVECTOR3(-randX2, 5.0f, 1.0f), &g_Player[0].mtxWorld);
 
-	bottom_back[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 10.0f, 0.0f);
+	//D3DXVec3TransformCoord(&up_back2[kiseki_idx], &D3DXVECTOR3(2.0f, 5.0f, 1.0f), &g_Player[0].mtxWorld);
 
-	up_back2[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 10.0f, 0.0f);
+	//D3DXVec3TransformCoord(&bottom_back2[kiseki_idx], &D3DXVECTOR3(-2.0f, 5.0f, 1.0f), &g_Player[0].mtxWorld);
 
-	bottom_back2[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+	//D3DXVec3TransformCoord(&up_back3[kiseki_idx], &D3DXVECTOR3(-2.0f, 5.0f, 1.0f), &g_Player[0].mtxWorld);
 
-	up_back3[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 5.0f, 5.0f);
-
-	bottom_back3[kiseki_idx] = back_pos + D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	//D3DXVec3TransformCoord(&bottom_back3[kiseki_idx], &D3DXVECTOR3(-4.0f, 5.0f, 1.0f), &g_Player[0].mtxWorld);
 
 	if (kiseki_idx > 0)
 	{
 		if (g_Player[PLAYER_PARENT].anim_use == PLAYER_RUNNING || g_Player[PLAYER_PARENT].anim_use == PLAYER_JUMPING)
 		{
-			SetKiseki(up_back[kiseki_idx - 1], up_back[kiseki_idx], bottom_back[kiseki_idx - 1], bottom_back[kiseki_idx], 0, 0);
-			SetKiseki(up_back[kiseki_idx - 1], bottom_back[kiseki_idx - 1], up_back[kiseki_idx], bottom_back[kiseki_idx], 0, 0);
+			SetKiseki(up_back[kiseki_idx - 1], up_back[kiseki_idx], bottom_back[kiseki_idx - 1], bottom_back[kiseki_idx], 0, 1);
+			SetKiseki(up_back[kiseki_idx - 1], bottom_back[kiseki_idx - 1], up_back[kiseki_idx], bottom_back[kiseki_idx], 0, 1);
 
-			SetKiseki(up_back2[kiseki_idx - 1], up_back2[kiseki_idx], bottom_back2[kiseki_idx - 1], bottom_back2[kiseki_idx], 0, 1);
-			SetKiseki(up_back2[kiseki_idx - 1], bottom_back2[kiseki_idx - 1], up_back2[kiseki_idx], bottom_back2[kiseki_idx], 0, 1);
+			//SetKiseki(up_back2[kiseki_idx - 1], up_back2[kiseki_idx], bottom_back2[kiseki_idx - 1], bottom_back2[kiseki_idx], 0, 0);
+			//SetKiseki(up_back2[kiseki_idx - 1], bottom_back2[kiseki_idx - 1], up_back2[kiseki_idx], bottom_back2[kiseki_idx], 0, 0);
 
-			SetKiseki(up_back3[kiseki_idx - 1], up_back3[kiseki_idx], bottom_back3[kiseki_idx - 1], bottom_back3[kiseki_idx], 0, 0);
-			SetKiseki(up_back3[kiseki_idx - 1], bottom_back3[kiseki_idx - 1], up_back3[kiseki_idx], bottom_back3[kiseki_idx], 0, 0);
+			//SetKiseki(up_back3[kiseki_idx - 1], up_back3[kiseki_idx], bottom_back3[kiseki_idx - 1], bottom_back3[kiseki_idx], 0, 1);
+			//SetKiseki(up_back3[kiseki_idx - 1], bottom_back3[kiseki_idx - 1], up_back3[kiseki_idx], bottom_back3[kiseki_idx], 0, 1);
 		}
 	}
 
@@ -832,7 +834,6 @@ void UpdatePlayer(void)
 	D3DXVECTOR3 pos = g_Player[PLAYER_PARENT].pos;
 	pos.y = 0.0f;
 	SetPositionShadow(g_Player[PLAYER_PARENT].shadowIdx, pos, g_Player[PLAYER_PARENT].scl);
-
 
 
 }

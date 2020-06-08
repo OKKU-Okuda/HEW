@@ -122,7 +122,7 @@ void UpdateKiseki(void)
 		{
 
 			//“§‰ßˆ—
-			g_aKiseki[i].col.a -= 0.07f;
+			g_aKiseki[i].col.a -= 0.023f;
 			if(g_aKiseki[i].col.a < 0.0f)
 			{
 				//a’l0ˆÈ‰º‚É‚È‚Á‚½‚ç0
@@ -353,7 +353,7 @@ int SetKiseki(D3DXVECTOR3 nemoto1, D3DXVECTOR3 nemoto2, D3DXVECTOR3 sentan1, D3D
 
 			if (col_type == 1)
 			{
-				g_aKiseki[nCntKiseki].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f);
+				g_aKiseki[nCntKiseki].col = D3DXCOLOR(0.8f, 0.8f, 0.8f, 0.35f);
 
 			}
 			else
