@@ -40,7 +40,7 @@ static Mesh g_meshFlat;			// 道の真ん中
 bool CheckHitFieldCliffR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 {
 
-	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < PLAYER_FIELDSIZE_R)
+	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < (FIELDROAD_X / 6) + PLAYER_FIELDSIZE_R)
 	{	// 前座標が内側であれば外に出ないようにする(右側は半分奈落の為出る）
 
 		if (pPos->x < -FIELDROAD_X / 2)
@@ -87,8 +87,8 @@ void InitFieldCliffR()
 	D3DDEVICE;
 
 	// 道の床部分作成
-	g_meshFlat = Create3DBoxMesh(&Vec3(FIELDROAD_X / 2, FIELDROAD_Y, FIELDCHIP_HEIGHT),
-		&Vec3(-FIELDROAD_X / 4, 0, 0));
+	g_meshFlat = Create3DBoxMesh(&Vec3(FIELDROAD_X / 3, FIELDROAD_Y, FIELDCHIP_HEIGHT),
+		&Vec3(-(FIELDROAD_X / 2 - FIELDROAD_X / 6), 0, 0));
 }
 
 /*=====================================================================

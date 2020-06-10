@@ -55,6 +55,6 @@ void TackleCameraUpdate(CAMERA* pCam)
 =====================================================================*/
 void DebugCameraUpdate(CAMERA* pCam)
 {
-	pCam->at = *GetPlayerPos() + CAMERA_ATOFFSET;
+	pCam->at = *GetPlayerPos();
 	pCam->pos = *GetPlayerPos() + CAMERA_DEBUGOFFSET;
 }
