@@ -17,6 +17,7 @@
 #include "Field/road.h"
 #include "Field/void.h"
 #include "Field/cliffR.h"
+#include "Field/cliffC.h"
 #include "Field/cliffL.h"
 #include "Field/jump.h"
 #include "Field/turnLR.h"
@@ -145,6 +146,7 @@ void InitField()
 	InitFieldVoid();
 	InitFieldRoad();
 	InitFieldCliffR();
+	InitFieldCliffC();
 	InitFieldCliffL();
 	InitFieldJump();
 	InitFieldTurnLR();
@@ -159,6 +161,7 @@ void UninitField()
 	UninitFieldVoid();
 	UninitFieldRoad();
 	UninitFieldCliffR();
+	UninitFieldCliffC();
 	UninitFieldCliffL();
 	UninitFieldJump();
 	UninitFieldTurnLR();
@@ -453,6 +456,9 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type,FIELD_CHIP* pData)
 
 	case FTYPE_CLIFFR:
 		return GetFieldCliffRFunc();
+
+	case FTYPE_CLIFFC:
+		return GetFieldCliffCFunc();
 
 	case FTYPE_CLIFFL:
 		return GetFieldCliffLFunc();

@@ -43,6 +43,7 @@
     <ClCompile Include="Title\Logo.cpp" />
     <ClCompile Include="Title\player.cpp" />
     <ClCompile Include="Title\select.cpp" />
+    <ClCompile Include="GameTackle\Field\cliffC.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
@@ -87,6 +88,7 @@
     <ClInclude Include="Title\Logo.h" />
     <ClInclude Include="Title\player.h" />
     <ClInclude Include="Title\select.h" />
+    <ClInclude Include="GameTackle\Field\cliffC.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HEW.exe" />

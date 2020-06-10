@@ -90,7 +90,9 @@ void SpawnField(CHIP_ID id_start)
 
 		
 		numRand = rand() % NUM_FTYPE_NORMAL + START_FTYPE_NORMAL;
-			
+		
+		//numRand = FTYPE_CLIFFC;
+
 		SetField(id_start, (FIELD_TYPE)numRand, GetPlayerDirection());		// ìπÇÃê›íu
 
 	}

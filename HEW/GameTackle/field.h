@@ -55,6 +55,7 @@ enum FIELD_TYPE {
 	// 道:NORMAL
 	FTYPE_ROAD,			// 一本道
 	FTYPE_CLIFFR,		// 右半分崖の道
+	FTYPE_CLIFFC,		// 左右崖の道
 	FTYPE_CLIFFL,		// 左半分崖の道
 	FTYPE_JUMP,			// イッツアジャンプワールド
 
