@@ -156,6 +156,7 @@
     <ClCompile Include="GameTackle\enemy.cpp" />
     <ClCompile Include="GameTackle\field.cpp" />
     <ClCompile Include="GameTackle\player_control.cpp" />
+    <ClCompile Include="GameTackle\pole.cpp" />
     <ClCompile Include="GameTackle\shadow.cpp" />
     <ClCompile Include="GameTackle\UI.cpp" />
     <ClCompile Include="Phase\Phase_GameKick.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="GameTackle\enemy.h" />
     <ClInclude Include="GameTackle\field.h" />
     <ClInclude Include="GameTackle\player_control.h" />
+    <ClInclude Include="GameTackle\pole.h" />
     <ClInclude Include="GameTackle\shadow.h" />
     <ClInclude Include="GameTackle\UI.h" />
     <ClInclude Include="Phase\Phase_GameKick.h" />
