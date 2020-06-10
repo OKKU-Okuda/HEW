@@ -77,7 +77,7 @@ HRESULT InitPole(void)
 	for (int nCntPole = 0; nCntPole < MAX_POLE; nCntPole++)
 	{
 		g_aPole[nCntPole].pos = D3DXVECTOR3(500.0f, 10.0f, 600.0f + (nCntPole * 30));
-		g_aPole[nCntPole].scl = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		g_aPole[nCntPole].scl = D3DXVECTOR3(1.f, 1.f, 1.f);
 		g_aPole[nCntPole].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aPole[nCntPole].fRadius = 0.0f;
 		g_aPole[nCntPole].nIdxShadow = -1;
