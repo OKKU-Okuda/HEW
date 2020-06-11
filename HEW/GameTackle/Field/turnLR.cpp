@@ -155,7 +155,7 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 		pDelChip = SearchChipID(AddFieldID(pData->ID, GetFieldIDVector(AddFieldDirection(GetPlayerDirection(), 2))));
 		if (pDelChip != NULL)
 		{
-			pDelChip->State = FSTATE_NONE;
+			DeleteField(pDelChip);
 		}
 
 		g_QTEState = QTE_NOINPUT;

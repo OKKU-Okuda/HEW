@@ -40,6 +40,7 @@ static void UpdatePlayerDebug();		// デバッグ移動関数
 static FIELD_DIRECTION		g_dirPlayer;		// プレイヤーのフィールド的方向
 
 static bool					g_isRotation;		// プレイヤー回転中か
+static bool					g_isMoveAccept;		// 奥への移動権限があるか
 
 #ifdef _DEBUG
 static bool g_isDebugControl = false;// (debug)操作に減速を付けて自由に操作できるようにする
@@ -62,7 +63,7 @@ void ResetPlayerControl()
 {
 	g_dirPlayer = FDIRECTION_0ZP;
 	g_isRotation = true;
-
+	g_isMoveAccept = false;
 #ifdef _DEBUG
 	g_isDebugControl = false;// (debug)操作に減速を付けて自由に操作できるようにする
 	g_spd = 0.0f;
@@ -212,8 +213,14 @@ void UpdatePlayerTranslation()
 	}
 
 	// 奥移動移動
-	*GetPlayerPos() += GetFieldVector(g_dirPlayer) * ADDPOS;
-
+	if (g_isMoveAccept == true)
+	{
+		*GetPlayerPos() += GetFieldVector(g_dirPlayer) * ADDPOS;
+	}
+	else if (GetKeyboardTrigger(DIK_W) || IsButtonPressed(0, BUTTON_UP))
+	{// 開幕はWで移動開始
+		g_isMoveAccept = true;
+	}
 }
 
 #ifdef _DEBUG
