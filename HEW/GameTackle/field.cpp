@@ -105,8 +105,7 @@ void UpdateField()
 			if (fabsf(GetPlayerPos()->x - pos_field.x) >= RANGE_DELCHIPKEEP ||
 				fabsf(GetPlayerPos()->z - pos_field.z) >= RANGE_DELCHIPKEEP)
 			{
-				DeleteItemByFieldPtr(&g_Field[i]);		// アイテムの削除
-				g_Field[i].State = FSTATE_NONE;			
+				DeleteField(&g_Field[i]);
 			}
 		}
 	}
@@ -116,6 +115,7 @@ void UpdateField()
 	if (GetKeyboardTrigger(DIK_F3))
 	{
 		ResetPlayerPos();
+		ResetItem();
 		ResetField();
 	}
 #endif
@@ -236,6 +236,15 @@ FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 	keep_pt->pFunc = SearchFieldObjFunc(type, keep_pt);
 
 	return keep_pt;
+}
+
+/*=====================================================================
+フィールド削除関数
+=====================================================================*/
+void DeleteField(FIELD_CHIP* pData)
+{
+	DeleteItemByFieldPtr(pData);		// アイテムの削除
+	pData->State = FSTATE_NONE;
 }
 
 /*=====================================================================

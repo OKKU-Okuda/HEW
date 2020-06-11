@@ -714,6 +714,11 @@ void UpdatePlayer(void)
 
 		g_Player[PLAYER_PARENT].jump_spped = JUMP_HEIGHT;
 
+		if (GetCount() % 4 == 0)
+		{// 4フレーム毎
+			SetEffect(D3DXVECTOR3(g_Pos.x, 5.0f, g_Pos.z), 5.0f, 5.0f);
+		}
+
 	}
 	//地面についていなかったら(ジャンプ以外で)
 	else if (g_Player[PLAYER_PARENT].anim_use != PLAYER_JUMPING)
@@ -769,7 +774,6 @@ void UpdatePlayer(void)
 			{
 				g_Player[i].move_time = 0.0f;
 				index = 0;
-				SetEffect(D3DXVECTOR3(g_Player[i].pos.x, 0.0f, g_Player[i].pos.z),5.0f,5.0f);
 			}
 			// 座標を求める	X = StartX + (EndX - StartX) * 今の時間
 			D3DXVECTOR3 vec = g_Player[i].tbl_adr[index + 1].pos - g_Player[i].tbl_adr[index].pos;
