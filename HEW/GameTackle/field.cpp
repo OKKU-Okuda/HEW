@@ -105,7 +105,8 @@ void UpdateField()
 			if (fabsf(GetPlayerPos()->x - pos_field.x) >= RANGE_DELCHIPKEEP ||
 				fabsf(GetPlayerPos()->z - pos_field.z) >= RANGE_DELCHIPKEEP)
 			{
-				g_Field[i].State = FSTATE_NONE;
+				DeleteItemByFieldPtr(&g_Field[i]);		// アイテムの削除
+				g_Field[i].State = FSTATE_NONE;			
 			}
 		}
 	}
@@ -516,6 +517,9 @@ FIELD_CHIP* GetChipMemory()
 		{// 使用中のはスキップ
 			continue;
 		}
+
+		// ゼロクリア
+		ZeroMemory(&g_Field[i], sizeof(FIELD_CHIP));
 
 		return &g_Field[i];
 	}

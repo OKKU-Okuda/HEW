@@ -6,6 +6,8 @@
 ***********************************************************************/
 #pragma once
 
+#include "item.h"
+
 #define MAX_FIELD		(100)		// フィールドプール最大数
 #define MAX_GIMMICK		(5)			// フィールド毎ギミック数
 
@@ -120,6 +122,8 @@ typedef struct FIELD_CHIP{
 	FIELD_STATE		State;		// 状態保管
 	CHIP_ID			ID;			// CHIP場所から位置を判別するID
 	FIELD_OBJFUNC*	pFunc;		// 道ごとに異なる更新関数等取得関数ポインタ
+
+	ITEM*			paItem[MAXITEM_PERFIELD];	// 紐づけられたアイテムのメモリ先
 
 	Matrix			WldMat;		// 当フィールドのワールド行列
 	Matrix			InvWldMat;	// 上記逆行列

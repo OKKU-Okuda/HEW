@@ -187,6 +187,9 @@ void InitGameTackle1(bool isFirst)
 	// エネミーの初期化
 	GetTackleEnemyFunc()->Init(false);
 
+	// アイテムのリセット
+	ResetItem();
+
 	// プレイヤーのリセット
 	ResetPlayerPos();
 
