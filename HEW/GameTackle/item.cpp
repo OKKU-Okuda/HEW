@@ -89,7 +89,6 @@ HRESULT InitItem(void)
 		g_aItem[nCntItem].bUse = false;
 		g_aItem[nCntItem].bHit = false;
 		g_aItem[nCntItem].time = 0.0f;
-		g_aItem[nCntItem].pParent = NULL;
 	}
 
 	g_ItemPoint = 0;
@@ -186,10 +185,10 @@ void UpdateItem(void)
 				
 			g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
 
-			if (g_aItem[nCntItem].ID_Parent.bit != g_aItem[nCntItem].pParent->ID.bit || g_aItem[nCntItem].pParent->State == FSTATE_NONE)
-			{// 所属フィールドが息してない場合は消す
-				DeleteItem(nCntItem);	
-			}
+			//if (g_aItem[nCntItem].ID_Parent.bit != g_aItem[nCntItem].pParent->ID.bit || g_aItem[nCntItem].pParent->State == FSTATE_NONE)
+			//{// 所属フィールドが息してない場合は消す
+			//	DeleteItem(nCntItem);	
+			//}
 
 		}
 	}
@@ -261,24 +260,41 @@ void DrawItem(void)
 	}
 }
 
+
 //=============================================================================
 // アイテムの設定
 //=============================================================================
-void SetItem(FIELD_CHIP* pParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
+void SetItem(FIELD_CHIP* pData ,D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
 {
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
 		if (!g_aItem[nCntItem].bUse)
-		{
+		{// 未使用エリアを取得
+			int nCntPtr = 0;			// フィールドにあるアイテムポインタ配列へのオフセット
+
+			// ステータスの書き換え
 			g_aItem[nCntItem].pos = pos;
 			g_aItem[nCntItem].rot = rot;
 			g_aItem[nCntItem].fRadius = ITEM_RADIUS;
 			g_aItem[nCntItem].nType = nType;
-			g_aItem[nCntItem].pParent = pParent;
-			g_aItem[nCntItem].ID_Parent = pParent->ID;
 			g_aItem[nCntItem].bUse = true;
 
-			break;
+			// フィールド側に自分を紐づけ処理
+			for (; nCntPtr < MAXITEM_PERFIELD; nCntPtr++)
+			{
+				if (pData->paItem[nCntPtr] == NULL)
+				{
+					pData->paItem[nCntPtr] = &g_aItem[nCntItem];
+					break;
+				}
+			}
+
+			if (nCntPtr == MAXITEM_PERFIELD)
+			{// すべて使用済みであればこのアイテムを消す
+				DeleteItem(nCntItem);
+			}
+
+			return;
 		}
 	}
 }
@@ -291,8 +307,29 @@ void DeleteItem(int nIdxItem)
 	if (nIdxItem >= 0 && nIdxItem < MAX_ITEM)
 	{
 		g_aItem[nIdxItem].bUse = false;
-		g_aItem[nIdxItem].pParent = NULL;		// 念のためnull_ptr
-		g_aItem[nIdxItem].ID_Parent = GetChipID(0, 0);
+	}
+}
+
+//=============================================================================
+// アイテムの削除設定
+//=============================================================================
+void DeleteItemByPtr(ITEM* pItem)
+{
+	pItem->bUse = false;
+	pItem = NULL;
+}
+
+//=============================================================================
+// フィールド指定でのアイテムの削除
+//=============================================================================
+void DeleteItemByFieldPtr(FIELD_CHIP *pData)
+{
+	for (int i = 0; i < MAXITEM_PERFIELD; i++)
+	{
+		if (pData->paItem[i] != NULL)
+		{
+			DeleteItemByPtr(pData->paItem[i]);
+		}
 	}
 }
 
@@ -301,7 +338,10 @@ void DeleteItem(int nIdxItem)
 //=============================================================================
 void ResetItem()
 {
-	ZeroMemory(g_aItem, sizeof(g_aItem));		
+	for (int i = 0; i < MAX_ITEM; i++)
+	{
+		DeleteItem(i);
+	}
 }
 
 //=============================================================================

@@ -80,7 +80,7 @@ void DrawFieldRoad(FIELD_CHIP* pData)
 =====================================================================*/
 void AwakeFieldRoad(FIELD_CHIP* pData)
 {
-	if (CheckRand(0.2f) == true)
+	if (CheckRand(1.f) == true)
 	{// コインの設置
 		const int numCoin = 20;													// コインの設置数
 		const float itv_coin = FIELDCHIP_HEIGHT / (numCoin + 1);				// コイン設置間隔
@@ -92,7 +92,7 @@ void AwakeFieldRoad(FIELD_CHIP* pData)
 
 			D3DXVec3TransformCoord(&pos, &pos, &pData->WldMat);			// 位置をワールド座標に変換
 
-			SetItem(pData, pos, Vec3(0, 0, 0));							// コイン設置
+			SetItem(pData,pos, Vec3(0, 0, 0));							// コイン設置
 		}
 
 	}

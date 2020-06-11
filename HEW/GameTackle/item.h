@@ -25,6 +25,7 @@
 #define ITEM_UI_POS_X			(1200.0f)					// アイテムのUIのスクリーン座標X
 #define ITEM_UI_POS_Y			(50.0f)						// アイテムのUIのスクリーン座標Y
 
+#define MAXITEM_PERFIELD		(20)						// フィールドに設置できる最大アイテム数
 //**************************************
 // 種類
 //**************************************
@@ -50,8 +51,6 @@ typedef struct
 	float time;				// アイテムのエフェクトに掛かる時間
 	int nIdxShadow;			// 影ID
 	int nType;				// 種類
-	FIELD_CHIP*		pParent;// 所属している親のフィールド先
-	CHIP_ID			ID_Parent;	// フィールド先の識別チェック用
 	bool bUse;				// 使用しているかどうか
 	bool bHit;				// 当たり判定
 } ITEM;
@@ -67,9 +66,14 @@ void DrawItem(void);
 //=============================================================================
 // アイテムの設定
 //=============================================================================
-void SetItem(FIELD_CHIP* pParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType = ITEMTYPE_COIN);
+struct FIELD_CHIP;
+
+void SetItem(FIELD_CHIP* pData, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType = ITEMTYPE_COIN);
 
 void DeleteItem(int nIdxItem);
+void DeleteItemByPtr(ITEM* pItem);
+void DeleteItemByFieldPtr(FIELD_CHIP *pData);
+
 void ResetItem();
 ITEM *GetItem(void);
 
