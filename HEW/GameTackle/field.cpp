@@ -12,6 +12,7 @@
 #include "player_control.h"
 #include "field_control.h"
 #include "item.h"
+#include "Gimmick/Gimmick.h"
 
 #include "Field/ResourceManager.h"
 #include "Field/road.h"
@@ -87,7 +88,8 @@ void UpdateField()
 
 			keeppos = pos_player;
 
-			g_Field[i].pFunc->Update(&g_Field[i], &pos_player);
+			g_Field[i].pFunc->Update(&g_Field[i], &pos_player);		
+			FieldGimmickUpdate(&g_Field[i], &pos_player);			// GIMMICKのアップデート
 
 			if (keeppos != pos_player)
 			{// 更新関数後にポジション変更があった場合
@@ -135,6 +137,9 @@ void DrawField()
 
 		// 描画
 		g_Field[i].pFunc->Draw(&g_Field[i]);
+
+		// GIMMICKの描画
+		FieldGimmickDraw(&g_Field[i]);
 	}
 }
 
@@ -151,6 +156,8 @@ void InitField()
 	InitFieldCliffL();
 	InitFieldJump();
 	InitFieldTurnLR();
+
+	InitFieldGimmick();
 }
 
 /*=====================================================================
@@ -167,6 +174,7 @@ void UninitField()
 	UninitFieldJump();
 	UninitFieldTurnLR();
 
+	UninitFieldGimmick();
 }
 
 /*=====================================================================
@@ -181,6 +189,9 @@ void ResetField()
 	}
 
 	ZeroMemory(&g_OnField, sizeof(g_OnField));
+
+	EndFieldGimmick();
+	ResetFieldGimmick();
 
 	// 0,0にonField
 	SetField(GetChipID(0, 0), FTYPE_ROAD, FDIRECTION_0ZP);
@@ -244,6 +255,7 @@ FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 void DeleteField(FIELD_CHIP* pData)
 {
 	DeleteItemByFieldPtr(pData);		// アイテムの削除
+	DeleteGimmickByFieldPtr(pData);		// ギミックの削除
 	pData->State = FSTATE_NONE;
 }
 

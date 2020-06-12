@@ -7,6 +7,7 @@
 #include "../../Core/main.h"
 #include "../../Core/debugproc.h"
 #include "../field.h"
+#include "../Gimmick/Wall.h"
 #include "ResourceManager.h"
 #include "road.h"
 #include "../item.h"
@@ -80,7 +81,7 @@ void DrawFieldRoad(FIELD_CHIP* pData)
 =====================================================================*/
 void AwakeFieldRoad(FIELD_CHIP* pData)
 {
-	if (CheckRand(1.f) == true)
+	if (CheckRand(0.2f) == true)
 	{// コインの設置
 		const int numCoin = 20;													// コインの設置数
 		const float itv_coin = FIELDCHIP_HEIGHT / (numCoin + 1);				// コイン設置間隔
@@ -96,9 +97,10 @@ void AwakeFieldRoad(FIELD_CHIP* pData)
 		}
 
 	}
-//	else if (CheckRand(0.3f) == true)
-	{// GIMMICKの設置
-
+	else if (CheckRand(0.5f) == true)
+	{// GIMMICK:壁の設置
+		int typeWall = rand() % MAX_GIMICKWALLQTE;
+		SetFieldGimmick(pData, GTYPE_WALL, &Vec3(0, 0, 250.0f), typeWall);
 	}
 }
 

@@ -13,6 +13,7 @@
 #include "field.h"
 #include "player_control.h"
 
+#include "../Phase/Phase_GameTackle1.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -220,6 +221,7 @@ void UpdatePlayerTranslation()
 	else if (GetKeyboardTrigger(DIK_W) || IsButtonPressed(0, BUTTON_UP))
 	{// 開幕はWで移動開始
 		g_isMoveAccept = true;
+		GameTackle1Start();
 	}
 }
 
