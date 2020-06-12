@@ -26,6 +26,7 @@
 #include "../GameTackle/field_control.h"
 #include "../GameTackle/effect.h"
 #include "../GameTackle/UI.h"
+#include "../GameTackle/pole.h"
 
 
 //---------------------------------------------------------------------
@@ -65,6 +66,9 @@ void UpdateGameTackle1()
 
 	// プレイヤーの更新処理
 	UpdatePlayer();
+
+	// ポールの更新処理
+	UpdatePole();
 
 	// 軌跡の更新
 	UpdateKiseki();
@@ -106,6 +110,9 @@ void DrawGameTackle1()
 	// モデルの描画処理
 	DrawPlayer();
 
+	//	ポールの描画処理
+	DrawPole();
+
 	// アイテムの描画処理
 	DrawItem();
 
@@ -146,6 +153,9 @@ void InitGameTackle1(bool isFirst)
 
 		// プレイヤーの初期化
 		InitPlayer();
+
+		// ポールの初期化処理
+		InitPole();
 
 		//軌跡の初期化
 		InitKiseki(0);
@@ -233,6 +243,9 @@ void UninitGameTackle1(bool isEnd)
 
 	// プレイヤーの終了処理
 	UninitPlayer();
+
+	// ポールの終了処理
+	UninitPole();
 
 	// エネミーの開放
 	GetTackleEnemyFunc()->Uninit(false);
