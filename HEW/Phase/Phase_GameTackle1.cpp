@@ -46,7 +46,7 @@
 
 // 画面遷移基本関数群をまとめておく
 static PHASE_FUNC g_PhaseFunc = { InitGameTackle1,UninitGameTackle1,UpdateGameTackle1,DrawGameTackle1 };
-
+static MySound g_bgmRunning;
 /*=====================================================================
 GameTackle1更新関数
 =====================================================================*/
@@ -166,6 +166,9 @@ void InitGameTackle1(bool isFirst)
 		// エネミーの読み込み
 		GetTackleEnemyFunc()->Init(true);
 
+		// 音の読み込み
+		g_bgmRunning = MySoundCreate("data/BGM/Running.wav");
+		MySoundSetVolume(g_bgmRunning, 0.8f);
 		return;
 	}
 
@@ -214,6 +217,8 @@ void UninitGameTackle1(bool isEnd)
 	// エネミーの終了化
 	GetTackleEnemyFunc()->Uninit(false);
 
+	// 音の停止
+	MySoundStop(g_bgmRunning);
 
 	if (isEnd == false)
 	{
@@ -222,6 +227,9 @@ void UninitGameTackle1(bool isEnd)
 	//---------------------------------------------------------------------
 	//	リソース開放処理
 	//---------------------------------------------------------------------
+
+	// 音の開放
+	MySoundDelete(&g_bgmRunning);
 
 	// プレイヤーの終了処理
 	UninitPlayer();
@@ -243,8 +251,18 @@ void UninitGameTackle1(bool isEnd)
 /*=====================================================================
 GameTackle1ゲームエンド関数
 =====================================================================*/
+void GameTackle1Start()
+{
+	// 音の再生
+	MySoundPlayEternal(g_bgmRunning);
+}
+
+/*=====================================================================
+GameTackle1ゲームエンド関数
+=====================================================================*/
 void GameTackle1End()
 {
+	EndFieldGimmick();
 	GoNextPhase(GetPhaseTitleFunc());
 }
 
