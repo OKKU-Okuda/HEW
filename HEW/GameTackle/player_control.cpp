@@ -17,6 +17,9 @@
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
+
+#define CHANGE_METER(len)	(len / 60.0f)
+
 #define	VALUE_MOVE			(10.0f)							// 移動量
 
 #define ADDROT	(0.1f)				// 回転量
@@ -25,6 +28,7 @@
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
+
 
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
@@ -41,7 +45,10 @@ static void UpdatePlayerDebug();		// デバッグ移動関数
 static FIELD_DIRECTION		g_dirPlayer;		// プレイヤーのフィールド的方向
 
 static bool					g_isRotation;		// プレイヤー回転中か
-static bool					g_isMoveAccept;		// 奥への移動権限があるか
+//static bool					g_isMoveAccept;		// 奥への移動権限があるか
+static MOVE_STATE			g_stateMove;			// 移動状態
+static float				g_lengthRun;			// 走りの総距離
+static float				g_Spd;					// 奥に行くスピード
 
 #ifdef _DEBUG
 static bool g_isDebugControl = false;// (debug)操作に減速を付けて自由に操作できるようにする
@@ -64,7 +71,9 @@ void ResetPlayerControl()
 {
 	g_dirPlayer = FDIRECTION_0ZP;
 	g_isRotation = true;
-	g_isMoveAccept = false;
+	g_stateMove = MSTATE_READY;
+	g_Spd = ADDPOS;
+	g_lengthRun = 0.0f;
 #ifdef _DEBUG
 	g_isDebugControl = false;// (debug)操作に減速を付けて自由に操作できるようにする
 	g_spd = 0.0f;
@@ -95,6 +104,46 @@ FIELD_DIRECTION GetPlayerDirection()
 bool IsPlayerRotation()
 {
 	return g_isRotation;
+}
+
+/*=====================================================================
+プレイヤー移動状態取得関数
+=====================================================================*/
+MOVE_STATE GetPlayerMoveState()
+{
+	return g_stateMove;
+}
+
+/*=====================================================================
+プレイヤー移動状態設置関数
+=====================================================================*/
+void SetPlayerMoveState(MOVE_STATE mstate)
+{
+	g_stateMove = mstate;
+}
+
+/*=====================================================================
+プレイヤー移動距離取得関数
+=====================================================================*/
+float GetPlayerRunMeter()
+{
+	return g_lengthRun;
+}
+
+/*=====================================================================
+プレイヤー速度設定関数
+=====================================================================*/
+void SetPlayerSpd(float spd)
+{
+	g_Spd = spd;
+}
+
+/*=====================================================================
+プレイヤー速度取得関数
+=====================================================================*/
+float GetPlayerSpd()
+{
+	return g_Spd;
 }
 
 /*=====================================================================
@@ -214,13 +263,18 @@ void UpdatePlayerTranslation()
 	}
 
 	// 奥移動移動
-	if (g_isMoveAccept == true)
+	if (g_stateMove == MSTATE_RUNNING)
 	{
-		*GetPlayerPos() += GetFieldVector(g_dirPlayer) * ADDPOS;
+		*GetPlayerPos() += GetFieldVector(g_dirPlayer) * g_Spd;
+		g_lengthRun += CHANGE_METER(g_Spd);							// 総距離計算
+#ifdef _DEBUG
+		PrintDebugProc(">>>>移動距離 %f M<<<<", g_lengthRun);		// デバッグ
+#endif // _DEBUG
+
 	}
-	else if (GetKeyboardTrigger(DIK_W) || IsButtonPressed(0, BUTTON_UP))
+	else if (g_stateMove==MSTATE_READY && (GetKeyboardTrigger(DIK_W) || IsButtonPressed(0, BUTTON_UP)))
 	{// 開幕はWで移動開始
-		g_isMoveAccept = true;
+		g_stateMove = MSTATE_RUNNING;
 		GameTackle1Start();
 	}
 }

@@ -24,6 +24,7 @@
 
 #define SIZE_YZ		(20.0f)			// 丸太の大きさ
 
+#define IS_USE_XMODEL		(true)
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
@@ -58,9 +59,13 @@ static void EndGimmick(GIMMICK_HEADER* pHead);					// 終了関数
 //---------------------------------------------------------------------
 static GIMMICK_FUNC g_Func = { UpdateGimmick ,DrawGimmick ,EndGimmick };
 static GIMMICK_SLIDE g_aGimmick[NUM_POOL];
-static Texture		g_tex;
-static Mesh			g_meshSlide;	
 
+#if IS_USE_XMODEL == true
+static Model		g_modelSlide;
+#else
+static Mesh			g_meshSlide;	
+static Texture		g_tex;
+#endif
 /*=====================================================================
 スライド初期化関数
 =====================================================================*/
@@ -121,6 +126,10 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 void DrawGimmick(GIMMICK_HEADER* pHead)
 {
 	var(pData, pHead);
+
+#if IS_USE_XMODEL == true
+	DrawModelWithOtherMatrix(g_modelSlide, &pData->WldMat);
+#else
 	D3DDEVICE;
 
 	// ワールドマトリックスの設定
@@ -129,6 +138,7 @@ void DrawGimmick(GIMMICK_HEADER* pHead)
 	pDevice->SetTexture(0, g_tex);
 
 	g_meshSlide->DrawSubset(0);
+#endif
 }
 
 /*=====================================================================
@@ -149,11 +159,14 @@ void InitFieldGimmickSlide()
 
 	ZeroMemory(g_aGimmick, sizeof(g_aGimmick));
 
+#if IS_USE_XMODEL == true
+	g_modelSlide = CreateModel("data/MODEL/pole.x");
+#else
 	g_meshSlide = Create3DBoxMesh(&Vec3(FIELDROAD_X + (ROADWALL_SIZEX * 2), SIZE_YZ, SIZE_YZ),
 		&Vec3(0, FIELDROAD_Y + (SIZE_YZ), 0));
 
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field.png", &g_tex);
-
+#endif
 }
 
 /*=====================================================================
@@ -161,9 +174,12 @@ void InitFieldGimmickSlide()
 =====================================================================*/
 void UninitFieldGimmickSlide()
 {
+#if IS_USE_XMODEL == true
+	DeleteModel(&g_modelSlide);
+#else
 	SAFE_RELEASE(g_meshSlide);
 	SAFE_RELEASE(g_tex);
-
+#endif
 
 }
 
