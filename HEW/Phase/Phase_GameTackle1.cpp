@@ -111,7 +111,7 @@ void DrawGameTackle1()
 	DrawPlayer();
 
 	//	ポールの描画処理
-	DrawPole();
+	//DrawPole();
 
 	// アイテムの描画処理
 	DrawItem();
