@@ -6,9 +6,11 @@
 ***********************************************************************/
 #include "../Core/main.h"
 
+#include "Gimmick/Gimmick.h"
+
 #include "field.h"
-#include "field_control.h"
 #include "player_control.h"
+#include "field_control.h"
 
 //---------------------------------------------------------------------
 //	É}ÉNÉçíËã`(ìØcppì‡å¿íË)

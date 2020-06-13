@@ -9,6 +9,7 @@
 #include "Gimmick.h"
 
 #include "Wall.h"
+#include "Slide.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -59,6 +60,7 @@ void SetFieldGimmick(FIELD_CHIP* pChip, GIMMICK_TYPE Type, Vec3* pPos, DWORD opt
 		pGHead = GetWallMemory(pChip, pPos, (GIMICKWALL_QTE)option);
 		break;
 	case GTYPE_FORSLIDE:
+		pGHead = GetSlideMemory(pChip, pPos);
 		break;
 	case MAX_GIMMICKTYPE:
 	default:
@@ -81,6 +83,7 @@ GIMMICK初期化関数
 void InitFieldGimmick()
 {
 	InitFieldGimmickWall();
+	InitFieldGimmickSlide();
 }
 
 /*=====================================================================
@@ -89,6 +92,7 @@ GIMMICK終了化関数
 void UninitFieldGimmick()
 {
 	UninitFieldGimmickWall();
+	UninitFieldGimmickSlide();
 }
 
 /*=====================================================================
@@ -97,6 +101,7 @@ GIMMICKエンド関数
 void EndFieldGimmick()
 {
 	AllEndFieldGimmickWall();
+	AllEndFieldGimmickSlide();
 }
 
 /*=====================================================================
@@ -105,6 +110,7 @@ GIMMICKリセット関数
 void ResetFieldGimmick()
 {
 	ResetFieldGimmickWall();
+	ResetFieldGimmickSlide();
 }
 
 /*=====================================================================

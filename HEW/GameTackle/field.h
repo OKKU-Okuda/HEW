@@ -5,7 +5,6 @@
 	field.cppに関するヘッダー
 ***********************************************************************/
 #pragma once
-
 #include "item.h"
 #include "Gimmick/Gimmick.h"
 
@@ -117,6 +116,7 @@ union CHIP_ID {
 };
 
 // フィールド
+struct GIMMICK_HEADER;
 typedef struct FIELD_CHIP{
 	FIELD_TYPE		Type;		// 道の種類(一応すぐ参照できるように保管)
 	FIELD_DIRECTION	Dir;		// 道の方向

@@ -7,12 +7,13 @@
 #include "../Core/main.h"
 #include "../Core/debugproc.h"
 
+#include "item.h"
+#include "Gimmick/Gimmick.h"
+
 #include "field.h"
 #include "player.h"
 #include "player_control.h"
 #include "field_control.h"
-#include "item.h"
-#include "Gimmick/Gimmick.h"
 
 #include "Field/ResourceManager.h"
 #include "Field/road.h"
@@ -477,15 +478,19 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type,FIELD_CHIP* pData)
 		return GetFieldRoadFunc();
 
 	case FTYPE_CLIFFR:
+		AwakeFieldCliffR(pData);
 		return GetFieldCliffRFunc();
 
 	case FTYPE_CLIFFC:
+		AwakeFieldCliffC(pData);
 		return GetFieldCliffCFunc();
 
 	case FTYPE_CLIFFL:
+		AwakeFieldCliffL(pData);
 		return GetFieldCliffLFunc();
 
 	case FTYPE_JUMP:
+		AwakeFieldJump(pData);
 		return GetFieldJumpFunc();
 
 	case FTYPE_TURNLR:

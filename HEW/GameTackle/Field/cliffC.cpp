@@ -73,6 +73,30 @@ void DrawFieldCliffC(FIELD_CHIP* pData)
 }
 
 /*=====================================================================
+中央崖Awake関数
+=====================================================================*/
+void AwakeFieldCliffC(FIELD_CHIP* pData)
+{
+	if (CheckRand(0.5f) == true)
+	{// コインの設置
+		const int numCoin = 10;													// コインの設置数
+		const float itv_coin = FIELDCHIP_HEIGHT / (numCoin + 1);				// コイン設置間隔
+		const float PosX = rand() % (int)(FIELDROAD_X / 3) - (FIELDROAD_X / 6);		// コイン設置列
+
+		for (int i = 0; i < numCoin; i++)
+		{
+			Vec3 pos(PosX, POSY_COIN, -FIELDCHIP_CENTER_Z + (i * itv_coin));		// 設置位置
+
+			D3DXVec3TransformCoord(&pos, &pos, &pData->WldMat);			// 位置をワールド座標に変換
+
+			SetItem(pData, pos, Vec3(0, 0.01f * i, 0));							// コイン設置
+		}
+
+	}
+
+}
+
+/*=====================================================================
 中央崖道初期化関数
 =====================================================================*/
 void InitFieldCliffC()

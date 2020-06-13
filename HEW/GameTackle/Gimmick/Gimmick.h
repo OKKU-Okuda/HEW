@@ -19,6 +19,7 @@ enum GIMMICK_TYPE {
 	MAX_GIMMICKTYPE
 };
 
+struct FIELD_CHIP;
 struct GIMMICK_HEADER;
 typedef struct {
 	void(*Update)(GIMMICK_HEADER*, Vec3*);		// GIMMICK更新関数(第2引数はプレイヤーの位置)

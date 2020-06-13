@@ -184,7 +184,7 @@ void DrawPole(void)
 		mat.MatD3D.Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 		mat.MatD3D.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 
-		pDevice->SetMaterial(&mat.MatD3D);
+		//pDevice->SetMaterial(&mat.MatD3D);
 	}
 
 }

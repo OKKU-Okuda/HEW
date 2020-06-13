@@ -151,6 +151,7 @@
     <ClCompile Include="GameTackle\Field\void.cpp" />
     <ClCompile Include="GameTackle\field_control.cpp" />
     <ClCompile Include="GameTackle\Gimmick\Gimmick.cpp" />
+    <ClCompile Include="GameTackle\Gimmick\Slide.cpp" />
     <ClCompile Include="GameTackle\Gimmick\Wall.cpp" />
     <ClCompile Include="GameTackle\item.cpp" />
     <ClCompile Include="GameTackle\kiseki.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="GameTackle\Field\void.h" />
     <ClInclude Include="GameTackle\field_control.h" />
     <ClInclude Include="GameTackle\Gimmick\Gimmick.h" />
+    <ClInclude Include="GameTackle\Gimmick\Slide.h" />
     <ClInclude Include="GameTackle\Gimmick\Wall.h" />
     <ClInclude Include="GameTackle\item.h" />
     <ClInclude Include="GameTackle\kiseki.h" />
