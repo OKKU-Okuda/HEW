@@ -38,6 +38,7 @@ enum
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
+struct FIELD_CHIP;
 typedef struct
 {
 	D3DXVECTOR3 pos;		// 現在の位置
@@ -50,6 +51,7 @@ typedef struct
 	float fRadius;			// 半径
 	float time;				// アイテムのエフェクトに掛かる時間
 	int nIdxShadow;			// 影ID
+	FIELD_CHIP*		pParent;	// 親
 	int nType;				// 種類
 	bool bUse;				// 使用しているかどうか
 	bool bHit;				// 当たり判定
@@ -71,7 +73,7 @@ struct FIELD_CHIP;
 void SetItem(FIELD_CHIP* pData, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType = ITEMTYPE_COIN);
 
 void DeleteItem(int nIdxItem);
-void DeleteItemByPtr(ITEM* pItem);
+void DeleteItemByPtr(ITEM** ppItem);
 void DeleteItemByFieldPtr(FIELD_CHIP *pData);
 
 void ResetItem();

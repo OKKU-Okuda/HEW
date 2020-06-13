@@ -160,14 +160,12 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 				pData->State = WSTATE_SUCCESSQTE;
 				pData->lenZSuc = pData->Pos.z - WALLSIZE_Z - pPos->z;
 
-				if (MySoundGetPlaying(g_seWalldowm) == false)
-				{// 壁壊しの音が見再生の場合
-					pData->isSoundPlaying = true;
+				pData->isSoundPlaying = true;
 
-					// 再生
-					MySoundSetVolume(g_seWalldowm, MIN_DOWNVOLUME);
-					MySoundPlayOnce(g_seWalldowm);
-				}
+				// 再生
+				MySoundSetVolume(g_seWalldowm, MIN_DOWNVOLUME);
+				MySoundPlayOnce(g_seWalldowm);
+				
 			}
 			else
 			{// 指定ビット以外が押されている
@@ -254,7 +252,7 @@ void EndGimmick(GIMMICK_HEADER* pHead)
 
 	if (pData->isSoundPlaying == true)
 	{// 壁を壊したオブジェクトの場合は音を停止
-		MySoundStop(g_seWalldowm);
+	//	MySoundStop(g_seWalldowm);
 	}
 }
 

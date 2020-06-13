@@ -18,6 +18,7 @@
 // マクロ定義
 //*****************************************************************************
 
+#define VOLUME_COIN		(4.0f)
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -40,6 +41,8 @@ const char *c_aFileNameItem[ITEMTYPE_MAX] =
 };
 
 int g_ItemPoint;
+
+static MySound g_seGetCoin;		// コインゲットse
 //=============================================================================
 // 初期化処理
 //=============================================================================
@@ -93,7 +96,8 @@ HRESULT InitItem(void)
 
 	g_ItemPoint = 0;
 
-
+	g_seGetCoin = MySoundCreate("data/SE/GetCoin.wav");
+	MySoundSetVolume(g_seGetCoin, VOLUME_COIN);
 	return S_OK;
 }
 
@@ -122,6 +126,8 @@ void UninitItem(void)
 			g_pD3DXMatBuffItem[nCntItemType] = NULL;
 		}
 	}
+
+	MySoundDelete(&g_seGetCoin);
 }
 
 //=============================================================================
@@ -158,7 +164,7 @@ void UpdateItem(void)
 				{	// 1を超えたら処理を終了
 					g_aItem[nCntItem].time = 1.0f;
 					g_ItemPoint++;
-					g_aItem[nCntItem].bUse = false;
+					DeleteItem(nCntItem);
 				}
 
 				// アイテムのUIがあるスクリーン座標をワールド座標に変換する(終点の処理)
@@ -185,6 +191,10 @@ void UpdateItem(void)
 				
 			g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
 
+			if (g_aItem[nCntItem].bHit == true)
+			{// コイン集める音
+				MySoundPlayOnce(g_seGetCoin);
+			}
 			//if (g_aItem[nCntItem].ID_Parent.bit != g_aItem[nCntItem].pParent->ID.bit || g_aItem[nCntItem].pParent->State == FSTATE_NONE)
 			//{// 所属フィールドが息してない場合は消す
 			//	DeleteItem(nCntItem);	
@@ -205,6 +215,10 @@ void DrawItem(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 	D3DXMATRIX mtxRot, mtxTranslate, mtxScl;
+	D3DMATERIAL9 Matdef;
+
+	// マテリアルの退避
+	pDevice->GetMaterial(&Matdef);
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
@@ -244,19 +258,12 @@ void DrawItem(void)
 		}
 	}
 
-	{// マテリアルをデフォルトに戻す
-		D3DXMATERIAL mat;
+	// マテリアルの復活
+	pDevice->SetMaterial(&Matdef);
 
-		mat.MatD3D.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
-		mat.MatD3D.Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
-		mat.MatD3D.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
-
-		pDevice->SetMaterial(&mat.MatD3D);
-	}
-
-	if (GetKeyboardPress(DIK_R))
+	//if (GetKeyboardPress(DIK_R))
 	{
-		InitItem();
+	//	InitItem();
 	}
 }
 
@@ -278,7 +285,9 @@ void SetItem(FIELD_CHIP* pData ,D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
 			g_aItem[nCntItem].fRadius = ITEM_RADIUS;
 			g_aItem[nCntItem].nType = nType;
 			g_aItem[nCntItem].bUse = true;
-
+			g_aItem[nCntItem].bHit = false;
+			g_aItem[nCntItem].pParent = pData;
+			g_aItem[nCntItem].time = 0.0f;
 			// フィールド側に自分を紐づけ処理
 			for (; nCntPtr < MAXITEM_PERFIELD; nCntPtr++)
 			{
@@ -297,6 +306,7 @@ void SetItem(FIELD_CHIP* pData ,D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
 			return;
 		}
 	}
+
 }
 
 //=============================================================================
@@ -307,16 +317,25 @@ void DeleteItem(int nIdxItem)
 	if (nIdxItem >= 0 && nIdxItem < MAX_ITEM)
 	{
 		g_aItem[nIdxItem].bUse = false;
+
+		for (int i = 0; i < MAXITEM_PERFIELD; i++)
+		{
+			if (g_aItem[nIdxItem].pParent->paItem[i] == &g_aItem[nIdxItem])
+			{// フィールド側も削除
+				g_aItem[nIdxItem].pParent->paItem[i] = NULL;
+				break;
+			}
+		}
 	}
 }
 
 //=============================================================================
 // アイテムの削除設定
 //=============================================================================
-void DeleteItemByPtr(ITEM* pItem)
+void DeleteItemByPtr(ITEM** ppItem)
 {
-	pItem->bUse = false;
-	pItem = NULL;
+	(*ppItem)->bUse = false;
+	*ppItem = NULL;
 }
 
 //=============================================================================
@@ -328,7 +347,7 @@ void DeleteItemByFieldPtr(FIELD_CHIP *pData)
 	{
 		if (pData->paItem[i] != NULL)
 		{
-			DeleteItemByPtr(pData->paItem[i]);
+			DeleteItemByPtr(&pData->paItem[i]);
 		}
 	}
 }
@@ -340,7 +359,7 @@ void ResetItem()
 {
 	for (int i = 0; i < MAX_ITEM; i++)
 	{
-		DeleteItem(i);
+		g_aItem[i].bUse = false;
 	}
 }
 
