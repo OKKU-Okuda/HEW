@@ -82,7 +82,7 @@ HRESULT InitPole(void)
 		g_aPole[nCntPole].fRadius = 0.0f;
 		g_aPole[nCntPole].nIdxShadow = -1;
 		g_aPole[nCntPole].nType = POLETYPE_COIN;
-		g_aPole[nCntPole].bUse = false;
+		g_aPole[nCntPole].bUse = true;
 		g_aPole[nCntPole].bHit = false;
 	}
 
@@ -138,6 +138,7 @@ void DrawPole(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 	D3DXMATRIX mtxRot, mtxTranslate, mtxScl;
 
+
 	for (int nCntPole = 0; nCntPole < MAX_POLE; nCntPole++)
 	{
 		if (g_aPole[nCntPole].bUse == true)
@@ -186,10 +187,6 @@ void DrawPole(void)
 		pDevice->SetMaterial(&mat.MatD3D);
 	}
 
-	if (GetKeyboardPress(DIK_R))
-	{
-		InitPole();
-	}
 }
 
 //=============================================================================
