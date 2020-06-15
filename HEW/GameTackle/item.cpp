@@ -20,7 +20,7 @@
 //*****************************************************************************
 
 #define VOLUME_COIN		(4.0f)
-#define SPD_UPRATE		(1.001f)		// コイン入手時の速度上昇率
+#define SPD_UPRATE		(1.003f)		// コイン入手時の速度上昇率
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -178,14 +178,17 @@ void UpdateItem(void)
 				D3DXVECTOR3 Vec = D3DXVECTOR3( g_aItem[nCntItem].endpos.x - g_aItem[nCntItem].firstpos.x, g_aItem[nCntItem].endpos.y - g_aItem[nCntItem].firstpos.y, g_aItem[nCntItem].endpos.z - g_aItem[nCntItem].firstpos.z);
 
 				// 第一制御点の計算
-				g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4));
+				//g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4));
+				g_aItem[nCntItem].control_F = D3DXVECTOR3(GetPlayerPos()->x + (Vec.x / 4), GetPlayerPos()->y + (Vec.y / 4), GetPlayerPos()->z + (Vec.z / 4));
 
 				// 第二制御点の計算
-				g_aItem[nCntItem].control_S = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 3), g_aItem[nCntItem].firstpos.y + (Vec.y / 3), g_aItem[nCntItem].firstpos.z + (Vec.z / 3));
+				//g_aItem[nCntItem].control_S = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 3), g_aItem[nCntItem].firstpos.y + (Vec.y / 3), g_aItem[nCntItem].firstpos.z + (Vec.z / 3));
+				g_aItem[nCntItem].control_S = D3DXVECTOR3(GetPlayerPos()->x + (Vec.x / 3), GetPlayerPos()->y + (Vec.y / 3), GetPlayerPos()->z + (Vec.z / 3));
 
 				// ベジェ曲線の関数
-				BezierCurve( &g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
-			
+				//BezierCurve( &g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
+				BezierCurve(&g_aItem[nCntItem].pos, g_aItem[nCntItem].time,GetPlayerPos(), &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
+
 				continue;
 			}
 
