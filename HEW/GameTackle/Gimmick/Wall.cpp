@@ -12,6 +12,7 @@
 #include "Gimmick.h"
 
 #include "../effect.h"
+#include "../player.h"
 //---------------------------------------------------------------------
 //	ƒ}ƒNƒ’è‹`(“¯cpp“àŒÀ’è)
 //---------------------------------------------------------------------
@@ -186,6 +187,11 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 		float posY_rate = 1.f - ((pData->Pos.z - WALLSIZE_Z - pPos->z) / pData->lenZSuc);
 		
 		pData->WldMat.m[3][1] = -FIELDROAD_X * posY_rate;
+		//Vec3 vec =  *GetPlayerPos()- Vec3(pData->WldMat.m[3]);
+		//D3DXVec3Normalize(&vec, &vec);
+		//pData->WldMat.m[3][0] = vec.x;
+		//pData->WldMat.m[3][1] = vec.y;
+		//pData->WldMat.m[3][2] = vec.z;
 
 		if (posY_rate > 1.0f)
 		{// ‰º‚ª‚èØ‚Á‚½‚ç‰¹‚ð‰º‚°‚é

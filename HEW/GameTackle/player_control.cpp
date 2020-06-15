@@ -49,6 +49,7 @@ static bool					g_isRotation;		// プレイヤー回転中か
 static MOVE_STATE			g_stateMove;			// 移動状態
 static float				g_lengthRun;			// 走りの総距離
 static float				g_Spd;					// 奥に行くスピード
+static float				g_HoriSpd;				// 横移動スピード
 
 #ifdef _DEBUG
 static bool g_isDebugControl = false;// (debug)操作に減速を付けて自由に操作できるようにする
@@ -74,6 +75,7 @@ void ResetPlayerControl()
 	g_stateMove = MSTATE_READY;
 	g_Spd = ADDPOS;
 	g_lengthRun = 0.0f;
+	g_HoriSpd = 0.0f;
 #ifdef _DEBUG
 	g_isDebugControl = false;// (debug)操作に減速を付けて自由に操作できるようにする
 	g_spd = 0.0f;
@@ -254,13 +256,17 @@ void UpdatePlayerTranslation()
 	// 横移動処理
 	if (GetKeyboardPress(DIK_A) || IsButtonPressed(0, BUTTON_LEFT))
 	{
-		*GetPlayerPos() += GetFieldVector(AddFieldDirection(g_dirPlayer, -1)) * ADDXPOS;
+		g_HoriSpd = -ADDXPOS;
 	}
 
 	if (GetKeyboardPress(DIK_D) || IsButtonPressed(0, BUTTON_RIGHT))
 	{
-		*GetPlayerPos() += GetFieldVector(AddFieldDirection(g_dirPlayer, 1)) * ADDXPOS;
+		g_HoriSpd = ADDXPOS;
 	}
+
+	g_HoriSpd *= 0.7f;
+
+	*GetPlayerPos() += GetFieldVector(AddFieldDirection(g_dirPlayer, 1)) * g_HoriSpd;
 
 	// 奥移動移動
 	if (g_stateMove == MSTATE_RUNNING)
