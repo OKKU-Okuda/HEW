@@ -114,7 +114,8 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 
 	if (pData->Pos.z - pPos->z < SIZE_YZ / 2 &&
 		pData->Pos.z - pPos->z > -SIZE_YZ / 2 &&
-		GetPlayer()->anim_use != PLAYER_SLIDING)
+		GetPlayer()->anim_use != PLAYER_SLIDING&&
+		GetPlayer()->anim_use != PLAYER_JUMPING)
 	{// 丸太にスライディング以外で衝突したらゲームオーバー
 		GameTackle1End();
 	}
