@@ -166,7 +166,7 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 				// 再生
 				MySoundSetVolume(g_seWalldowm, MIN_DOWNVOLUME);
 				MySoundPlayOnce(g_seWalldowm);
-				
+				SetPlayerSE(PSE_WALLATTACK);
 			}
 			else
 			{// 指定ビット以外が押されている

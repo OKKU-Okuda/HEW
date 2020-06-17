@@ -40,6 +40,9 @@
 
 static PLAYER				g_Player[PLAYER_PARTS_MAX];						// プレイヤー
 
+static MySound				g_aSE[MAX_PSE];		// サウンド行列
+static PLAYER_SE			g_typeSE;			// プレイ中サウンド
+
 static int kiseki_idx = 0;
 D3DXVECTOR3 up_back[VERTEX_MAX];						// 
 D3DXVECTOR3 bottom_back[VERTEX_MAX];					// 
@@ -611,6 +614,16 @@ HRESULT InitPlayer(void)
 		g_Player[i].scl = g_Player[i].tbl_adr[index].scl + scl * time;
 
 	}
+
+	g_aSE[PSE_JUMP] = MySoundCreate("data/SE/Jump.wav");
+	g_aSE[PSE_SLIDE] = MySoundCreate("data/SE/Slide.wav");
+	g_aSE[PSE_LOSE] = MySoundCreate("data/SE/Death.wav");
+	g_aSE[PSE_WALLATTACK] = MySoundCreate("data/SE/Attack.wav");
+
+	for (int i = 0; i < MAX_PSE; i++)
+	{
+		MySoundSetVolume(g_aSE[i], 4.f);
+	}
 	return S_OK;
 }
 
@@ -638,6 +651,12 @@ void UninitPlayer(void)
 			g_Player[i].pD3DXBuffMat->Release();
 			g_Player[i].pD3DXBuffMat = NULL;
 		}
+	}
+
+	// 全サウンド削除
+	for (int i = 0; i < MAX_PSE; i++)
+	{
+		MySoundDelete(&g_aSE[i]);
 	}
 }
 
@@ -672,6 +691,11 @@ void UpdatePlayer(void)
 	{
 		g_Pos.y += g_Player[PLAYER_PARENT].jump_spped;
 
+		if (g_Player[PLAYER_PARENT].jump_spped == JUMP_HEIGHT)
+		{// 地面からの最初のジャンプで鳴らす
+			SetPlayerSE(PSE_JUMP);
+		}
+
 		g_Player[PLAYER_PARENT].jump_spped -= JUMP_GRAVITY;
 
 		g_slidin_cnt = 0;
@@ -681,6 +705,12 @@ void UpdatePlayer(void)
 	//sliding処理
 	if (g_Player[PLAYER_PARENT].anim_use == PLAYER_SLIDING)
 	{
+
+		if (g_slidin_cnt == 0)
+		{// 最初のスライディングで鳴らす
+			SetPlayerSE(PSE_SLIDE);
+		}
+
 		g_slidin_cnt++;
 		if (g_slidin_cnt >= SLIDING_CNT)
 		{
@@ -961,4 +991,20 @@ void ResetPlayerPos()
 	gravity = 1.0f;
 	g_Player[PLAYER_PARENT].jump_spped = 0.0f;
 	SetPlayerDirection(FDIRECTION_0ZP);
+}
+
+//=============================================================================
+// プレイヤーSEを鳴らす
+//=============================================================================
+void SetPlayerSE(PLAYER_SE se)
+{
+
+	for (int i = 0; i < MAX_PSE; i++)
+	{// サウンド止める
+		MySoundStop(g_aSE[i]);
+	}
+
+	// Play
+	MySoundPlayOnce(g_aSE[se]);
+	g_typeSE = se;
 }

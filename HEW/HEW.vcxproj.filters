@@ -48,6 +48,7 @@
     <ClCompile Include="GameTackle\Gimmick\Wall.cpp" />
     <ClCompile Include="GameTackle\pole.cpp" />
     <ClCompile Include="GameTackle\Gimmick\Slide.cpp" />
+    <ClCompile Include="GameTackle\ground_mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="GameTackle\Gimmick\Wall.h" />
     <ClInclude Include="GameTackle\pole.h" />
     <ClInclude Include="GameTackle\Gimmick\Slide.h" />
+    <ClInclude Include="GameTackle\ground_mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HEW.exe" />

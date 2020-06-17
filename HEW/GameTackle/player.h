@@ -17,6 +17,16 @@ enum PLAYER_STATE {
 	PLAYER_SLIDING
 };
 
+// プレイヤー効果音列挙
+enum PLAYER_SE {
+	PSE_JUMP,
+	PSE_SLIDE,
+	PSE_WALLATTACK,
+	PSE_LOSE,
+
+	MAX_PSE			/*最大数取得*/
+};
+
 struct PLAYER
 {
 	bool     			use;				// モデルの位置
@@ -65,3 +75,4 @@ Vec3 *GetPlayerOld_Pos(void);
 Vec3 *GetPlayerRot(void);
 void ResetPlayerPos();	// プレイヤーを初期座標に転送
 
+void SetPlayerSE(PLAYER_SE se);	// プレイヤーサウンド
