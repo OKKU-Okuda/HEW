@@ -276,6 +276,7 @@ GameTackle1ゲームエンド関数
 void GameTackle1End()
 {
 	EndFieldGimmick();
+	SetPlayerSE(PSE_LOSE);
 	SetPlayerMoveState(MSTATE_END);
 	GoNextPhase(GetPhaseTitleFunc());
 }
