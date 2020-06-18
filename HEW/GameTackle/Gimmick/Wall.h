@@ -15,8 +15,8 @@
 enum GIMICKWALL_QTE {
 	GQTE_X = 0,
 	GQTE_Y = 1,
-	GQTE_A = 2,
-	GQTE_B = 3,
+	//GQTE_A = 2,
+	//GQTE_B = 3,
 	MAX_GIMICKWALLQTE		/*óvëfêîéÊìæ*/
 };
 //---------------------------------------------------------------------

@@ -132,25 +132,25 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 		DWORD bitType = 0x00000001 << pData->Type;		// 押されるべきビットを立てたビット列
 
 		// ボタン押されたかのチェック
-		if (GetKeyboardTrigger(DIK_1))
+		if (GetKeyboardTrigger(DIK_1)|| IsButtonTriggered(0, BUTTON_A))
 		{
 			bitIpt |= 0x00000001 << GQTE_X;
 		}
 
-		if (GetKeyboardTrigger(DIK_2))
+		if (GetKeyboardTrigger(DIK_2) || IsButtonTriggered(0, BUTTON_B))
 		{
 			bitIpt |= 0x00000001 << GQTE_Y;
 		}
 
-		if (GetKeyboardTrigger(DIK_3))
-		{
-			bitIpt |= 0x00000001 << GQTE_A;
-		}
-
-		if (GetKeyboardTrigger(DIK_4))
-		{
-			bitIpt |= 0x00000001 << GQTE_B;
-		}
+		//if (GetKeyboardTrigger(DIK_3))
+		//{
+		//	bitIpt |= 0x00000001 << GQTE_A;
+		//}
+		//
+		//if (GetKeyboardTrigger(DIK_4))
+		//{
+		//	bitIpt |= 0x00000001 << GQTE_B;
+		//}
 
 
 		if (bitIpt)
@@ -274,10 +274,21 @@ void InitFieldGimmickWall()
 	g_meshWall = Create3DBoxMesh(&Vec3(FIELDROAD_X, FIELDROAD_X, WALLSIZE_Z),
 		&Vec3(0, FIELDROAD_X / 2, 0));
 
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall1.png", &g_tex[0]);
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall2.png", &g_tex[1]);
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall3.png", &g_tex[2]);
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall4.png", &g_tex[3]);
+	int id = MessageBox(NULL, "テクスチャをパッド用に変更する？", "(´・ω・)", MB_YESNOCANCEL | MB_ICONQUESTION);
+
+	if (id == IDYES)
+	{
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall_TRY.png", &g_tex[0]);
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall_SQA.png", &g_tex[1]);
+	}
+	else
+	{
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall1.png", &g_tex[0]);
+		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall2.png", &g_tex[1]);
+	}
+
+	//D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall3.png", &g_tex[2]);
+	//D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall4.png", &g_tex[3]);
 
 	g_seWalldowm = MySoundCreate("data/SE/WallDown.wav");
 	g_seWallFailed = MySoundCreate("data/SE/WallFailed.wav");

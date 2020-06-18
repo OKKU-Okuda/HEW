@@ -55,6 +55,8 @@
 #define SAFE_NUMBER(x,mi,ma)	{ x = max(min(x,ma),mi); }							// ナンバーチェック(数字が範囲外の場合上限か下限が代入される)
 #define D3DDEVICE				LPDIRECT3DDEVICE9 pDevice = GetDevice();			// ゲットデバイス簡略化ﾏｸﾛ
 
+#define ISUSE_MENUUI (true)
+
 // 型名短縮宣言
 typedef D3DXVECTOR2				Vec2;
 typedef D3DXVECTOR3				Vec3;
