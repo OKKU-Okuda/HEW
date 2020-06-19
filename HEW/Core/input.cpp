@@ -501,25 +501,29 @@ void UpdatePad(void)
 		//* x-axis (right)
 		if (dijs.lX > 0)					padState[i] |= BUTTON_RIGHT;
 		//* Ａボタン
-		if (dijs.rgbButtons[0] & 0x80)	padState[i] |= BUTTON_A;
+		if (dijs.rgbButtons[0] & 0x80)	padState[i] |= BUTTON_A;		// □ボタン(DualShock4)
 		//* Ｂボタン
-		if (dijs.rgbButtons[1] & 0x80)	padState[i] |= BUTTON_B;
+		if (dijs.rgbButtons[1] & 0x80)	padState[i] |= BUTTON_B;		// ×ボタン(DualShock4)
 		//* Ｃボタン
-		if (dijs.rgbButtons[2] & 0x80)	padState[i] |= BUTTON_C;
+		if (dijs.rgbButtons[2] & 0x80)	padState[i] |= BUTTON_C;		// 〇ボタン(DualShock4)
 		//* Ｘボタン
-		if (dijs.rgbButtons[3] & 0x80)	padState[i] |= BUTTON_X;
+		if (dijs.rgbButtons[3] & 0x80)	padState[i] |= BUTTON_X;		// △ボタン(DualShock4)
 		//* Ｙボタン
-		if (dijs.rgbButtons[4] & 0x80)	padState[i] |= BUTTON_Y;
+		if (dijs.rgbButtons[4] & 0x80)	padState[i] |= BUTTON_Y;		// L1ボタン(DualShock4)
 		//* Ｚボタン
-		if (dijs.rgbButtons[5] & 0x80)	padState[i] |= BUTTON_Z;
+		if (dijs.rgbButtons[5] & 0x80)	padState[i] |= BUTTON_Z;		// R1ボタン(DualShock4)
 		//* Ｌボタン
-		if (dijs.rgbButtons[6] & 0x80)	padState[i] |= BUTTON_L;
+		if (dijs.rgbButtons[6] & 0x80)	padState[i] |= BUTTON_L;		// L2ボタン(DualShock4)
 		//* Ｒボタン
-		if (dijs.rgbButtons[7] & 0x80)	padState[i] |= BUTTON_R;
+		if (dijs.rgbButtons[7] & 0x80)	padState[i] |= BUTTON_R;		// R2ボタン(DualShock4)
 		//* ＳＴＡＲＴボタン
-		if (dijs.rgbButtons[8] & 0x80)	padState[i] |= BUTTON_START;
+		if (dijs.rgbButtons[8] & 0x80)	padState[i] |= BUTTON_START;	// SHAREボタン(DualShock4)
 		//* Ｍボタン
-		if (dijs.rgbButtons[9] & 0x80)	padState[i] |= BUTTON_M;
+		if (dijs.rgbButtons[9] & 0x80)	padState[i] |= BUTTON_M;		// OPTIONボタン(DualShock4)
+
+		if (dijs.rgbButtons[10] & 0x80)	padState[i] |= BUTTON_L3;		// OPTIONボタン(DualShock4)
+
+		if (dijs.rgbButtons[11] & 0x80)	padState[i] |= BUTTON_R3;		// OPTIONボタン(DualShock4)
 
 		// Trigger設定
 		padTrigger[i] = ((lastPadState ^ padState[i])	// 前回と違っていて
