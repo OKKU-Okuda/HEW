@@ -32,6 +32,8 @@
 #define BUTTON_R		0x00000800l	// Ｒボタン(.rgbButtons[7]&0x80)
 #define BUTTON_START	0x00001000l	// ＳＴＡＲＴボタン(.rgbButtons[8]&0x80)
 #define BUTTON_M		0x00002000l	// Ｍボタン(.rgbButtons[9]&0x80)
+#define BUTTON_L3		0x00004000l	// L3ボタン(.rgbButtons[10]&0x80)
+#define BUTTON_R3		0x00008000l	// R3ボタン(.rgbButtons[11]&0x80)
 #define GAMEPADMAX		4			// 同時に接続するジョイパッドの最大数をセット
 
 
