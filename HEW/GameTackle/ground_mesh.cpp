@@ -5,53 +5,98 @@
 	プレイヤーが乗らないフィールド生成に関するプログラム
 ***********************************************************************/
 #include "../Core/main.h"
+#include "field.h"
 #include "ground_mesh.h"
-
+#include "player.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
-#define INDEX_TYPE				WORD
-#define NUM_GROUNDVERTEX		(50)
+#define GROUNDSIZE				(FIELDCHIP_WIDTH * 3.5)
 
-#define NUM_GROUNDINDEX			(2 * (NUM_GROUNDVERTEX * NUM_GROUNDVERTEX - NUM_GROUNDVERTEX + 2))
-
-#define NUM_GROUNDAROUND		(2)
-#define POOL_GROUND				((NUM_GROUNDAROUND*2)*(NUM_GROUNDAROUND*2))
+#define GROUND_POSY				(-55.f)
+//#define FOR(i,exit)				for(int (i) = 0; (i) < (exit); (i)++)
+#define RATE_POS				(0.0002f)
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
-
-typedef INDEX_TYPE* IndexPtr;
-typedef VERTEX_3D* VertexPtr;
-
-typedef struct {
-	VtxBuff		Vtx;
-	Matrix		WldMat;
-}GROUND_MESH;
 
 
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-static void CreateGroundIndexBuffer();			// 地面インデックス生成関数
-
+//static void CreateGroundIndexBuffer();			// 地面インデックス生成関数
+static void ChangeTexturePos();
 
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
-static IdxBuff g_IdxGroundMesh;
-static GROUND_MESH g_Ground[POOL_GROUND];
+static VtxBuff	g_Vtx;
+static Matrix	g_Mat;		// 行列
+static Texture	g_Tex;
 
-
-
-void CreateGroundVertexBuffer()
+/*=====================================================================
+地面更新関数
+=====================================================================*/
+void UpdateGround()
 {
+	Vec3 pos_ground = *GetPlayerPos();
+	pos_ground.y = GROUND_POSY;
+	GetMatrix(&g_Mat, &pos_ground, &Vec3(D3DX_PI / 2, 0, 0));
+
+
+	// 位置でテクスチャの変更
+	ChangeTexturePos();
 
 }
 
 /*=====================================================================
-インデックス設定プログラム
+地面描画関数
 =====================================================================*/
+void DrawGround()
+{
+	Draw3DVertexBuffer(g_Tex, g_Vtx, &g_Mat);
+}
+
+/*=====================================================================
+地面初期化関数
+=====================================================================*/
+void InitGround()
+{
+	D3DDEVICE;
+	g_Vtx = Create3DPolygon(&Vec2(GROUNDSIZE, GROUNDSIZE));
+
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/ground.png", &g_Tex);
+
+}
+
+
+/*=====================================================================
+地面テクスチャ座標変更関数
+=====================================================================*/
+void ChangeTexturePos()
+{
+	VERTEX_3D* pVtx = NULL;
+	Vec2	  TexPos;
+
+	TexPos.x = GetPlayerPos()->x * RATE_POS;
+	TexPos.y = -GetPlayerPos()->z * RATE_POS;
+
+	g_Vtx->Lock(0, 0, (void**)&pVtx, 0);
+
+	pVtx[0].tex.x =
+		pVtx[2].tex.x = TexPos.x - 0.5f;
+	pVtx[1].tex.x =
+		pVtx[3].tex.x = TexPos.x + 0.5f;
+
+	pVtx[0].tex.y =
+		pVtx[1].tex.y = TexPos.y - 0.5f;
+	pVtx[2].tex.y =
+		pVtx[3].tex.y = TexPos.y + 0.5f;
+
+	g_Vtx->Unlock();
+}
+
+#if 0
 void CreateGroundIndexBuffer()
 {
 
@@ -100,3 +145,4 @@ void CreateGroundIndexBuffer()
 
 	g_IdxGroundMesh->Unlock();
 }
+#endif

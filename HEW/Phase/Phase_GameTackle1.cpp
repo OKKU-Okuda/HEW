@@ -27,7 +27,7 @@
 #include "../GameTackle/effect.h"
 #include "../GameTackle/UI.h"
 #include "../GameTackle/pole.h"
-
+#include "../GameTackle/ground_mesh.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -93,6 +93,9 @@ void UpdateGameTackle1()
 
 	// UIの更新
 	UpdateUI();
+
+	// 地面の更新
+	UpdateGround();
 }
 
 /*=====================================================================
@@ -100,6 +103,9 @@ GameTackle1描画関数
 =====================================================================*/
 void DrawGameTackle1()
 {
+	// 地面の描画
+	DrawGround();
+
 	// フィールドの描画
 	DrawField();
 
@@ -171,6 +177,9 @@ void InitGameTackle1(bool isFirst)
 
 		// UIの初期化
 		InitUI(0);
+
+		// 地面の初期化
+		InitGround();
 
 
 		// エネミーの読み込み
@@ -275,8 +284,8 @@ GameTackle1ゲームエンド関数
 =====================================================================*/
 void GameTackle1End()
 {
-	EndFieldGimmick();
 	SetPlayerSE(PSE_LOSE);
+	EndFieldGimmick();
 	SetPlayerMoveState(MSTATE_END);
 	GoNextPhase(GetPhaseTitleFunc());
 }
