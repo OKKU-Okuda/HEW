@@ -16,34 +16,22 @@
 #include"player_control.h"
 
 //*****************************************************************************
-// マクロ定義
-//*****************************************************************************
-
-#define VOLUME_COIN		(4.0f)
-#define SPD_UPRATE		(1.003f)		// コイン入手時の速度上昇率
-
-//*****************************************************************************
-// プロトタイプ宣言
-//*****************************************************************************
-
-//*****************************************************************************
 // グローバル変数
 //*****************************************************************************
 LPDIRECT3DTEXTURE9	g_pD3DTextureItem[ITEMTYPE_MAX];	// テクスチャ読み込み場所
 LPD3DXMESH			g_pMeshItem[ITEMTYPE_MAX];			// ID3DXMeshインターフェイスへのポインタ
 LPD3DXBUFFER		g_pD3DXMatBuffItem[ITEMTYPE_MAX];	// メッシュのマテリアル情報を格納
 DWORD				g_aNumMatItem[ITEMTYPE_MAX];		// 属性情報の総数
-
 D3DXMATRIX			g_mtxWorldItem;						// ワールドマトリックス
-
 ITEM				g_aItem[MAX_ITEM];					// アイテムワーク
 
 const char *c_aFileNameItem[ITEMTYPE_MAX] =
 {
 	"data/MODEL/item000.x",		// コイン
+	/* <----アイテムの種類を増やしたいときここにxファイルを追加*/
 };
 
-int g_ItemPoint;
+int g_nItemPoint;
 
 static MySound g_seGetCoin;		// コインゲットse
 //=============================================================================
@@ -94,13 +82,13 @@ HRESULT InitItem(void)
 		g_aItem[nCntItem].nType = ITEMTYPE_COIN;
 		g_aItem[nCntItem].bUse = false;
 		g_aItem[nCntItem].bHit = false;
-		g_aItem[nCntItem].time = 0.0f;
+		g_aItem[nCntItem].fTime = 0.0f;
 	}
 
-	g_ItemPoint = 0;
-
+	g_nItemPoint = 0;
 	g_seGetCoin = MySoundCreate("data/SE/GetCoin.wav");
 	MySoundSetVolume(g_seGetCoin, VOLUME_COIN);
+
 	return S_OK;
 }
 
@@ -149,7 +137,7 @@ void UpdateItem(void)
 #ifdef _DEBUG
 			numActiveItem++;
 #endif
-
+			// アイテムを常に回転させておく
 			g_aItem[nCntItem].rot.y += 0.05f;
 
 			if (g_aItem[nCntItem].bHit == true)
@@ -159,14 +147,14 @@ void UpdateItem(void)
 				//*************************************
 
 				// 0～1までの時間の処理
-				if (g_aItem[nCntItem].time < 1.0f)
+				if (g_aItem[nCntItem].fTime < 1.0f)
 				{
-					g_aItem[nCntItem].time += ADD_ITEM_TIME;
+					g_aItem[nCntItem].fTime += ADD_ITEM_TIME;
 				}
 				else
 				{	// 1を超えたら処理を終了
-					g_aItem[nCntItem].time = 1.0f;
-					g_ItemPoint++;
+					g_aItem[nCntItem].fTime = 1.0f;
+					g_nItemPoint++;
 					DeleteItem(nCntItem);
 
 					SetPlayerSpd(GetPlayerSpd()*SPD_UPRATE);		// 速度上昇
@@ -178,25 +166,20 @@ void UpdateItem(void)
 				D3DXVECTOR3 Vec = D3DXVECTOR3( g_aItem[nCntItem].endpos.x - g_aItem[nCntItem].firstpos.x, g_aItem[nCntItem].endpos.y - g_aItem[nCntItem].firstpos.y, g_aItem[nCntItem].endpos.z - g_aItem[nCntItem].firstpos.z);
 
 				// 第一制御点の計算
-				//g_aItem[nCntItem].control_F = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 4), g_aItem[nCntItem].firstpos.y + (Vec.y / 4), g_aItem[nCntItem].firstpos.z + (Vec.z / 4));
 				g_aItem[nCntItem].control_F = D3DXVECTOR3(GetPlayerPos()->x + (Vec.x / 4), GetPlayerPos()->y + (Vec.y / 4), GetPlayerPos()->z + (Vec.z / 4));
 
 				// 第二制御点の計算
-				//g_aItem[nCntItem].control_S = D3DXVECTOR3(g_aItem[nCntItem].firstpos.x + (Vec.x / 3), g_aItem[nCntItem].firstpos.y + (Vec.y / 3), g_aItem[nCntItem].firstpos.z + (Vec.z / 3));
 				g_aItem[nCntItem].control_S = D3DXVECTOR3(GetPlayerPos()->x + (Vec.x / 3), GetPlayerPos()->y + (Vec.y / 3), GetPlayerPos()->z + (Vec.z / 3));
 
 				// ベジェ曲線の関数
-				//BezierCurve( &g_aItem[nCntItem].pos, g_aItem[nCntItem].time, &g_aItem[nCntItem].firstpos, &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
-				BezierCurve(&g_aItem[nCntItem].pos, g_aItem[nCntItem].time,GetPlayerPos(), &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
+				BezierCurve(&g_aItem[nCntItem].pos, g_aItem[nCntItem].fTime,GetPlayerPos(), &g_aItem[nCntItem].control_F, &g_aItem[nCntItem].control_S, &g_aItem[nCntItem].endpos);
 
 				continue;
 			}
 
 
 			// 非接触時の処理
-
 			g_aItem[nCntItem].bHit = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
-				
 			g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
 
 			if (g_aItem[nCntItem].bHit == true)
@@ -268,11 +251,6 @@ void DrawItem(void)
 
 	// マテリアルの復活
 	pDevice->SetMaterial(&Matdef);
-
-	//if (GetKeyboardPress(DIK_R))
-	{
-	//	InitItem();
-	}
 }
 
 
@@ -285,7 +263,7 @@ void SetItem(FIELD_CHIP* pData ,D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
 	{
 		if (!g_aItem[nCntItem].bUse)
 		{// 未使用エリアを取得
-			int nCntPtr = 0;			// フィールドにあるアイテムポインタ配列へのオフセット
+			int nCntPtr = 0;	// フィールドにあるアイテムポインタ配列へのオフセット
 
 			// ステータスの書き換え
 			g_aItem[nCntItem].pos = pos;
@@ -295,7 +273,7 @@ void SetItem(FIELD_CHIP* pData ,D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType)
 			g_aItem[nCntItem].bUse = true;
 			g_aItem[nCntItem].bHit = false;
 			g_aItem[nCntItem].pParent = pData;
-			g_aItem[nCntItem].time = 0.0f;
+			g_aItem[nCntItem].fTime = 0.0f;
 			// フィールド側に自分を紐づけ処理
 			for (; nCntPtr < MAXITEM_PERFIELD; nCntPtr++)
 			{
@@ -393,7 +371,7 @@ D3DXVECTOR3 *BezierCurve(
 	D3DXVECTOR3* p_third,	// ベジェ曲線の第2制御点
 	D3DXVECTOR3* p_end)		// ベジェ曲線の終点
 {
-	// わかりやすくするための変数
+	// わかりやすくするために変数を用意
 	float tp = 1 - t;
 	float a, b, c, d;
 
