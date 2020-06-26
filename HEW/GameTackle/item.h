@@ -26,12 +26,16 @@
 #define ITEM_UI_POS_Y			(50.0f)						// アイテムのUIのスクリーン座標Y
 
 #define MAXITEM_PERFIELD		(20)						// フィールドに設置できる最大アイテム数
+#define VOLUME_COIN				(4.0f)						// コイン取得時の音量
+#define SPD_UPRATE				(1.003f)					// コイン入手時の速度上昇率
+
 //**************************************
 // 種類
 //**************************************
 enum
 {
-	ITEMTYPE_COIN = 0,		// コイン
+	ITEMTYPE_COIN = 0,	// コイン
+	/* <----アイテムの種類を増やしたいときここに追加*/
 	ITEMTYPE_MAX
 };
 
@@ -39,8 +43,10 @@ enum
 // 構造体定義
 //*****************************************************************************
 struct FIELD_CHIP;
-typedef struct
+
+class ITEM
 {
+public:
 	D3DXVECTOR3 pos;		// 現在の位置
 	D3DXVECTOR3 scl;		// アイテムのスケール調整
 	D3DXVECTOR3 firstpos;	// アイテムが当たった位置
@@ -48,14 +54,14 @@ typedef struct
 	D3DXVECTOR3 rot;		// 現在の向き
 	D3DXVECTOR3 control_F;	// 一つ目の制御点
 	D3DXVECTOR3 control_S;	// 二つ目の制御点
-	float fRadius;			// 半径
-	float time;				// アイテムのエフェクトに掛かる時間
-	int nIdxShadow;			// 影ID
-	FIELD_CHIP*		pParent;	// 親
-	int nType;				// 種類
-	bool bUse;				// 使用しているかどうか
-	bool bHit;				// 当たり判定
-} ITEM;
+	float		fRadius;	// 半径
+	float		fTime;		// アイテムのエフェクトに掛かる時間
+	int			nIdxShadow;	// 影ID
+	FIELD_CHIP*	pParent;	// 親
+	int			nType;		// 種類
+	bool		bUse;		// 使用しているかどうか
+	bool		bHit;		// 当たり判定
+};
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -71,28 +77,27 @@ void DrawItem(void);
 struct FIELD_CHIP;
 
 void SetItem(FIELD_CHIP* pData, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType = ITEMTYPE_COIN);
-
 void DeleteItem(int nIdxItem);
 void DeleteItemByPtr(ITEM** ppItem);
 void DeleteItemByFieldPtr(FIELD_CHIP *pData);
-
 void ResetItem();
+
 ITEM *GetItem(void);
 
 D3DXVECTOR3 *BezierCurve(
-	D3DXVECTOR3* p_pos,
-	float t, 
-	D3DXVECTOR3* p_start, 
-	D3DXVECTOR3* p_second, 
-	D3DXVECTOR3* p_third, 
-	D3DXVECTOR3* p_end);
+	D3DXVECTOR3* p_pos,		// 戻り値
+	float t, 				// 0から1までの時間
+	D3DXVECTOR3* p_start, 	// ベジェ曲線の始点
+	D3DXVECTOR3* p_second, 	// ベジェ曲線の第1制御点
+	D3DXVECTOR3* p_third, 	// ベジェ曲線の第2制御点
+	D3DXVECTOR3* p_end);	// ベジェ曲線の終点
 
 D3DXVECTOR3* CalcScreenToWorld(
 	D3DXVECTOR3* p_out,
-	float Sx,			// スクリーンX座標
-	float Sy,			// スクリーンY座標
-	float fZ,			// 射影空間でのZ値（0～1）
-	int Screen_w,		// スクリーンの横幅
-	int Screen_h,		// スクリーンの縦幅
-	D3DXMATRIX* View,	// ビューマトリックス
-	D3DXMATRIX* Prj);	// プロジェクションマトリックス
+	float Sx,				// スクリーンX座標
+	float Sy,				// スクリーンY座標
+	float fZ,				// 射影空間でのZ値（0～1）
+	int Screen_w,			// スクリーンの横幅
+	int Screen_h,			// スクリーンの縦幅
+	D3DXMATRIX* View,		// ビューマトリックス
+	D3DXMATRIX* Prj);		// プロジェクションマトリックス
