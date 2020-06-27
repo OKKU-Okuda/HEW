@@ -68,9 +68,10 @@ HRESULT InitItem(void)
 #endif
 	}
 
+	// 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		g_aItem[nCntItem].pos = D3DXVECTOR3(500.0f, 10.0f, 600.0f + (nCntItem * 30));
+		g_aItem[nCntItem].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].scl = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
 		g_aItem[nCntItem].firstpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aItem[nCntItem].endpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -86,6 +87,8 @@ HRESULT InitItem(void)
 	}
 
 	g_nItemPoint = 0;
+
+	// コイン取得時のSEの初期化
 	g_seGetCoin = MySoundCreate("data/SE/GetCoin.wav");
 	MySoundSetVolume(g_seGetCoin, VOLUME_COIN);
 
@@ -157,7 +160,7 @@ void UpdateItem(void)
 					g_nItemPoint++;
 					DeleteItem(nCntItem);
 
-					SetPlayerSpd(GetPlayerSpd()*SPD_UPRATE);		// 速度上昇
+					SetPlayerSpd(GetPlayerSpd()*SPD_UPRATE);	// 速度上昇
 				}
 
 				// アイテムのUIがあるスクリーン座標をワールド座標に変換する(終点の処理)
@@ -177,7 +180,6 @@ void UpdateItem(void)
 				continue;
 			}
 
-
 			// 非接触時の処理
 			g_aItem[nCntItem].bHit = CheckHitBB(*GetPlayerPos(), g_aItem[nCntItem].pos, D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z), D3DXVECTOR3(ITEM_SIZE_X, ITEM_SIZE_Y, ITEM_SIZE_Z));
 			g_aItem[nCntItem].firstpos = g_aItem[nCntItem].pos;
@@ -186,11 +188,6 @@ void UpdateItem(void)
 			{// コイン集める音
 				MySoundPlayOnce(g_seGetCoin);
 			}
-			//if (g_aItem[nCntItem].ID_Parent.bit != g_aItem[nCntItem].pParent->ID.bit || g_aItem[nCntItem].pParent->State == FSTATE_NONE)
-			//{// 所属フィールドが息してない場合は消す
-			//	DeleteItem(nCntItem);	
-			//}
-
 		}
 	}
 
@@ -405,18 +402,22 @@ D3DXVECTOR3* CalcScreenToWorld(
 	D3DXMATRIX* View,	// ビューマトリックス
 	D3DXMATRIX* Prj		// プロジェクションマトリックス
 ) {
-	// 各行列の逆行列を算出
 	D3DXMATRIX InvView, InvPrj, VP, InvViewport;
 
+	// 各行列の逆行列を算出
 	D3DXMatrixInverse(&InvView, NULL, View);
 	D3DXMatrixInverse(&InvPrj, NULL, Prj);
+
+	// 単位行列を作成
 	D3DXMatrixIdentity(&VP);
 
+	// ビューポート行列の作成
 	VP._11 = Screen_w / 2.0f;
 	VP._22 = -Screen_h / 2.0f;
 	VP._41 = Screen_w / 2.0f;
 	VP._42 = Screen_h / 2.0f;
 
+	// ビューポート行列の逆行列を算出
 	D3DXMatrixInverse(&InvViewport, NULL, &VP);
 
 	// 逆変換
