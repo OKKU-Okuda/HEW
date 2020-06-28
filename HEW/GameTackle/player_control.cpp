@@ -12,6 +12,7 @@
 #include "player.h"
 #include "field.h"
 #include "player_control.h"
+#include "UI.h"
 
 #include "../Phase/Phase_GameTackle1.h"
 //---------------------------------------------------------------------
@@ -276,7 +277,7 @@ void UpdatePlayerTranslation()
 #ifdef _DEBUG
 		PrintDebugProc(">>>>移動距離 %f M<<<<", g_lengthRun);		// デバッグ
 #endif // _DEBUG
-
+		ChangeDistance(1);
 	}
 	else if (g_stateMove==MSTATE_READY && (GetKeyboardTrigger(DIK_W) || IsButtonPressed(0, BUTTON_UP)))
 	{// 開幕はWで移動開始
