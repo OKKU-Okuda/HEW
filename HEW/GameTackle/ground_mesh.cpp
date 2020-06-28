@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------
 #define GROUNDSIZE				(FIELDCHIP_WIDTH * 3.5)
 
-#define GROUND_POSY				(-55.f)
+#define GROUND_POSY				(-75.f)
 //#define FOR(i,exit)				for(int (i) = 0; (i) < (exit); (i)++)
 #define RATE_POS				(0.0002f)
 //---------------------------------------------------------------------
@@ -65,7 +65,7 @@ void InitGround()
 	D3DDEVICE;
 	g_Vtx = Create3DPolygon(&Vec2(GROUNDSIZE, GROUNDSIZE));
 
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/ground.png", &g_Tex);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/field005.jpg", &g_Tex);
 
 }
 
