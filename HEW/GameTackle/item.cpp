@@ -14,6 +14,7 @@
 #include "item.h"	
 #include "player.h"
 #include"player_control.h"
+#include "UI.h"
 
 //*****************************************************************************
 // グローバル変数
@@ -187,6 +188,7 @@ void UpdateItem(void)
 			if (g_aItem[nCntItem].bHit == true)
 			{// コイン集める音
 				MySoundPlayOnce(g_seGetCoin);
+				ChangeCoin(1);
 			}
 		}
 	}
