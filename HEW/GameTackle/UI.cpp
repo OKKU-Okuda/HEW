@@ -660,3 +660,9 @@ UI *GetUI(void)
 {
 	return &g_ui;
 }
+
+void ResetUI(void)
+{
+	GetUI()->coin = 0;
+	GetUI()->distance = 0;
+}

@@ -93,5 +93,6 @@ HRESULT MakeVertexDistance(LPDIRECT3DDEVICE9 pDevice);
 void SetTextureDistance(int idx, int number);
 
 UI *GetUI(void);
+void ResetUI(void);
 
 #endif

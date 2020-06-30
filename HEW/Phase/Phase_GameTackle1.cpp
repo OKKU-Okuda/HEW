@@ -201,6 +201,9 @@ void InitGameTackle1(bool isFirst)
 	// アイテムのリセット
 	ResetItem();
 
+	// UIのリセット
+	ResetUI();
+
 	// プレイヤーのリセット
 	ResetPlayerPos();
 
