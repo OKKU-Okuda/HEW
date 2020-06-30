@@ -20,13 +20,15 @@
 #include "../Phase/Phase_GameTackle2.h"
 #include "../Phase/Phase_GameTackle3.h"
 
+// テクスチャ読み込みでokか
+#include "../GameTackle/Gimmick/Wall.h"
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
 #define WINDOW_NAME		"RuggerMAN"			// ウインドウのキャプション名
 
-#define PASS_WINDOWMODE		(true)			// 起動時に表示方法選択をパスするか(パス時、ウィンドウモードになる）
+#define PASS_WINDOWMODE		(false)			// 起動時に表示方法選択をパスするか(パス時、ウィンドウモードになる）
 #define USE_TIMESTOPMODE	(true)			// 更新をパスして時間停止を行える機工を追加する(F2)
 
 //*****************************************************************************
@@ -138,8 +140,18 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 #if !PASS_WINDOWMODE // 表示方法を行うか否か
 
+	int id = MessageBox(NULL, "テクスチャをパッド用に変更する？", "(´・ω・)", MB_YESNOCANCEL | MB_ICONQUESTION);
+	if (id == IDNO)
+	{
+		SetWallTextureForGamePad(false);
+	}
+	else
+	{
+		SetWallTextureForGamePad(true);
+	}
+
 	// 初期化処理(ウィンドウを作成してから行う)
-	int id = MessageBox(NULL, "Windowモードでプレイしますか？", "起動モード", MB_YESNOCANCEL | MB_ICONQUESTION);
+	id = MessageBox(NULL, "Windowモードでプレイしますか？", "起動モード", MB_YESNOCANCEL | MB_ICONQUESTION);
 
 	switch (id)
 	{

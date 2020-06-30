@@ -73,6 +73,7 @@ static Texture		g_tex[MAX_GIMICKWALLQTE];
 static Mesh			g_meshWall;	
 static MySound		g_seWalldowm;	// 壁が終われる音
 static MySound		g_seWallFailed;	// GIMMICKがミスった音
+static bool			g_isShowPad;	// テクスチャがパッド用か
 /*=====================================================================
 壁初期化関数
 =====================================================================*/
@@ -263,6 +264,14 @@ void EndGimmick(GIMMICK_HEADER* pHead)
 }
 
 /*=====================================================================
+壁テクスチャ変更関数
+=====================================================================*/
+void SetWallTextureForGamePad(bool isShowPad)
+{
+	g_isShowPad = isShowPad;
+}
+
+/*=====================================================================
 壁初期化関数
 =====================================================================*/
 void InitFieldGimmickWall()
@@ -274,9 +283,8 @@ void InitFieldGimmickWall()
 	g_meshWall = Create3DBoxMesh(&Vec3(FIELDROAD_X, FIELDROAD_X, WALLSIZE_Z),
 		&Vec3(0, FIELDROAD_X / 2, 0));
 
-	int id = MessageBox(NULL, "テクスチャをパッド用に変更する？", "(´・ω・)", MB_YESNOCANCEL | MB_ICONQUESTION);
 
-	if (id == IDYES)
+	if (g_isShowPad)
 	{
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall_TRY.png", &g_tex[0]);
 		D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/gimmick_wall_SQA.png", &g_tex[1]);

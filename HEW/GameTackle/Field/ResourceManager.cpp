@@ -37,11 +37,7 @@ void CreateFieldTexture()
 {
 	D3DDEVICE;
 
-#ifdef _DEBUG
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field01.png", &g_texPool[FTEX_NONE]);
-#else
-	g_texPool[FTEX_NONE] = NULL;
-#endif
 
 }
 
