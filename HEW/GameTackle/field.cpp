@@ -69,7 +69,8 @@ static struct {
 
 //static FIELD_DIRECTION	g_fdir;			// 現在の方向
 //static CHIP_ID			g_latestid;		// 一番最近設置したチャンク
-	
+
+static int g_cntCreate[MAX_FIELDTYPE];		// クリエイトカウンタ
 
 /*=====================================================================
 フィールド更新関数
@@ -206,6 +207,8 @@ void ResetField()
 	// ここからテスト
 //	SetField(0, 3, FTYPE_ROAD, FDIRECTION_3XM);
 
+	// カウンタリセット
+	ZeroMemory(g_cntCreate, sizeof(g_cntCreate));
 }
 
 /*=====================================================================
@@ -246,6 +249,9 @@ FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 	keep_pt->Dir = fdirection;
 	keep_pt->Type = type;
 	keep_pt->pFunc = SearchFieldObjFunc(type, keep_pt);
+
+	// クリエイトカウンタのインクリメント
+	g_cntCreate[type]++;
 
 	return keep_pt;
 }
@@ -422,6 +428,14 @@ CHIP_ID AddFieldID(CHIP_ID id1, CHIP_ID id2)
 	id1.vec2.x += id2.vec2.x;
 	id1.vec2.z += id2.vec2.z;
 	return id1;					// 加算場所
+}
+
+/*=====================================================================
+タイプ別クリエイトカウンタ取得関数
+=====================================================================*/
+int GetCountCreateFieldType(FIELD_TYPE type)
+{
+	return g_cntCreate[type];
 }
 
 /*=====================================================================
