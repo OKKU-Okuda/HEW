@@ -133,12 +133,12 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 		DWORD bitType = 0x00000001 << pData->Type;		// 押されるべきビットを立てたビット列
 
 		// ボタン押されたかのチェック
-		if (GetKeyboardTrigger(DIK_1)|| IsButtonTriggered(0, BUTTON_A))
+		if (GetKeyboardTrigger(DIK_1)|| IsButtonTriggered(0, BUTTON_X))
 		{
 			bitIpt |= 0x00000001 << GQTE_X;
 		}
 
-		if (GetKeyboardTrigger(DIK_2) || IsButtonTriggered(0, BUTTON_B))
+		if (GetKeyboardTrigger(DIK_2) || IsButtonTriggered(0, BUTTON_A))
 		{
 			bitIpt |= 0x00000001 << GQTE_Y;
 		}
