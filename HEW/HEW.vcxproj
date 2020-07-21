@@ -147,6 +147,7 @@
     <ClCompile Include="GameTackle\Field\jump.cpp" />
     <ClCompile Include="GameTackle\Field\ResourceManager.cpp" />
     <ClCompile Include="GameTackle\Field\road.cpp" />
+    <ClCompile Include="GameTackle\Field\turnL.cpp" />
     <ClCompile Include="GameTackle\Field\turnLR.cpp" />
     <ClCompile Include="GameTackle\Field\void.cpp" />
     <ClCompile Include="GameTackle\field_control.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="GameTackle\Field\jump.h" />
     <ClInclude Include="GameTackle\Field\ResourceManager.h" />
     <ClInclude Include="GameTackle\Field\road.h" />
+    <ClInclude Include="GameTackle\Field\turnL.h" />
     <ClInclude Include="GameTackle\Field\turnLR.h" />
     <ClInclude Include="GameTackle\Field\void.h" />
     <ClInclude Include="GameTackle\field_control.h" />

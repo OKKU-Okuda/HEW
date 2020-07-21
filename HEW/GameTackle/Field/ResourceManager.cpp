@@ -38,6 +38,7 @@ void CreateFieldTexture()
 	D3DDEVICE;
 
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_field01.png", &g_texPool[FTEX_NONE]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bridge_wall.png", &g_texPool[FTEX_WALL]);
 
 }
 
@@ -53,6 +54,39 @@ void CreateFieldMesh()
 
 	g_meshPool[FMESH_LONGWALLLEFT] = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, FIELDCHIP_HEIGHT),
 		&Vec3((-FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), 0));
+
+	// 分岐フィールド系のメッシュ
+	{
+		const float sizeZ = (FIELDCHIP_HEIGHT - FIELDROAD_X) / 2;
+		const float posZ = FIELDCHIP_CENTER_Z - (sizeZ / 2);
+
+		const float size_flatX = FIELDCHIP_CENTER_X - (FIELDROAD_X / 2);
+		const float pos_flatX = size_flatX / 2 + (FIELDROAD_X / 2);
+
+		const float size_WallX = FIELDCHIP_CENTER_X - (FIELDROAD_X / 2) - ROADWALL_SIZEX;
+		const float pos_WallX = pos_flatX + (ROADWALL_SIZEX / 2);
+
+		g_meshPool[FMESH_LEFTFRONTWALL] = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, sizeZ),
+			&Vec3((-FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -posZ));
+
+		g_meshPool[FMESH_RIGHTFRONTWALL] = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, sizeZ),
+			&Vec3((FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -posZ));
+
+
+
+		g_meshPool[FMESH_LEFTCENTERWALL] = Create3DBoxMesh(&Vec3(size_WallX, ROADWALL_SIZEY, ROADWALL_SIZEX),
+			&Vec3(-pos_WallX, (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -(FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2)));
+
+		g_meshPool[FMESH_RIGHTCENTERWALL] = Create3DBoxMesh(&Vec3(size_WallX, ROADWALL_SIZEY, ROADWALL_SIZEX),
+			&Vec3(pos_WallX, (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -(FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2)));
+
+
+		g_meshPool[FMESH_FRONTFLAT] = Create3DBoxMesh(&Vec3(FIELDROAD_X, FIELDROAD_Y, sizeZ + FIELDROAD_X), &Vec3(0, 0, -posZ + (FIELDROAD_X / 2)));
+
+
+		g_meshPool[FMESH_LEFTFLAT] = Create3DBoxMesh(&Vec3(size_flatX, FIELDROAD_Y, FIELDROAD_X), &Vec3(-pos_flatX, 0, 0));
+		g_meshPool[FMESH_RIGHTFLAT] = Create3DBoxMesh(&Vec3(size_flatX, FIELDROAD_Y, FIELDROAD_X), &Vec3(pos_flatX, 0, 0));
+	}
 
 }
 

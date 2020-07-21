@@ -23,6 +23,7 @@
 #include "Field/cliffL.h"
 #include "Field/jump.h"
 #include "Field/turnLR.h"
+#include "Field/turnL.h"
 
 #include "../Phase/Phase_GameTackle1.h"
 
@@ -130,6 +131,12 @@ void UpdateField()
 =====================================================================*/
 void DrawField()
 {
+	D3DDEVICE;
+	DWORD default_lighting = false;
+
+	pDevice->GetRenderState(D3DRS_LIGHTING, &default_lighting);
+
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	for (int i = 0; i < MAX_FIELD; i++)
 	{
 		if (g_Field[i].State == FSTATE_NONE)
@@ -143,6 +150,8 @@ void DrawField()
 		// GIMMICKの描画
 		FieldGimmickDraw(&g_Field[i]);
 	}
+	pDevice->SetRenderState(D3DRS_LIGHTING, default_lighting);
+
 }
 
 /*=====================================================================
@@ -158,6 +167,7 @@ void InitField()
 	InitFieldCliffL();
 	InitFieldJump();
 	InitFieldTurnLR();
+	InitFieldTurnL();
 
 	InitFieldGimmick();
 }
@@ -175,6 +185,7 @@ void UninitField()
 	UninitFieldCliffL();
 	UninitFieldJump();
 	UninitFieldTurnLR();
+	UninitFieldTurnL();
 
 	UninitFieldGimmick();
 }
@@ -301,7 +312,7 @@ bool PlayerCheckHitOnField()
 			{// 検索にヒットしない場合はここで帰還する
 
 				PrintDebugProc("[ERROR]プレイヤーに干渉させるチャンクが存在しません(ID:%d,%d)", id.vec2.x, id.vec2.z);
-				return true;
+				return false;
 			}
 
 			SetOnFieldWk(keep_pt);
@@ -510,9 +521,10 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type,FIELD_CHIP* pData)
 	case FTYPE_TURNLR:
 		return GetFieldTurnLRFunc();
 
+	case FTYPE_TURNL:
+		return GetFieldTurnLFunc();
+
 	//case FTYPE_TURNR:
-	//	break;
-	//case FTYPE_TURNL:
 	//	break;
 	case MAX_FIELDTYPE:
 		break;

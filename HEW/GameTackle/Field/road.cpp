@@ -65,13 +65,16 @@ void DrawFieldRoad(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
 
-	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &pData->WldMat);
 
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
 
 	GetFieldShareMesh(FMESH_LONGFLAT)->DrawSubset(0);
+
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_WALL));
+
 	GetFieldShareMesh(FMESH_LONGWALLLEFT)->DrawSubset(0);
 	GetFieldShareMesh(FMESH_LONGWALLRIGHT)->DrawSubset(0);
 

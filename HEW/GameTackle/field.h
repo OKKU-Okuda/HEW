@@ -64,7 +64,7 @@ enum FIELD_TYPE {
 	// カーブ道:CURVE
 	FTYPE_TURNLR,		// 左右分岐点の道
 	//FTYPE_TURNR,		// 右に曲がる道
-	//FTYPE_TURNL,		// 左に曲がる道
+	FTYPE_TURNL,		// 左に曲がる道
 
 	MAX_FIELDTYPE		/* 最大数取得 */
 };

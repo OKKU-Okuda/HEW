@@ -1,17 +1,17 @@
 /**********************************************************************
-[[左右分岐道道プログラム(GameTackle/Field/turnLR.cpp)]]
+[[左分岐道道プログラム(GameTackle/Field/turnL.cpp)]]
 	作者：奥田　真規
 
-	左右分岐道道に関するプログラム
+	左分岐道道に関するプログラム
 ***********************************************************************/
 #include "../../Core/main.h"
 #include "../../Core/debugproc.h"
-#include "../field.h"
 #include "../../Phase/Phase_GameTackle1.h"
+#include "../field.h"
 #include "ResourceManager.h"
 #include "../field_control.h"
 #include "../player_control.h"
-#include "turnLR.h"
+#include "turnL.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -32,15 +32,15 @@ enum TURNLR_QTETYPE {
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-static bool CheckHitFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos);
-static void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos);
-static void DrawFieldTurnLR(FIELD_CHIP* pData);
+static bool CheckHitFieldTurnL(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos);
+static void UpdateFieldTurnL(FIELD_CHIP* pData, Vec3* pPos);
+static void DrawFieldTurnL(FIELD_CHIP* pData);
 
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
 
-static FIELD_OBJFUNC g_Func = { CheckHitFieldTurnLR,UpdateFieldTurnLR,DrawFieldTurnLR };	// 道独自の関数
+static FIELD_OBJFUNC g_Func = { CheckHitFieldTurnL,UpdateFieldTurnL,DrawFieldTurnL };	// 道独自の関数
 static TURNLR_QTETYPE g_QTEState = QTE_NOINPUT;
 
 static Mesh g_meshWallBack = NULL;
@@ -59,7 +59,7 @@ static Mesh g_meshWallBack = NULL;
 /*=====================================================================
 左右分岐道道当たり判定関数
 =====================================================================*/
-bool CheckHitFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
+bool CheckHitFieldTurnL(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 {
 	// 位置の状態列挙
 	enum POSITION_STATE {
@@ -72,13 +72,14 @@ bool CheckHitFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 	DWORD PosState = PSTATE_VOID;		// 位置の状態
 
 	// エリア状態の判別処理
-	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R &&
+	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < (FIELDROAD_X / 2)+ PLAYER_FIELDSIZE_R &&
 		pPastPos->z < (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R)
 	{	// 縦エリアにいる
 		PosState |= PSTATE_INVERTICAL;
 	}
 
-	if (pPastPos->z > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->z < (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R)
+	if (pPastPos->z > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->z < (FIELDROAD_X / 2)+PLAYER_FIELDSIZE_R&&
+		pPastPos->x < (FIELDROAD_X / 2) + PLAYER_FIELDSIZE_R)
 	{	// 横エリアにいる
 		PosState |= PSTATE_INHORIZONTAL;
 	}
@@ -117,7 +118,7 @@ bool CheckHitFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 /*=====================================================================
 左右分岐道道更新関数
 =====================================================================*/
-void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
+void UpdateFieldTurnL(FIELD_CHIP* pData, Vec3* pPos)
 {
 	const float maxIptPosZ = -FIELDROAD_X / 2 - PLAYER_FIELDSIZE_R;		// 入力受付のｚ最大値
 	const float minIptPosZ = maxIptPosZ - RANGE_INPUTLR;				//　同上最小値
@@ -129,7 +130,7 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 	if (pPos->z <= maxIptPosZ && pPos->z >= minIptPosZ && g_QTEState == QTE_NOINPUT)
 	{// 未入力状態で左右キーを押すとCURVE予約
 #ifdef _DEBUG
-		PrintDebugProc("[debug_TurnLR]Qキー、Eキー:CURVE");
+		PrintDebugProc("[debug_TurnL]Qキー、Eキー:CURVE");
 #endif
 		if (GetKeyboardTrigger(DIK_Q) || IsButtonTriggered(0, BUTTON_Y))
 		{
@@ -148,23 +149,24 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 		if (g_QTEState == QTE_LEFT)
 		{
 			SetPlayerDirection(AddFieldDirection(GetPlayerDirection(), -1));
+
+			// 反対側の道を消す処理
+			pDelChip = SearchChipID(AddFieldID(pData->ID, GetFieldIDVector(AddFieldDirection(GetPlayerDirection(), 2))));
+			if (pDelChip != NULL)
+			{
+				DeleteField(pDelChip);
+			}
+
+
+			id_start = AddFieldID(pData->ID, GetFieldIDVector(GetPlayerDirection()));
+			SpawnField(id_start);
 		}
 		else if (g_QTEState == QTE_RIGHT)
 		{
 			SetPlayerDirection(AddFieldDirection(GetPlayerDirection(), 1));
 		}
 
-		// 反対側の道を消す処理
-		pDelChip = SearchChipID(AddFieldID(pData->ID, GetFieldIDVector(AddFieldDirection(GetPlayerDirection(), 2))));
-		if (pDelChip != NULL)
-		{
-			DeleteField(pDelChip);
-		}
-
 		g_QTEState = QTE_NOINPUT;
-
-		id_start = AddFieldID(pData->ID, GetFieldIDVector(GetPlayerDirection()));
-		SpawnField(id_start);
 
 	}
 }
@@ -172,7 +174,7 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 /*=====================================================================
 左右分岐道道描画関数
 =====================================================================*/
-void DrawFieldTurnLR(FIELD_CHIP* pData)
+void DrawFieldTurnL(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
 
@@ -184,8 +186,6 @@ void DrawFieldTurnLR(FIELD_CHIP* pData)
 
 	GetFieldShareMesh(FMESH_FRONTFLAT)->DrawSubset(0);
 	GetFieldShareMesh(FMESH_LEFTFLAT)->DrawSubset(0);
-	GetFieldShareMesh(FMESH_RIGHTFLAT)->DrawSubset(0);
-
 
 	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_WALL));
 
@@ -195,7 +195,6 @@ void DrawFieldTurnLR(FIELD_CHIP* pData)
 	g_meshWallBack->DrawSubset(0);
 
 	GetFieldShareMesh(FMESH_LEFTCENTERWALL)->DrawSubset(0);
-	GetFieldShareMesh(FMESH_RIGHTCENTERWALL)->DrawSubset(0);
 
 
 }
@@ -203,25 +202,25 @@ void DrawFieldTurnLR(FIELD_CHIP* pData)
 /*=====================================================================
 左右分岐道道初期化関数
 =====================================================================*/
-void InitFieldTurnLR()
+void InitFieldTurnL()
 {
 	// 
-	g_meshWallBack = Create3DBoxMesh(&Vec3(FIELDCHIP_WIDTH, ROADWALL_SIZEY, ROADWALL_SIZEX),
-		&Vec3(0, (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), (FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2)));
+	g_meshWallBack = Create3DBoxMesh(&Vec3((FIELDROAD_X/2) + (FIELDCHIP_WIDTH / 2) + (ROADWALL_SIZEX/2), ROADWALL_SIZEY, ROADWALL_SIZEX),
+		&Vec3(-(FIELDCHIP_WIDTH / 4)+(FIELDROAD_X/4)+(ROADWALL_SIZEX/2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), (FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2)));
 
 }
 
 /*=====================================================================
 左右分岐道道終了化関数
 =====================================================================*/
-void UninitFieldTurnLR()
+void UninitFieldTurnL()
 {
 }
 
 /*=====================================================================
 左右分岐道道独自関数アドレス取得関数
 =====================================================================*/
-FIELD_OBJFUNC* GetFieldTurnLRFunc()
+FIELD_OBJFUNC* GetFieldTurnLFunc()
 {
 	return &g_Func;
 }
