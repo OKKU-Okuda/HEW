@@ -23,6 +23,7 @@
 #include "Field/cliffL.h"
 #include "Field/jump.h"
 #include "Field/turnLR.h"
+#include "Field/turnL.h"
 
 #include "../Phase/Phase_GameTackle1.h"
 
@@ -166,6 +167,7 @@ void InitField()
 	InitFieldCliffL();
 	InitFieldJump();
 	InitFieldTurnLR();
+	InitFieldTurnL();
 
 	InitFieldGimmick();
 }
@@ -183,6 +185,7 @@ void UninitField()
 	UninitFieldCliffL();
 	UninitFieldJump();
 	UninitFieldTurnLR();
+	UninitFieldTurnL();
 
 	UninitFieldGimmick();
 }
@@ -518,9 +521,10 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type,FIELD_CHIP* pData)
 	case FTYPE_TURNLR:
 		return GetFieldTurnLRFunc();
 
+	case FTYPE_TURNL:
+		return GetFieldTurnLFunc();
+
 	//case FTYPE_TURNR:
-	//	break;
-	//case FTYPE_TURNL:
 	//	break;
 	case MAX_FIELDTYPE:
 		break;

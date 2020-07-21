@@ -16,7 +16,9 @@
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
-#define RATE_SPAWN_TURN		(0.1f)
+//#define RATE_SPAWN_TURN		(0.1f)
+#define RATE_SPAWN_TURN		(1.f)
+
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
@@ -73,6 +75,14 @@ void SpawnField(CHIP_ID id_start)
 			else
 			{
 #endif
+
+				FIELD_DIRECTION fdirleft = AddFieldDirection(GetPlayerDirection(), -1);		// 横に続く道の方向
+				CHIP_ID idleft = AddFieldID(id_start, GetFieldIDVector(fdirleft));			// 横に続く道のid
+				SetField(idleft, FTYPE_ROAD, fdirleft);		// 分岐道の設置
+
+				type = FTYPE_TURNL;
+
+				/*
 				type = FTYPE_TURNLR;
 
 				FIELD_DIRECTION fdirleft = AddFieldDirection(GetPlayerDirection(), -1);		// 横に続く道の方向
@@ -82,7 +92,7 @@ void SpawnField(CHIP_ID id_start)
 				FIELD_DIRECTION fdirright = AddFieldDirection(GetPlayerDirection(), 1);			// 横に続く道の方向
 				CHIP_ID idright = AddFieldID(id_start, GetFieldIDVector(fdirright));			// 横に続く道のid
 				SetField(idright, FTYPE_ROAD, fdirright);		// 分岐道の設置
-
+				*/
 			//}
 
 			SetField(id_start, type, GetPlayerDirection());		// 分岐道の設置
