@@ -140,8 +140,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 #if !PASS_WINDOWMODE // 表示方法を行うか否か
 
-	int id = MessageBox(NULL, "テクスチャをパッド用に変更する？", "(´・ω・)", MB_YESNOCANCEL | MB_ICONQUESTION);
-	if (id == IDNO)
+	int id = MessageBox(NULL, "テクスチャをキーボード用で適用する？", "(´・ω・)", MB_YESNOCANCEL | MB_ICONQUESTION);
+	if (id == IDYES)
 	{
 		SetWallTextureForGamePad(false);
 	}

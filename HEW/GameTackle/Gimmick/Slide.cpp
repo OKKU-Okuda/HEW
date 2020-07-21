@@ -127,6 +127,11 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 void DrawGimmick(GIMMICK_HEADER* pHead)
 {
 	var(pData, pHead);
+	D3DDEVICE;
+	DWORD is_lighting = false;
+
+	pDevice->GetRenderState(D3DRS_LIGHTING, &is_lighting);
+	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 
 #if IS_USE_XMODEL == true
 	DrawModelWithOtherMatrix(g_modelSlide, &pData->WldMat);
@@ -140,6 +145,9 @@ void DrawGimmick(GIMMICK_HEADER* pHead)
 
 	g_meshSlide->DrawSubset(0);
 #endif
+
+	pDevice->SetRenderState(D3DRS_LIGHTING, is_lighting);
+
 }
 
 /*=====================================================================

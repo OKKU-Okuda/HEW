@@ -69,13 +69,14 @@ void DrawFieldCliffR(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
 
-	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &pData->WldMat);
 
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
 	g_meshFlat->DrawSubset(0);
 
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_WALL));
 	GetFieldShareMesh(FMESH_LONGWALLLEFT)->DrawSubset(0);
 }
 

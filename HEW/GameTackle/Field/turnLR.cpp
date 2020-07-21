@@ -42,16 +42,17 @@ static void DrawFieldTurnLR(FIELD_CHIP* pData);
 static FIELD_OBJFUNC g_Func = { CheckHitFieldTurnLR,UpdateFieldTurnLR,DrawFieldTurnLR };	// 道独自の関数
 static TURNLR_QTETYPE g_QTEState = QTE_NOINPUT;
 
-static Mesh g_meshWallLeftFront = NULL;
-static Mesh g_meshWallRightFront = NULL;
 static Mesh g_meshWallBack = NULL;
-static Mesh g_meshWallLeftCenter = NULL;
-static Mesh g_meshWallRightCenter = NULL;
+
+//static Mesh g_meshWallLeftFront = NULL;
+///static Mesh g_meshWallRightFront = NULL;
+//static Mesh g_meshWallLeftCenter = NULL;
+//static Mesh g_meshWallRightCenter = NULL;
 
 
-static Mesh g_meshFlatFront = NULL;
-static Mesh g_meshFlatLeft = NULL;
-static Mesh g_meshFlatRight = NULL;
+//static Mesh g_meshFlatFront = NULL;
+//static Mesh g_meshFlatLeft = NULL;
+//static Mesh g_meshFlatRight = NULL;
 
 
 /*=====================================================================
@@ -173,21 +174,27 @@ void DrawFieldTurnLR(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
 
-	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &pData->WldMat);
 
-	g_meshWallLeftFront	  ->DrawSubset(0);
-	g_meshWallRightFront	 ->DrawSubset(0);
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
+
+	GetFieldShareMesh(FMESH_FRONTFLAT)->DrawSubset(0);
+	GetFieldShareMesh(FMESH_LEFTFLAT)->DrawSubset(0);
+	GetFieldShareMesh(FMESH_RIGHTFLAT)->DrawSubset(0);
+
+
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_WALL));
+
+	GetFieldShareMesh(FMESH_LEFTFRONTWALL)->DrawSubset(0);
+	GetFieldShareMesh(FMESH_RIGHTFRONTWALL)->DrawSubset(0);
 
 	g_meshWallBack->DrawSubset(0);
-	g_meshWallLeftCenter->DrawSubset(0);
-	g_meshWallRightCenter->DrawSubset(0);
 
-	g_meshFlatFront->DrawSubset(0);
-	g_meshFlatLeft->DrawSubset(0);
-	g_meshFlatRight->DrawSubset(0);
+	GetFieldShareMesh(FMESH_LEFTCENTERWALL)->DrawSubset(0);
+	GetFieldShareMesh(FMESH_RIGHTCENTERWALL)->DrawSubset(0);
+
 
 }
 
@@ -196,40 +203,10 @@ void DrawFieldTurnLR(FIELD_CHIP* pData)
 =====================================================================*/
 void InitFieldTurnLR()
 {
-
-	const float sizeZ = (FIELDCHIP_HEIGHT - FIELDROAD_X) / 2;
-	const float posZ = FIELDCHIP_CENTER_Z - (sizeZ / 2);
-
-	const float size_flatX = FIELDCHIP_CENTER_X - (FIELDROAD_X / 2);
-	const float pos_flatX = size_flatX / 2 + (FIELDROAD_X / 2);
-
-	const float size_WallX = FIELDCHIP_CENTER_X - (FIELDROAD_X / 2) - ROADWALL_SIZEX;
-	const float pos_WallX = pos_flatX + (ROADWALL_SIZEX / 2);
-
-	g_meshWallLeftFront = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, sizeZ),
-		&Vec3((-FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -posZ));
-
-	g_meshWallRightFront = Create3DBoxMesh(&Vec3(ROADWALL_SIZEX, ROADWALL_SIZEY, sizeZ),
-		&Vec3((FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2), (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -posZ));
-
+	// 
 	g_meshWallBack = Create3DBoxMesh(&Vec3(FIELDCHIP_WIDTH, ROADWALL_SIZEY, ROADWALL_SIZEX),
 		&Vec3(0, (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), (FIELDROAD_X / 2) + (ROADWALL_SIZEX / 2)));
 
-
-	g_meshWallLeftCenter = Create3DBoxMesh(&Vec3(size_WallX, ROADWALL_SIZEY, ROADWALL_SIZEX),
-		&Vec3(-pos_WallX, (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -(FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2)));
-
-	g_meshWallRightCenter = Create3DBoxMesh(&Vec3(size_WallX, ROADWALL_SIZEY, ROADWALL_SIZEX),
-		&Vec3(pos_WallX, (ROADWALL_SIZEY / 2) - (FIELDROAD_Y / 2), -(FIELDROAD_X / 2) - (ROADWALL_SIZEX / 2)));
-
-
-	g_meshFlatFront = Create3DBoxMesh(&Vec3(FIELDROAD_X, FIELDROAD_Y, sizeZ + FIELDROAD_X) , &Vec3(0, 0, -posZ+ (FIELDROAD_X/2)));
-	
-
-	g_meshFlatLeft = Create3DBoxMesh(&Vec3(size_flatX, FIELDROAD_Y, FIELDROAD_X), &Vec3(-pos_flatX, 0, 0));
-	g_meshFlatRight = Create3DBoxMesh(&Vec3(size_flatX, FIELDROAD_Y, FIELDROAD_X), &Vec3(pos_flatX, 0, 0));
-
-	// 
 }
 
 /*=====================================================================

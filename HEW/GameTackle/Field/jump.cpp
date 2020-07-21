@@ -72,18 +72,24 @@ void DrawFieldJump(FIELD_CHIP* pData)
 {
 	D3DDEVICE;
 
-	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &pData->WldMat);
 
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_NONE));
+
 	for (int i = 0; i < 2; i++)
 	{
 		g_meshFlat[i]->DrawSubset(0);
+	}
 
+	pDevice->SetTexture(0, GetFieldShareTexture(FTEX_WALL));
+	for (int i = 0; i < 2; i++)
+	{
 		g_meshRightWall[i]->DrawSubset(0);
 		g_meshLeftWall[i]->DrawSubset(0);
 	}
+
 }
 
 /*=====================================================================

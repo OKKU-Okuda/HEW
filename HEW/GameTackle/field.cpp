@@ -130,6 +130,12 @@ void UpdateField()
 =====================================================================*/
 void DrawField()
 {
+	D3DDEVICE;
+	DWORD default_lighting = false;
+
+	pDevice->GetRenderState(D3DRS_LIGHTING, &default_lighting);
+
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	for (int i = 0; i < MAX_FIELD; i++)
 	{
 		if (g_Field[i].State == FSTATE_NONE)
@@ -143,6 +149,8 @@ void DrawField()
 		// GIMMICKの描画
 		FieldGimmickDraw(&g_Field[i]);
 	}
+	pDevice->SetRenderState(D3DRS_LIGHTING, default_lighting);
+
 }
 
 /*=====================================================================
@@ -301,7 +309,7 @@ bool PlayerCheckHitOnField()
 			{// 検索にヒットしない場合はここで帰還する
 
 				PrintDebugProc("[ERROR]プレイヤーに干渉させるチャンクが存在しません(ID:%d,%d)", id.vec2.x, id.vec2.z);
-				return true;
+				return false;
 			}
 
 			SetOnFieldWk(keep_pt);
