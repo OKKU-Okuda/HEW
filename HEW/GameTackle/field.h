@@ -34,6 +34,9 @@
 #define NUM_FTYPE_NORMAL			(FTYPE_JUMP + 1 - FTYPE_ROAD)// 通常道数取得
 #define START_FTYPE_NORMAL			(FTYPE_ROAD)					// 通常道の開始番地
 
+#define NUM_FTYPE_CURVE			(FTYPE_TURNL + 1 - FTYPE_TURNLR)// 分岐道数取得
+#define START_FTYPE_CURVE			(FTYPE_TURNLR)					// 分岐道の開始番地
+
 // コイン設置ｙ座標
 #define POSY_COIN	(10.0f)
 //---------------------------------------------------------------------
@@ -63,7 +66,7 @@ enum FIELD_TYPE {
 
 	// カーブ道:CURVE
 	FTYPE_TURNLR,		// 左右分岐点の道
-	//FTYPE_TURNR,		// 右に曲がる道
+	FTYPE_TURNR,		// 右に曲がる道
 	FTYPE_TURNL,		// 左に曲がる道
 
 	MAX_FIELDTYPE		/* 最大数取得 */

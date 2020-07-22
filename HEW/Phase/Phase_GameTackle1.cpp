@@ -58,7 +58,7 @@ void UpdateGameTackle1()
 	// 次のフェーズに行く
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{	// タックル2
-		GoNextPhase(GetPhaseGameTackle2Func());
+		GoNextPhase(GetPhaseTitleFunc());
 	}
 
 	// プレイヤーの位置制御
