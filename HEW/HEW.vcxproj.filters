@@ -50,6 +50,7 @@
     <ClCompile Include="GameTackle\Gimmick\Slide.cpp" />
     <ClCompile Include="GameTackle\ground_mesh.cpp" />
     <ClCompile Include="GameTackle\Field\turnL.cpp" />
+    <ClCompile Include="GameTackle\Field\turnR.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
@@ -101,6 +102,7 @@
     <ClInclude Include="GameTackle\Gimmick\Slide.h" />
     <ClInclude Include="GameTackle\ground_mesh.h" />
     <ClInclude Include="GameTackle\Field\turnL.h" />
+    <ClInclude Include="GameTackle\Field\turnR.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HEW.exe" />

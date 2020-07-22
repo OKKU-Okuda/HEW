@@ -17,6 +17,7 @@ typedef struct
 
 	/*コイン*/
 	int			coin;
+	int			coin_target;		// イベント変更の目安数
 	int			COIN_PLACE;			// スコアの桁数
 	float		COIN_POS_X;		// スコアの表示基準位置Ｘ座標
 	float		COIN_SIZE_X;
@@ -30,6 +31,7 @@ typedef struct
 
 						/*距離*/
 	int			distance;
+	int			distance_target;	// スコアの桁イベント用
 	int			DISTANCE_PLACE;		//距離の桁数
 	float		DISTANCE_POS_X;	// スコアの表示基準位置Ｘ座標
 	float		DISTANCE_SIZE_X;

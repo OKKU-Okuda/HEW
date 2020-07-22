@@ -149,6 +149,7 @@
     <ClCompile Include="GameTackle\Field\road.cpp" />
     <ClCompile Include="GameTackle\Field\turnL.cpp" />
     <ClCompile Include="GameTackle\Field\turnLR.cpp" />
+    <ClCompile Include="GameTackle\Field\turnR.cpp" />
     <ClCompile Include="GameTackle\Field\void.cpp" />
     <ClCompile Include="GameTackle\field_control.cpp" />
     <ClCompile Include="GameTackle\Gimmick\Gimmick.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="GameTackle\Field\road.h" />
     <ClInclude Include="GameTackle\Field\turnL.h" />
     <ClInclude Include="GameTackle\Field\turnLR.h" />
+    <ClInclude Include="GameTackle\Field\turnR.h" />
     <ClInclude Include="GameTackle\Field\void.h" />
     <ClInclude Include="GameTackle\field_control.h" />
     <ClInclude Include="GameTackle\Gimmick\Gimmick.h" />

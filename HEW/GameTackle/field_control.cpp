@@ -16,8 +16,8 @@
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
-//#define RATE_SPAWN_TURN		(0.1f)
-#define RATE_SPAWN_TURN		(1.f)
+#define RATE_SPAWN_TURN		(0.1f)
+//#define RATE_SPAWN_TURN		(1.f)
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -53,36 +53,28 @@ void SpawnField(CHIP_ID id_start)
 		// 分岐道の割合設置(hit時処理終了)
 		if (CheckRand(RATE_SPAWN_TURN) == true)
 		{
+			numRand = rand() % NUM_FTYPE_CURVE + START_FTYPE_CURVE;
+
 			FIELD_TYPE type;
-#if 0		// 一方向系CURVE道は未実装
 			// 分岐道は３つなので公平に
-			if (CheckRand(1 / 3.0f) == true)
+			if (numRand == FTYPE_TURNL)
 			{
-				FIELD_DIRECTION fdirleft = AddFieldDirection(GetPlayerDirection(), -1);		// 横に続く道の方向
-				CHIP_ID idleft = AddFieldID(id_start, GetFieldIDVector(fdirleft));			// 横に続く道のid
-				SetField(idleft, type, fdirleft);		// 分岐道の設置
-
-				type = FTYPE_TURNL;
-			}
-			else if (CheckRand(1 / 2.0f) == true)
-			{
-				FIELD_DIRECTION fdirright = AddFieldDirection(GetPlayerDirection(), 1);			// 横に続く道の方向
-				CHIP_ID idright = AddFieldID(id_start, GetFieldIDVector(fdirright));			// 横に続く道のid
-				SetField(idright, type, fdirright);		// 分岐道の設置
-
-				type = FTYPE_TURNR;
-			}
-			else
-			{
-#endif
-
 				FIELD_DIRECTION fdirleft = AddFieldDirection(GetPlayerDirection(), -1);		// 横に続く道の方向
 				CHIP_ID idleft = AddFieldID(id_start, GetFieldIDVector(fdirleft));			// 横に続く道のid
 				SetField(idleft, FTYPE_ROAD, fdirleft);		// 分岐道の設置
 
 				type = FTYPE_TURNL;
+			}
+			else if (numRand == FTYPE_TURNR)
+			{
+				FIELD_DIRECTION fdirright = AddFieldDirection(GetPlayerDirection(), 1);			// 横に続く道の方向
+				CHIP_ID idright = AddFieldID(id_start, GetFieldIDVector(fdirright));			// 横に続く道のid
+				SetField(idright, FTYPE_ROAD, fdirright);		// 分岐道の設置
 
-				/*
+				type = FTYPE_TURNR;
+			}
+			else
+			{
 				type = FTYPE_TURNLR;
 
 				FIELD_DIRECTION fdirleft = AddFieldDirection(GetPlayerDirection(), -1);		// 横に続く道の方向
@@ -92,8 +84,8 @@ void SpawnField(CHIP_ID id_start)
 				FIELD_DIRECTION fdirright = AddFieldDirection(GetPlayerDirection(), 1);			// 横に続く道の方向
 				CHIP_ID idright = AddFieldID(id_start, GetFieldIDVector(fdirright));			// 横に続く道のid
 				SetField(idright, FTYPE_ROAD, fdirright);		// 分岐道の設置
-				*/
-			//}
+
+			}
 
 			SetField(id_start, type, GetPlayerDirection());		// 分岐道の設置
 

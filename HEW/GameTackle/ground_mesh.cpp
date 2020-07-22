@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //	É}ÉNÉçíËã`(ìØcppì‡å¿íË)
 //---------------------------------------------------------------------
-#define GROUNDSIZE				(FIELDCHIP_WIDTH * 3.5)
+#define GROUNDSIZE				(FIELDCHIP_WIDTH * 4.f)
 
 #define GROUND_POSY				(-75.f)
 //#define FOR(i,exit)				for(int (i) = 0; (i) < (exit); (i)++)

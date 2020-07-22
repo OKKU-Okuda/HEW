@@ -56,6 +56,7 @@ HRESULT InitUI(int type)
 
 		// スコアの初期化
 		g_ui.coin = 0;
+		g_ui.coin_target = 10;
 
 		g_ui.COIN_SIZE_X = 35.0f;
 		g_ui.COIN_SIZE_Y = 50.0f;
@@ -75,6 +76,7 @@ HRESULT InitUI(int type)
 
 		// スコアの初期化
 		g_ui.distance = 0;
+		g_ui.distance_target = 10;
 
 		g_ui.DISTANCE_SIZE_X = 35.0f;
 		g_ui.DISTANCE_SIZE_Y = 50.0f;
@@ -162,9 +164,10 @@ void UpdateUI(void)
 	}
 
 	/*桁*/
-	if (g_ui.coin == 10)
+	if (g_ui.coin >= g_ui.coin_target)
 	{
-		g_ui.COIN_PLACE = 2;
+		g_ui.coin_target *= 10;	// 次の桁までのターゲットとする
+		g_ui.COIN_PLACE++;
 
 		g_ui.COIN_SIZE_X = 55.0f;
 		g_ui.COIN_SIZE_Y = 70.0f;
@@ -172,81 +175,10 @@ void UpdateUI(void)
 		g_ui.COIN_POS_X = (SCREEN_WIDTH - (COIN_INTERVAL_X + g_ui.COIN_SIZE_X) * g_ui.COIN_PLACE - 35.0f);
 
 		MakeVertexCoin(pDevice);
+
 	}
 
-	if (g_ui.coin == 100)
-	{
-		g_ui.COIN_PLACE = 3;
-
-		g_ui.COIN_SIZE_X = 55.0f;
-		g_ui.COIN_SIZE_Y = 70.0f;
-
-		g_ui.COIN_POS_X = (SCREEN_WIDTH - (COIN_INTERVAL_X + g_ui.COIN_SIZE_X) * g_ui.COIN_PLACE - 35.0f);
-
-		MakeVertexCoin(pDevice);
-	}
-
-	if (g_ui.coin == 1000)
-	{
-		g_ui.COIN_PLACE = 4;
-
-		g_ui.COIN_SIZE_X = 55.0f;
-		g_ui.COIN_SIZE_Y = 70.0f;
-
-		g_ui.COIN_POS_X = (SCREEN_WIDTH - (COIN_INTERVAL_X + g_ui.COIN_SIZE_X) * g_ui.COIN_PLACE - 35.0f);
-
-		MakeVertexCoin(pDevice);
-	}
-
-	if (g_ui.coin == 10000)
-	{
-		g_ui.COIN_PLACE = 5;
-
-		g_ui.COIN_SIZE_X = 55.0f;
-		g_ui.COIN_SIZE_Y = 70.0f;
-
-		g_ui.COIN_POS_X = (SCREEN_WIDTH - (COIN_INTERVAL_X + g_ui.COIN_SIZE_X) * g_ui.COIN_PLACE - 35.0f);
-
-		MakeVertexCoin(pDevice);
-	}
-
-	if (g_ui.coin == 100000)
-	{
-		g_ui.COIN_PLACE = 6;
-
-		g_ui.COIN_SIZE_X = 55.0f;
-		g_ui.COIN_SIZE_Y = 70.0f;
-
-		g_ui.COIN_POS_X = (SCREEN_WIDTH - (COIN_INTERVAL_X + g_ui.COIN_SIZE_X) * g_ui.COIN_PLACE - 35.0f);
-
-		MakeVertexCoin(pDevice);
-	}
-
-	if (g_ui.coin == 1000000)
-	{
-		g_ui.COIN_PLACE = 7;
-
-		g_ui.COIN_SIZE_X = 55.0f;
-		g_ui.COIN_SIZE_Y = 70.0f;
-
-		g_ui.COIN_POS_X = (SCREEN_WIDTH - (COIN_INTERVAL_X + g_ui.COIN_SIZE_X) * g_ui.COIN_PLACE - 35.0f);
-
-		MakeVertexCoin(pDevice);
-	}
-
-	if (g_ui.coin == 10000000)
-	{
-		g_ui.COIN_PLACE = 8;
-
-		g_ui.COIN_SIZE_X = 55.0f;
-		g_ui.COIN_SIZE_Y = 70.0f;
-
-		g_ui.COIN_POS_X = (SCREEN_WIDTH - (COIN_INTERVAL_X + g_ui.COIN_SIZE_X) * g_ui.COIN_PLACE - 35.0f);
-
-		MakeVertexCoin(pDevice);
-	}
-
-	if ((g_ui.coin == 15) || (g_ui.coin == 105) || (g_ui.coin == 1005) || (g_ui.coin == 10005) || (g_ui.coin == 100005) || (g_ui.coin == 1000005))
+	else if ((g_ui.coin == 15) || (g_ui.coin == 105) || (g_ui.coin == 1005) || (g_ui.coin == 10005) || (g_ui.coin == 100005) || (g_ui.coin == 1000005))
 	{
 		g_ui.COIN_SIZE_X = 35.0f;
 		g_ui.COIN_SIZE_Y = 50.0f;
@@ -265,10 +197,12 @@ void UpdateUI(void)
 
 		SetTextureDistance(nCntPlace, number);
 	}
+
 	/*桁*/
-	if (g_ui.distance == 10)
+	if (g_ui.distance >= g_ui.distance_target)
 	{
-		g_ui.DISTANCE_PLACE = 2;
+		g_ui.distance_target *= 10;	// 次の桁までのターゲットとする
+		g_ui.DISTANCE_PLACE++;
 
 		g_ui.DISTANCE_SIZE_X = 55.0f;
 		g_ui.DISTANCE_SIZE_Y = 70.0f;
@@ -276,81 +210,9 @@ void UpdateUI(void)
 		g_ui.DISTANCE_POS_X = (SCREEN_WIDTH - (DISTANCE_INTERVAL_X + g_ui.DISTANCE_SIZE_X) * g_ui.DISTANCE_PLACE - 35.0f);
 
 		MakeVertexDistance(pDevice);
+
 	}
-
-	if (g_ui.distance == 100)
-	{
-		g_ui.DISTANCE_PLACE = 3;
-
-		g_ui.DISTANCE_SIZE_X = 55.0f;
-		g_ui.DISTANCE_SIZE_Y = 70.0f;
-
-		g_ui.DISTANCE_POS_X = (SCREEN_WIDTH - (DISTANCE_INTERVAL_X + g_ui.DISTANCE_SIZE_X) * g_ui.DISTANCE_PLACE - 35.0f);
-
-		MakeVertexDistance(pDevice);
-	}
-
-	if (g_ui.distance == 1000)
-	{
-		g_ui.DISTANCE_PLACE = 4;
-
-		g_ui.DISTANCE_SIZE_X = 55.0f;
-		g_ui.DISTANCE_SIZE_Y = 70.0f;
-
-		g_ui.DISTANCE_POS_X = (SCREEN_WIDTH - (DISTANCE_INTERVAL_X + g_ui.DISTANCE_SIZE_X) * g_ui.DISTANCE_PLACE - 35.0f);
-
-		MakeVertexDistance(pDevice);
-	}
-
-	if (g_ui.distance == 10000)
-	{
-		g_ui.DISTANCE_PLACE = 5;
-
-		g_ui.DISTANCE_SIZE_X = 55.0f;
-		g_ui.DISTANCE_SIZE_Y = 70.0f;
-
-		g_ui.DISTANCE_POS_X = (SCREEN_WIDTH - (DISTANCE_INTERVAL_X + g_ui.DISTANCE_SIZE_X) * g_ui.DISTANCE_PLACE - 35.0f);
-
-		MakeVertexDistance(pDevice);
-	}
-
-	if (g_ui.distance == 100000)
-	{
-		g_ui.DISTANCE_PLACE = 6;
-
-		g_ui.DISTANCE_SIZE_X = 55.0f;
-		g_ui.DISTANCE_SIZE_Y = 70.0f;
-
-		g_ui.DISTANCE_POS_X = (SCREEN_WIDTH - (DISTANCE_INTERVAL_X + g_ui.DISTANCE_SIZE_X) * g_ui.DISTANCE_PLACE - 35.0f);
-
-		MakeVertexDistance(pDevice);
-	}
-
-	if (g_ui.distance == 1000000)
-	{
-		g_ui.DISTANCE_PLACE = 7;
-
-		g_ui.DISTANCE_SIZE_X = 55.0f;
-		g_ui.DISTANCE_SIZE_Y = 70.0f;
-
-		g_ui.DISTANCE_POS_X = (SCREEN_WIDTH - (DISTANCE_INTERVAL_X + g_ui.DISTANCE_SIZE_X) * g_ui.DISTANCE_PLACE - 35.0f);
-
-		MakeVertexDistance(pDevice);
-	}
-
-	if (g_ui.distance == 10000000)
-	{
-		g_ui.DISTANCE_PLACE = 8;
-
-		g_ui.DISTANCE_SIZE_X = 55.0f;
-		g_ui.DISTANCE_SIZE_Y = 70.0f;
-
-		g_ui.DISTANCE_POS_X = (SCREEN_WIDTH - (DISTANCE_INTERVAL_X + g_ui.DISTANCE_SIZE_X) * g_ui.DISTANCE_PLACE - 35.0f);
-
-		MakeVertexDistance(pDevice);
-	}
-
-	if ((g_ui.distance == 50) || (g_ui.distance == 150) || (g_ui.distance == 1050) || (g_ui.distance == 10050) || (g_ui.distance == 100050) || (g_ui.distance == 1000050))
+	else if((g_ui.distance == 50) || (g_ui.distance == 150) || (g_ui.distance == 1050) || (g_ui.distance == 10050) || (g_ui.distance == 100050) || (g_ui.distance == 1000050))
 	{
 		g_ui.DISTANCE_SIZE_X = 35.0f;
 		g_ui.DISTANCE_SIZE_Y = 50.0f;
