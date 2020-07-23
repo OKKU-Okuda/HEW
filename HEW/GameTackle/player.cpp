@@ -615,6 +615,7 @@ HRESULT InitPlayer(void)
 
 	}
 
+	g_aSE[PSE_START] = MySoundCreate("data/SE/GameStart.wav");
 	g_aSE[PSE_JUMP] = MySoundCreate("data/SE/Jump.wav");
 	g_aSE[PSE_SLIDE] = MySoundCreate("data/SE/Slide.wav");
 	g_aSE[PSE_LOSE] = MySoundCreate("data/SE/Death.wav");

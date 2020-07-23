@@ -12,11 +12,12 @@
 #include "../field_control.h"
 #include "../player_control.h"
 #include "turnL.h"
+#include "../UI.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
-#define RANGE_INPUTLR	(FIELDCHIP_WIDTH*1.f)		// 中心までのinput読み込みエリア
+#define RANGE_INPUTLR	(FIELDCHIP_WIDTH*1.25f)		// 中心までのinput読み込みエリア
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -132,13 +133,22 @@ void UpdateFieldTurnL(FIELD_CHIP* pData, Vec3* pPos)
 #ifdef _DEBUG
 		PrintDebugProc("[debug_TurnL]Qキー、Eキー:CURVE");
 #endif
+
+		SetUIGuideActive(UD_LEFT, true);
+		SetUIGuideActive(UD_RIGHT, false);
+
 		if (GetKeyboardTrigger(DIK_Q) || IsButtonTriggered(0, BUTTON_Y))
 		{
 			g_QTEState = QTE_LEFT;
+			PlayUIGuideSelect();
 		}
 		else if (GetKeyboardTrigger(DIK_E) || IsButtonTriggered(0, BUTTON_Z))
 		{
 			g_QTEState = QTE_RIGHT;
+
+			SetUIGuideActive(UD_LEFT, false);
+			SetUIGuideActive(UD_RIGHT, true);
+			PlayUIGuideSelect();
 		}
 	}
 	else if (g_QTEState != QTE_NOINPUT && pPos->z <= maxRotPosZ && pPos->z >= minRotPosZ)
@@ -167,6 +177,9 @@ void UpdateFieldTurnL(FIELD_CHIP* pData, Vec3* pPos)
 		}
 
 		g_QTEState = QTE_NOINPUT;
+
+		SetUIGuideActive(UD_LEFT, false);
+		SetUIGuideActive(UD_RIGHT, false);
 
 	}
 }

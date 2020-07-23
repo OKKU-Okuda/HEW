@@ -11,6 +11,15 @@
 //*****************************************************************************
 // \‘¢‘Ì’è‹`
 //*****************************************************************************
+
+// UI‚Ì•ûŒü¯•Ê
+enum UI_DIRECTION {
+	UD_LEFT = 0,
+	UD_RIGHT,
+
+	MAX_UD
+};
+
 typedef struct
 {
 	float f;
@@ -97,4 +106,6 @@ void SetTextureDistance(int idx, int number);
 UI *GetUI(void);
 void ResetUI(void);
 
+void SetUIGuideActive(UI_DIRECTION ud, bool isActive);
+void PlayUIGuideSelect();
 #endif

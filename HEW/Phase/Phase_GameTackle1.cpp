@@ -279,6 +279,8 @@ void GameTackle1Start()
 {
 	// 音の再生
 	MySoundPlayEternal(g_bgmRunning);
+	SetPlayerSE(PSE_START);
+
 }
 
 /*=====================================================================
