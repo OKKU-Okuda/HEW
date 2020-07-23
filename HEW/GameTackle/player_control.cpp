@@ -13,6 +13,7 @@
 #include "field.h"
 #include "player_control.h"
 #include "UI.h"
+#include "countdown.h"
 
 #include "../Phase/Phase_GameTackle1.h"
 //---------------------------------------------------------------------
@@ -218,6 +219,8 @@ void UpdatePlayerRotation()
 
 void UpdatePlayerTranslation()
 {
+	int countdown_flag = GetCountdownFlag();
+
 	if (g_isRotation == true)
 	{// ‰ñ“]’†‚ÍˆÚ“®ˆ—‚µ‚È‚¢
 		return;
@@ -279,7 +282,7 @@ void UpdatePlayerTranslation()
 #endif // _DEBUG
 		ChangeDistance(1);
 	}
-	else if (g_stateMove==MSTATE_READY && (GetKeyboardTrigger(DIK_W) || IsButtonPressed(0, BUTTON_UP)))
+	else if (g_stateMove==MSTATE_READY && countdown_flag==2)
 	{// ŠJ–‹‚ÍW‚ÅˆÚ“®ŠJn
 		g_stateMove = MSTATE_RUNNING;
 		GameTackle1Start();

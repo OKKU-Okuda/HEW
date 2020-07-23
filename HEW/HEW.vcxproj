@@ -140,6 +140,7 @@
     <ClCompile Include="Core\MyList.cpp" />
     <ClCompile Include="GameKick\OrderLogo.cpp" />
     <ClCompile Include="GameTackle\camera.cpp" />
+    <ClCompile Include="GameTackle\countdown.cpp" />
     <ClCompile Include="GameTackle\effect.cpp" />
     <ClCompile Include="GameTackle\Field\cliffC.cpp" />
     <ClCompile Include="GameTackle\Field\cliffL.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="GameTackle\ground_mesh.cpp" />
     <ClCompile Include="GameTackle\item.cpp" />
     <ClCompile Include="GameTackle\kiseki.cpp" />
+    <ClCompile Include="GameTackle\pause.cpp" />
     <ClCompile Include="GameTackle\player.cpp" />
     <ClCompile Include="GameTackle\enemy.cpp" />
     <ClCompile Include="GameTackle\field.cpp" />
@@ -192,6 +194,7 @@
     <ClInclude Include="Core\MyList.h" />
     <ClInclude Include="GameKick\OrderLogo.h" />
     <ClInclude Include="GameTackle\camera.h" />
+    <ClInclude Include="GameTackle\countdown.h" />
     <ClInclude Include="GameTackle\effect.h" />
     <ClInclude Include="GameTackle\Field\cliffC.h" />
     <ClInclude Include="GameTackle\Field\cliffL.h" />
@@ -210,6 +213,7 @@
     <ClInclude Include="GameTackle\ground_mesh.h" />
     <ClInclude Include="GameTackle\item.h" />
     <ClInclude Include="GameTackle\kiseki.h" />
+    <ClInclude Include="GameTackle\pause.h" />
     <ClInclude Include="GameTackle\player.h" />
     <ClInclude Include="GameTackle\enemy.h" />
     <ClInclude Include="GameTackle\field.h" />
