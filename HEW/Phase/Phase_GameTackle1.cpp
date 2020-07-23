@@ -187,7 +187,8 @@ void InitGameTackle1(bool isFirst)
 		// 地面の初期化
 		InitGround();
 
-
+		// カウントダウンのリソース読み込み
+		InitCountdown(0);
 
 		// エネミーの読み込み
 		GetTackleEnemyFunc()->Init(true);
@@ -222,7 +223,7 @@ void InitGameTackle1(bool isFirst)
 	ResetField();
 
 	//カウントダウンの初期化
-	InitCountdown(0);
+	InitCountdown(1);
 
 	// カメラ更新関数の設定
 	GetCamera()->length = 30.0f;

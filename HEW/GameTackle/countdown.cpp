@@ -84,9 +84,11 @@ HRESULT InitCountdown(int type)
 		D3DXCreateTextureFromFile(pDevice,				// デバイスへのポインタ
 			TEXTURE_SHUTSUJIN,							// ファイルの名前
 			&g_pD3DTextureShutsujin);					// 読み込むメモリー
+
+		g_seCountdown = MySoundCreate("data/SE/countdown.wav");
+
 	}
 
-	g_seCountdown = MySoundCreate("data/SE/countdown.wav");
 
 	g_sound = false;
 	return S_OK;
