@@ -28,6 +28,7 @@
 #include "../GameTackle/UI.h"
 #include "../GameTackle/pole.h"
 #include "../GameTackle/ground_mesh.h"
+#include "../GameTackle/countdown.h"
 
 //---------------------------------------------------------------------
 //マクロ定義(同cpp内限定)
@@ -96,6 +97,9 @@ void UpdateGameTackle1()
 
 	// 地面の更新
 	UpdateGround();
+
+	//カウントダウンの更新
+	UpdateCountdown();
 }
 
 /*=====================================================================
@@ -132,6 +136,9 @@ void DrawGameTackle1()
 
 	// UIの描画
 	DrawUI();
+
+	//カウントダウンの描画
+	DrawCountdown();
 
 }
 
@@ -181,6 +188,7 @@ void InitGameTackle1(bool isFirst)
 		InitGround();
 
 
+
 		// エネミーの読み込み
 		GetTackleEnemyFunc()->Init(true);
 
@@ -212,6 +220,9 @@ void InitGameTackle1(bool isFirst)
 
 	// フィールドのリセット処理
 	ResetField();
+
+	//カウントダウンの初期化
+	InitCountdown(0);
 
 	// カメラ更新関数の設定
 	GetCamera()->length = 30.0f;
@@ -251,6 +262,9 @@ void UninitGameTackle1(bool isEnd)
 
 	// 音の開放
 	MySoundDelete(&g_bgmRunning);
+
+	//カウントダウンの終了処理
+	UninitCountdown();
 
 	// プレイヤーの終了処理
 	UninitPlayer();
