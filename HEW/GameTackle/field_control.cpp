@@ -31,7 +31,7 @@
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
-//static CHIP_ID g_idlate;		// 最後に設置したCHIPID(分岐系は別）
+static CHIP_ID g_idlate;		// 最後に設置した直線CHIPID(分岐系は別）
 
 /*=====================================================================
 フィールドCHIP生成関数
@@ -100,6 +100,7 @@ void SpawnField(CHIP_ID id_start)
 		SetField(id_start, (FIELD_TYPE)numRand, GetPlayerDirection());		// 道の設置
 
 	}
+	g_idlate = id_start;
 }
 
 /*=====================================================================
@@ -109,6 +110,19 @@ void UpdateFieldControl()
 {
 	
 	
+}
+
+/*=====================================================================
+フィールド最終1取得関数
+=====================================================================*/
+Vec3 GetLatestFieldPosition()
+{
+	Vec3 ans;
+
+	ans.x = FIELDCHIP_CENTER_X + (FIELDCHIP_WIDTH * g_idlate.vec2.x);
+	ans.z = FIELDCHIP_CENTER_Z + (FIELDCHIP_HEIGHT * g_idlate.vec2.z);
+	ans.y = 0.f;
+	return ans;
 }
 
 

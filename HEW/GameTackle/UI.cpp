@@ -119,7 +119,7 @@ HRESULT InitUI(int type)
 
 	/*•ªŠò—U“±*/
 	{
-		ZeroMemory(g_Guide, sizeof(g_Guide));
+		ZeroMemory(&g_Guide[0], sizeof(g_Guide));
 		MakeVertexGuide();
 	}
 
@@ -712,4 +712,7 @@ void ResetUI(void)
 {
 	GetUI()->coin = 0;
 	GetUI()->distance = 0;
+	ZeroMemory(&g_Guide[0], sizeof(g_Guide));
+	MakeVertexGuide();
+
 }

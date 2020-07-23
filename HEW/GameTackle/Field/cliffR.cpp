@@ -40,7 +40,7 @@ static Mesh g_meshFlat;			// 道の真ん中
 bool CheckHitFieldCliffR(FIELD_CHIP* pData, Vec3* pPos, Vec3* pPastPos)
 {
 
-	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < (FIELDROAD_X / 6) + PLAYER_FIELDSIZE_R)
+	if (pPastPos->x > -(FIELDROAD_X / 2) - PLAYER_FIELDSIZE_R && pPastPos->x < -(FIELDROAD_X / 6) + PLAYER_FIELDSIZE_R)
 	{	// 前座標が内側であれば外に出ないようにする(右側は半分奈落の為出る）
 
 		if (pPos->x < -FIELDROAD_X / 2)
