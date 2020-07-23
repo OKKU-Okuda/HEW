@@ -7,19 +7,40 @@
 #include"../Core/main.h"
 
 #include "UI.h"
+#include "../Core/sound.h"
 
+#define GUIDE_DIVIDE_X			(10u)
+#define GUIDE_CNTNEXTANIM		(5u)
+#define GUIDE_ALPHAADD			(0.05f)
+#define GUIDE_BASECENTERPOSX	(220.f)	// 中心からのx差値
+#define GUIDE_SIZEX		(120.f)
+#define GUIDE_POSY		(200.0f)
+#define GUIDE_SIZEY		(120.f)
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
 HRESULT MakeVertexCoin(LPDIRECT3DDEVICE9 pDevice);
 void SetTextureCoin(int idx, int number);
 
+static void MakeVertexGuide();
+static void VertexGuideUpdate(UI_DIRECTION ud, DWORD animID);
+
 //*****************************************************************************
 // グローバル変数宣言
 //*****************************************************************************
-					/*コイン*/
+/*コインと距離メータ*/
 UI		g_ui;
 
+/*左右分岐誘導UI*/
+static struct {
+	DWORD cntAnim;		// テクスチャ分割用
+	float numAlpha;		// fadein.fadeout用
+	VERTEX_2D vtx[NUM_VERTEX];
+	bool isActive;		// アニメーション自体のACTIVE
+}g_Guide[MAX_UD];
+
+static Texture g_GuideTex = NULL;
+static MySound g_seSelect = NULL;
 //=============================================================================
 // 初期化処理
 //=============================================================================
@@ -47,6 +68,12 @@ HRESULT InitUI(int type)
 			TEXTURE_FRAME_DISTANCE,		// ファイルの名前
 			&g_ui.pD3DTextureDistance[1]);	// 読み込むメモリー
 
+		D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
+			"data/TEXTURE/arrowUI.png",		// ファイルの名前
+			&g_GuideTex);	// 読み込むメモリー
+
+		g_seSelect = MySoundCreate("data/SE/UIGuide.wav");
+		MySoundSetVolume(g_seSelect, 3.f);
 	}
 
 	/*コイン*/
@@ -88,6 +115,12 @@ HRESULT InitUI(int type)
 		// 頂点情報の作成
 		MakeVertexDistance(pDevice);
 
+	}
+
+	/*分岐誘導*/
+	{
+		ZeroMemory(g_Guide, sizeof(g_Guide));
+		MakeVertexGuide();
 	}
 
 	g_ui.add_timer = 0.0f;
@@ -143,6 +176,10 @@ void UninitUI(void)
 			g_ui.pD3DVtxBuffDistance = NULL;
 		}
 	}
+
+	/*分岐誘導*/
+	SAFE_RELEASE(g_GuideTex);
+	MySoundDelete(&g_seSelect);
 }
 
 //=============================================================================
@@ -221,6 +258,33 @@ void UpdateUI(void)
 
 		MakeVertexDistance(pDevice);
 	}
+
+
+	/*分岐誘導*/
+	for (int i = 0; i < MAX_UD; i++)
+	{
+		if (g_Guide[i].isActive == true)
+		{// ACTIVE時の処理
+			g_Guide[i].numAlpha += GUIDE_ALPHAADD;
+			if (g_Guide[i].numAlpha > 1.f)
+			{
+				g_Guide[i].numAlpha = 1.f;
+			}
+
+			g_Guide[i].cntAnim++;
+		}
+		else
+		{// 非アクティブ時の処理
+			g_Guide[i].numAlpha -= GUIDE_ALPHAADD;
+			if (g_Guide[i].numAlpha < 0.f)
+			{
+				g_Guide[i].numAlpha = 0.f;
+			}
+		}
+
+		VertexGuideUpdate((UI_DIRECTION)i, (g_Guide[i].cntAnim / GUIDE_CNTNEXTANIM) % GUIDE_DIVIDE_X);
+	}
+
 }
 
 //=============================================================================
@@ -275,7 +339,128 @@ void DrawUI(void)
 		// ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, (g_ui.DISTANCE_PLACE * 4), NUM_POLYGON);
 	}
+
+	/*分岐誘導*/
+	for (int i = 0; i < MAX_UD; i++)
+	{
+		// 頂点フォーマットの設定
+		pDevice->SetFVF(FVF_VERTEX_2D);
+
+		// テクスチャの設定
+		pDevice->SetTexture(0, g_GuideTex);
+
+		// ポリゴンの描画
+		pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, g_Guide[i].vtx, sizeof(VERTEX_2D));
+	}
 }
+
+//=============================================================================
+// 頂点の作成	分岐誘導ガイド
+//=============================================================================
+void MakeVertexGuide()
+{
+	D3DDEVICE;
+
+	for (int i = 0; i < MAX_UD; i++)
+	{
+		g_Guide[i].vtx[0].diffuse =
+			g_Guide[i].vtx[1].diffuse =
+			g_Guide[i].vtx[2].diffuse =
+			g_Guide[i].vtx[3].diffuse = -1;
+
+		g_Guide[i].vtx[0].rhw =
+			g_Guide[i].vtx[1].rhw =
+			g_Guide[i].vtx[2].rhw =
+			g_Guide[i].vtx[3].rhw = 1.f;
+
+		g_Guide[i].vtx[0].vtx.z =
+			g_Guide[i].vtx[1].vtx.z =
+			g_Guide[i].vtx[2].vtx.z =
+			g_Guide[i].vtx[3].vtx.z = 0.f;
+
+		g_Guide[i].vtx[0].vtx.y =
+			g_Guide[i].vtx[1].vtx.y = GUIDE_POSY - GUIDE_SIZEY;
+		g_Guide[i].vtx[2].vtx.y =
+			g_Guide[i].vtx[3].vtx.y = GUIDE_POSY + GUIDE_SIZEY;
+
+
+		VertexGuideUpdate((UI_DIRECTION)i, 0);
+	}
+
+	g_Guide[UD_LEFT].vtx[0].vtx.x =
+		g_Guide[UD_LEFT].vtx[2].vtx.x = SCREEN_CENTER_X - GUIDE_BASECENTERPOSX - GUIDE_SIZEX;
+	g_Guide[UD_LEFT].vtx[1].vtx.x =
+		g_Guide[UD_LEFT].vtx[3].vtx.x = SCREEN_CENTER_X - GUIDE_BASECENTERPOSX + GUIDE_SIZEX;
+
+	g_Guide[UD_RIGHT].vtx[0].vtx.x =
+		g_Guide[UD_RIGHT].vtx[2].vtx.x = SCREEN_CENTER_X + GUIDE_BASECENTERPOSX - GUIDE_SIZEX;
+	g_Guide[UD_RIGHT].vtx[1].vtx.x =
+		g_Guide[UD_RIGHT].vtx[3].vtx.x = SCREEN_CENTER_X + GUIDE_BASECENTERPOSX + GUIDE_SIZEX;
+}
+
+//=============================================================================
+// 頂点の更新	分岐誘導ガイド
+//=============================================================================
+void VertexGuideUpdate(UI_DIRECTION ud, DWORD animID)
+{
+	const float SIZEX = 1.f / GUIDE_DIVIDE_X;
+
+	// 時間余ったら個々のコードを書き直す
+	if (ud == UD_LEFT)
+	{
+		g_Guide[ud].vtx[0].tex.y =
+			g_Guide[ud].vtx[2].tex.y = 0.f;
+		g_Guide[ud].vtx[1].tex.y =
+			g_Guide[ud].vtx[3].tex.y = 1.f;
+
+		g_Guide[ud].vtx[0].tex.x =
+			g_Guide[ud].vtx[1].tex.x = SIZEX * (animID + 1);
+
+		g_Guide[ud].vtx[2].tex.x =
+			g_Guide[ud].vtx[3].tex.x = g_Guide[ud].vtx[0].tex.x - SIZEX;
+	}
+	else
+	{
+		g_Guide[ud].vtx[0].tex.y =
+			g_Guide[ud].vtx[2].tex.y = 1.f;
+		g_Guide[ud].vtx[1].tex.y =
+			g_Guide[ud].vtx[3].tex.y = 0.f;
+
+		g_Guide[ud].vtx[0].tex.x =
+			g_Guide[ud].vtx[1].tex.x = SIZEX * (animID);
+
+		g_Guide[ud].vtx[2].tex.x =
+			g_Guide[ud].vtx[3].tex.x = g_Guide[ud].vtx[0].tex.x + SIZEX;
+	}
+
+	g_Guide[ud].vtx[0].diffuse =
+		g_Guide[ud].vtx[1].diffuse =
+		g_Guide[ud].vtx[2].diffuse =
+		g_Guide[ud].vtx[3].diffuse = D3DXCOLOR(1.f, 1.f, 1.f, g_Guide[ud].numAlpha);
+
+}
+
+//=============================================================================
+// 誘導UIの表示設定
+//=============================================================================
+void SetUIGuideActive(UI_DIRECTION ud, bool isActive)
+{
+	if (g_Guide[ud].isActive == false && isActive == true)
+	{
+		g_Guide[ud].cntAnim = 0u;
+	}
+
+	g_Guide[ud].isActive = isActive;
+}
+
+//=============================================================================
+// セレクト音を再生
+//=============================================================================
+void PlayUIGuideSelect()
+{
+	MySoundPlayOnce(g_seSelect);
+}
+
 //=============================================================================
 // 頂点の作成	コイン
 //=============================================================================

@@ -260,7 +260,7 @@ void EndGimmick(GIMMICK_HEADER* pHead)
 
 	if (pData->isSoundPlaying == true)
 	{// 壁を壊したオブジェクトの場合は音を停止
-	//	MySoundStop(g_seWalldowm);
+		MySoundStop(g_seWalldowm);
 	}
 }
 

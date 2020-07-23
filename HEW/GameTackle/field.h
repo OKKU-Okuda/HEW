@@ -157,7 +157,7 @@ bool PlayerCheckHitOnField();
 	FIELD_TYPE type,				:設置フィールドタイプ
 	FIELD_DIRECTION fdirection		:方向
 =====================================================================*/
-FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection);
+FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection, bool isAddGimmick=true);
 
 /*=====================================================================
 フィールド削除関数

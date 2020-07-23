@@ -54,7 +54,8 @@ static CHIP_ID GetFieldChipID(Vec3* pos);						// 3éüå≥ÉèÅ[ÉãÉhç¿ïWÇ©ÇÁIDÇéZèoÇ
 static FIELD_CHIP* GetChipMemory();								// ãÛÇ´CHIPÇíTÇµÇƒÉAÉhÉåÉXÇï‘Ç∑ÇæÇØ
 
 static void SetOnFieldWk(FIELD_CHIP* pData);					// g_OnFieldÇÃÉXÉeÅ[É^ÉXÇê›íu
-static FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type, FIELD_CHIP* pData);// typeÇ©ÇÁì∆é©ä÷êîç\ë¢ëÃÉAÉhÉåÉXÇåüçıÇ∑ÇÈ
+static FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type, FIELD_CHIP* pData, bool isAddGimmick = true);
+
 static void SwapAllChipState(FIELD_STATE fst_target, FIELD_STATE fst_set);	// èÛë‘Çï ÇÃèÛë‘Ç…ïœä∑Ç∑ÇÈÅiÇ∑Ç◊ÇƒÅj
 
 //---------------------------------------------------------------------
@@ -210,7 +211,7 @@ void ResetField()
 	ResetFieldGimmick();
 
 	// 0,0Ç…onField
-	SetField(GetChipID(0, 0), FTYPE_ROAD, FDIRECTION_0ZP);
+	SetField(GetChipID(0, 0), FTYPE_ROAD, FDIRECTION_0ZP, false);
 	SetOnFieldWk(SearchChipID(GetChipID(0, 0)));
 
 	SpawnField(GetChipID(0, 0));
@@ -233,7 +234,7 @@ void ResetField()
 	FIELD_TYPE type,				:ê›íuÉtÉBÅ[ÉãÉhÉ^ÉCÉv
 	FIELD_DIRECTION fdirection		:ï˚å¸
 =====================================================================*/
-FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection)
+FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection,bool isAddGimmick)
 {
 	FIELD_CHIP* keep_pt = NULL;
 
@@ -262,7 +263,7 @@ FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection)
 	keep_pt->ID = id;
 	keep_pt->Dir = fdirection;
 	keep_pt->Type = type;
-	keep_pt->pFunc = SearchFieldObjFunc(type, keep_pt);
+	keep_pt->pFunc = SearchFieldObjFunc(type, keep_pt, isAddGimmick);
 
 	// ÉNÉäÉGÉCÉgÉJÉEÉìÉ^ÇÃÉCÉìÉNÉäÉÅÉìÉg
 	g_cntCreate[type]++;
@@ -494,7 +495,7 @@ FIELD_CHIP* SearchChipID(CHIP_ID id)
 /*=====================================================================
 	cppì‡ä÷êî
 =====================================================================*/
-FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type,FIELD_CHIP* pData)
+FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type,FIELD_CHIP* pData,bool isAddGimmick)
 {
 	switch (type)
 	{
@@ -502,23 +503,23 @@ FIELD_OBJFUNC* SearchFieldObjFunc(FIELD_TYPE type,FIELD_CHIP* pData)
 		return GetFieldVoidFunc();
 
 	case FTYPE_ROAD:
-		AwakeFieldRoad(pData);
+		if(isAddGimmick)AwakeFieldRoad(pData);
 		return GetFieldRoadFunc();
 
 	case FTYPE_CLIFFR:
-		AwakeFieldCliffR(pData);
+		if (isAddGimmick)AwakeFieldCliffR(pData);
 		return GetFieldCliffRFunc();
 
 	case FTYPE_CLIFFC:
-		AwakeFieldCliffC(pData);
+		if (isAddGimmick)AwakeFieldCliffC(pData);
 		return GetFieldCliffCFunc();
 
 	case FTYPE_CLIFFL:
-		AwakeFieldCliffL(pData);
+		if (isAddGimmick)AwakeFieldCliffL(pData);
 		return GetFieldCliffLFunc();
 
 	case FTYPE_JUMP:
-		AwakeFieldJump(pData);
+		if (isAddGimmick)AwakeFieldJump(pData);
 		return GetFieldJumpFunc();
 
 	case FTYPE_TURNLR:

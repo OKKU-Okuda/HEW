@@ -12,11 +12,13 @@
 #include "../field_control.h"
 #include "../player_control.h"
 #include "turnLR.h"
+#include "../UI.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
-#define RANGE_INPUTLR	(FIELDCHIP_WIDTH*1.f)		// 中心までのinput読み込みエリア
+#define RANGE_INPUTLR	(FIELDCHIP_WIDTH*1.25f)		// 中心までのinput読み込みエリア
 
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
@@ -131,13 +133,22 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 #ifdef _DEBUG
 		PrintDebugProc("[debug_TurnLR]Qキー、Eキー:CURVE");
 #endif
+		SetUIGuideActive(UD_LEFT, true);
+		SetUIGuideActive(UD_RIGHT, true);
+
 		if (GetKeyboardTrigger(DIK_Q) || IsButtonTriggered(0, BUTTON_Y))
 		{
 			g_QTEState = QTE_LEFT;
+			SetUIGuideActive(UD_LEFT, true);
+			SetUIGuideActive(UD_RIGHT, false);
+			PlayUIGuideSelect();
 		}
 		else if (GetKeyboardTrigger(DIK_E) || IsButtonTriggered(0, BUTTON_Z))
 		{
 			g_QTEState = QTE_RIGHT;
+			SetUIGuideActive(UD_LEFT, false);
+			SetUIGuideActive(UD_RIGHT, true);
+			PlayUIGuideSelect();
 		}
 	}
 	else if (g_QTEState != QTE_NOINPUT && pPos->z <= maxRotPosZ && pPos->z >= minRotPosZ)
@@ -165,6 +176,9 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 
 		id_start = AddFieldID(pData->ID, GetFieldIDVector(GetPlayerDirection()));
 		SpawnField(id_start);
+
+		SetUIGuideActive(UD_LEFT, false);
+		SetUIGuideActive(UD_RIGHT, false);
 
 	}
 }
