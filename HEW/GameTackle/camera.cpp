@@ -43,11 +43,11 @@
 =====================================================================*/
 void GameStartCam001Update(CAMERA* pCam)
 {
-	Vec3 StartPos(PLAYER_POSX, 20, PLAYER_POSZ + 50);
-	Vec3 EndPos(PLAYER_POSX, 390, GROUNDSIZE);
+	Vec3 StartPos(PLAYER_POSX, 20, -500);
+	Vec3 EndPos(PLAYER_POSX, 20, GetLatestFieldPosition().z);
 
 	int sec;
-	float per, perPow;
+	float per;
 
 	GetCountdownTime(&sec, &per);
 	if (sec == 2)
@@ -58,14 +58,18 @@ void GameStartCam001Update(CAMERA* pCam)
 		return;
 	}
 
-	perPow = per * per;
+	//perPow = per * per;
 
+	if (EndPos.z > GROUNDSIZE )
+	{
+		EndPos.z = GROUNDSIZE;
+	}
 
-	pCam->at = *GetPlayerPos() + Vec3(0,30.f,0) + (Vec3(0, 0, GROUNDSIZE * 0.7f) * perPow);
+	pCam->at = StartPos + ((EndPos - StartPos)* per);
 
-	pCam->pos = StartPos + ((EndPos - StartPos)* perPow);
+	pCam->pos = pCam->at + Vec3(0, 300, -100);
 
-	pCam->up = Vec3(0, 1, 0);
+	pCam->up = Vec3(0, 0, 1);
 	//•ªŠò‚ÌØ‚ê–Ú‚ªŒ©‚¦‚¿‚á‚¤‚Ì‚ÅC³
 }
 
@@ -89,7 +93,7 @@ void GameStartCam002Update(CAMERA* pCam)
 		return;
 	}
 
-	pCam->at = *GetPlayerPos() + Vec3(0, 30.f, 0);
+	pCam->at = *GetPlayerPos() + Vec3(0, 20.f, 0);
 
 	pCam->pos = StartPos + ((EndPos - StartPos)* per);
 

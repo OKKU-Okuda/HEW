@@ -212,6 +212,7 @@ void ResetField()
 
 	// 0,0にonField
 	SetField(GetChipID(0, 0), FTYPE_ROAD, FDIRECTION_0ZP, false);
+	SetField(GetChipID(0, 1), FTYPE_ROAD, FDIRECTION_0ZP, true);
 
 	// カメラワーク用のダミー
 	SetField(GetChipID(0, -1), FTYPE_ROAD, FDIRECTION_0ZP, false);
@@ -219,7 +220,7 @@ void ResetField()
 
 	SetOnFieldWk(SearchChipID(GetChipID(0, 0)));
 
-	SpawnField(GetChipID(0, 0));
+	SpawnField(GetChipID(0, 1));
 	// ここからテスト
 //	SetField(0, 1, FTYPE_ROAD, FDIRECTION_1XP);
 	// ここからテスト
