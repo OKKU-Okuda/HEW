@@ -614,7 +614,10 @@ HRESULT InitPlayer(void)
 	}
 
 	g_aSE[PSE_START] = MySoundCreate("data/SE/GameStart.wav");
-	g_aSE[PSE_JUMP] = MySoundCreate("data/SE/Jump.wav");
+	g_aSE[PSE_JUMP1] = MySoundCreate("data/SE/Jump.wav");
+	g_aSE[PSE_JUMP2] = MySoundCreate("data/SE/Jump2.wav");
+	g_aSE[PSE_JUMP3] = MySoundCreate("data/SE/Jump3.wav");
+	g_aSE[PSE_JUMPRARE] = MySoundCreate("data/SE/JumpRare.wav");
 	g_aSE[PSE_SLIDE] = MySoundCreate("data/SE/Slide.wav");
 	g_aSE[PSE_LOSE] = MySoundCreate("data/SE/Death.wav");
 	g_aSE[PSE_WALLATTACK] = MySoundCreate("data/SE/Attack.wav");
@@ -692,7 +695,7 @@ void UpdatePlayer(void)
 
 		if (g_Player[PLAYER_PARENT].jump_spped == JUMP_HEIGHT)
 		{// 地面からの最初のジャンプで鳴らす
-			SetPlayerSE(PSE_JUMP);
+			SetPlayerJumpSE();
 		}
 
 		g_Player[PLAYER_PARENT].jump_spped -= JUMP_GRAVITY;
@@ -1006,4 +1009,19 @@ void SetPlayerSE(PLAYER_SE se)
 	// Play
 	MySoundPlayOnce(g_aSE[se]);
 	g_typeSE = se;
+}
+
+//=============================================================================
+// プレイヤージャンプ系SEをランダムで鳴らす
+//=============================================================================
+void SetPlayerJumpSE()
+{
+	int se = rand() % 3 + PSE_JUMP1;
+
+	if (rand() % 100 == 0)
+	{// 1%の確率でﾚｱボイス（おばさん）
+		se = PSE_JUMPRARE;
+	}
+
+	SetPlayerSE((PLAYER_SE)se);
 }

@@ -22,7 +22,10 @@ enum PLAYER_STATE {
 // プレイヤー効果音列挙
 enum PLAYER_SE {
 	PSE_START,
-	PSE_JUMP,
+	PSE_JUMP1,
+	PSE_JUMP2,
+	PSE_JUMP3,
+	PSE_JUMPRARE,
 	PSE_SLIDE,
 	PSE_WALLATTACK,
 	PSE_LOSE,
@@ -79,3 +82,4 @@ Vec3 *GetPlayerRot(void);
 void ResetPlayerPos();	// プレイヤーを初期座標に転送
 
 void SetPlayerSE(PLAYER_SE se);	// プレイヤーサウンド
+void SetPlayerJumpSE();			// ランダムでジャンプ系サウンドを選択
