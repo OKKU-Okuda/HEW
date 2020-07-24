@@ -16,7 +16,8 @@
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
-#define RATE_SPAWN_TURN		(0.1f)
+#define RATE_SPAWN_TURN		(0.1f)			// 分岐道の出現率
+#define LIMIT_SPAWN_TURN	(40)			// 40回直線系の道を作成した場合にpool数に考慮して強制的に分岐道を出現させル
 //#define RATE_SPAWN_TURN		(1.f)
 
 //---------------------------------------------------------------------
@@ -41,7 +42,8 @@ static CHIP_ID g_idlate;		// 最後に設置した直線CHIPID(分岐系は別）
 void SpawnField(CHIP_ID id_start)
 {
 	CHIP_ID addID = GetFieldIDVector(GetPlayerDirection());
-
+	FIELD_TYPE Latesttype = FTYPE_VOID;
+	int cntNormal = 0;
 	while (1)
 	{
 		int numRand;		//非CURVE道設置時のタイプ乱数を保管
@@ -51,7 +53,7 @@ void SpawnField(CHIP_ID id_start)
 		id_start.vec2.z += addID.vec2.z;
 
 		// 分岐道の割合設置(hit時処理終了)
-		if (CheckRand(RATE_SPAWN_TURN) == true)
+		if (CheckRand(RATE_SPAWN_TURN) == true || cntNormal >= LIMIT_SPAWN_TURN)
 		{
 			numRand = rand() % NUM_FTYPE_CURVE + START_FTYPE_CURVE;
 
@@ -92,13 +94,14 @@ void SpawnField(CHIP_ID id_start)
 			break;	// 分岐道後は設置しない
 		}
 
-		
-		numRand = rand() % NUM_FTYPE_NORMAL + START_FTYPE_NORMAL;
-		
+		do {
+			numRand = rand() % NUM_FTYPE_NORMAL + START_FTYPE_NORMAL;
+		} while (Latesttype == numRand);	// 前回と同じものを作らない
 		//numRand = FTYPE_CLIFFC;
 
 		SetField(id_start, (FIELD_TYPE)numRand, GetPlayerDirection());		// 道の設置
-
+		Latesttype = (FIELD_TYPE)numRand;
+		cntNormal++;
 	}
 	g_idlate = id_start;
 }
