@@ -18,4 +18,9 @@ void UpdateCountdown(void);
 void DrawCountdown(void);
 int GetCountdownFlag(void);
 
+//=============================================================================
+// カウント時間取得関数[カウント状態を考慮しない]
+//=============================================================================
+void GetCountdownTime(int* pRemainSec, float* pRemainRatePerSec);
+
 #endif

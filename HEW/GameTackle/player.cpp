@@ -26,8 +26,6 @@
 #define	JUMP_HEIGHT			(6.0f)							// ジャンプの高さ
 #define	JUMP_GRAVITY		(0.25f)							// 重力
 #define	GRAVITY				(1.0f)							// 重力
-#define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
-#define PLAYER_POSZ			(FIELDCHIP_HEIGHT/2)
 #define SLIDING_CNT			(120)
 //*****************************************************************************
 // プロトタイプ宣言

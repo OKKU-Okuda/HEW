@@ -11,6 +11,11 @@
 
 #include "camera.h"	
 #include "player.h"
+#include "countdown.h"
+#include "field.h"
+#include "field_control.h"
+#include "ground_mesh.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -34,6 +39,67 @@
 //static Vec3 OffsetCamPos(0, 55.0f, -180.0f);
 
 /*=====================================================================
+スタートカメラ1番目関数
+=====================================================================*/
+void GameStartCam001Update(CAMERA* pCam)
+{
+	Vec3 StartPos(PLAYER_POSX, 20, -500);
+	Vec3 EndPos(PLAYER_POSX, 20, GetLatestFieldPosition().z);
+
+	int sec;
+	float per;
+
+	GetCountdownTime(&sec, &per);
+	if (sec == 2)
+	{// 次のカメラワークにするかを判断
+		GameStartCam002Update(pCam);
+		SetCameraFunc(GameStartCam002Update);
+
+		return;
+	}
+
+	//perPow = per * per;
+
+	if (EndPos.z > GROUNDSIZE )
+	{
+		EndPos.z = GROUNDSIZE;
+	}
+
+	pCam->at = StartPos + ((EndPos - StartPos)* per);
+
+	pCam->pos = pCam->at + Vec3(0, 300, -100);
+
+	pCam->up = Vec3(0, 0, 1);
+	//分岐の切れ目が見えちゃうので修正
+}
+
+/*=====================================================================
+スタートカメラ2番目関数
+=====================================================================*/
+void GameStartCam002Update(CAMERA* pCam)
+{
+	Vec3 StartPos(PLAYER_POSX +50, 40, PLAYER_POSZ + 50);
+	Vec3 EndPos(PLAYER_POSX+50, 40, PLAYER_POSZ -50);
+
+	int sec;
+	float per;
+
+	GetCountdownTime(&sec, &per);
+	if (sec == 1)
+	{// 次のカメラワークにするかを判断
+		TackleCameraUpdate(pCam);
+		SetCameraFunc(TackleCameraUpdate);
+
+		return;
+	}
+
+	pCam->at = *GetPlayerPos() + Vec3(0, 20.f, 0);
+
+	pCam->pos = StartPos + ((EndPos - StartPos)* per);
+
+}
+
+/*=====================================================================
 メインカメラ関数
 =====================================================================*/
 void TackleCameraUpdate(CAMERA* pCam)
@@ -47,6 +113,7 @@ void TackleCameraUpdate(CAMERA* pCam)
 	pCam->pos.x = sinf(GetPlayerRot()->y) * CAMERA_RANGE + pCam->at.x ; //+ OffsetCamPos.x;
 	pCam->pos.z = cosf(GetPlayerRot()->y) * CAMERA_RANGE + pCam->at.z ; //+ OffsetCamPos.z;
 	pCam->pos.y = pCam->at.y + CAMERA_OFFSETY;
+	pCam->up = Vec3(0, 1, 0);
 
 }
 

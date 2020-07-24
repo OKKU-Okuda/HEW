@@ -475,4 +475,12 @@ int GetCountdownFlag(void)
 	return countdown_flag;
 }
 
+//=============================================================================
+// カウント時間取得関数[カウント状態を考慮しない]
+//=============================================================================
+void GetCountdownTime(int* pRemainSec,float* pRemainRatePerSec)
+{
+	*pRemainSec = g_CountdownPattern;
+	*pRemainRatePerSec = g_fAlphaLogo;
+}
 

@@ -212,9 +212,15 @@ void ResetField()
 
 	// 0,0にonField
 	SetField(GetChipID(0, 0), FTYPE_ROAD, FDIRECTION_0ZP, false);
+	SetField(GetChipID(0, 1), FTYPE_ROAD, FDIRECTION_0ZP, true);
+
+	// カメラワーク用のダミー
+	SetField(GetChipID(0, -1), FTYPE_ROAD, FDIRECTION_0ZP, false);
+	SetField(GetChipID(0, -2), FTYPE_ROAD, FDIRECTION_0ZP, false);
+
 	SetOnFieldWk(SearchChipID(GetChipID(0, 0)));
 
-	SpawnField(GetChipID(0, 0));
+	SpawnField(GetChipID(0, 1));
 	// ここからテスト
 //	SetField(0, 1, FTYPE_ROAD, FDIRECTION_1XP);
 	// ここからテスト
@@ -276,6 +282,10 @@ FIELD_CHIP* SetField(CHIP_ID id, FIELD_TYPE type, FIELD_DIRECTION fdirection,boo
 =====================================================================*/
 void DeleteField(FIELD_CHIP* pData)
 {
+	if (pData == NULL)
+	{
+		return;
+	}
 	DeleteItemByFieldPtr(pData);		// アイテムの削除
 	DeleteGimmickByFieldPtr(pData);		// ギミックの削除
 	pData->State = FSTATE_NONE;

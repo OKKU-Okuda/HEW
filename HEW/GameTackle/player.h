@@ -9,6 +9,8 @@
 //*****************************************************************************
 // É}ÉNÉçíËã`
 //*****************************************************************************
+#define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
+#define PLAYER_POSZ			(FIELDCHIP_HEIGHT/2)
 
 enum PLAYER_STATE {
 	PLAYER_STOP,

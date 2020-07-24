@@ -78,7 +78,7 @@ void UpdateGameTackle1()
 	UpdateShadow();
 
 	// エネミーの更新
-	GetTackleEnemyFunc()->Update();
+	//GetTackleEnemyFunc()->Update();
 
 	// フィールド制御の更新
 	UpdateFieldControl();
@@ -129,7 +129,7 @@ void DrawGameTackle1()
 	DrawKiseki();
 
 	// エネミーの描画
-	GetTackleEnemyFunc()->Draw();
+	//GetTackleEnemyFunc()->Draw();
 
 	// エフェクトの描画
 	DrawEffect();
@@ -191,7 +191,7 @@ void InitGameTackle1(bool isFirst)
 		InitCountdown(0);
 
 		// エネミーの読み込み
-		GetTackleEnemyFunc()->Init(true);
+		//GetTackleEnemyFunc()->Init(true);
 
 		// 音の読み込み
 		g_bgmRunning = MySoundCreate("data/BGM/Running.wav");
@@ -205,7 +205,7 @@ void InitGameTackle1(bool isFirst)
 
 
 	// エネミーの初期化
-	GetTackleEnemyFunc()->Init(false);
+	//GetTackleEnemyFunc()->Init(false);
 
 	// アイテムのリセット
 	ResetItem();
@@ -228,7 +228,7 @@ void InitGameTackle1(bool isFirst)
 	// カメラ更新関数の設定
 	GetCamera()->length = 30.0f;
 	GetCamera()->rotXZ = 0.0f;
-	SetCameraFunc(TackleCameraUpdate);
+	SetCameraFunc(GameStartCam001Update);
 }
 
 /*=====================================================================
@@ -248,7 +248,7 @@ void UninitGameTackle1(bool isEnd)
 	//---------------------------------------------------------------------
 
 	// エネミーの終了化
-	GetTackleEnemyFunc()->Uninit(false);
+	//GetTackleEnemyFunc()->Uninit(false);
 
 	// 音の停止
 	MySoundStop(g_bgmRunning);
@@ -274,7 +274,7 @@ void UninitGameTackle1(bool isEnd)
 	UninitPole();
 
 	// エネミーの開放
-	GetTackleEnemyFunc()->Uninit(false);
+	//GetTackleEnemyFunc()->Uninit(false);
 
 	// フィールドの終了化
 	UninitField();
@@ -295,6 +295,8 @@ void GameTackle1Start()
 	// 音の再生
 	MySoundPlayEternal(g_bgmRunning);
 	SetPlayerSE(PSE_START);
+	DeleteField(SearchChipID(GetChipID(0, -1)));
+	DeleteField(SearchChipID(GetChipID(0, -2)));
 
 }
 
