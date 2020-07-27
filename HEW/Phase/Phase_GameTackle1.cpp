@@ -10,10 +10,11 @@
 #include "../Core/sound.h"
 #include "../Core/camera.h"
 #include "../Core/debugproc.h"
-
+	
 #include "Phase_GameTackle1.h"
 #include "Phase_GameTackle2.h"
 #include "Phase_Title.h"
+#include "Phase_Result.h"
 
 #include "../GameTackle/player.h"
 #include "../GameTackle/enemy.h"
@@ -29,6 +30,8 @@
 #include "../GameTackle/pole.h"
 #include "../GameTackle/ground_mesh.h"
 #include "../GameTackle/countdown.h"
+
+#include "../Result/player.h"
 
 //---------------------------------------------------------------------
 //マクロ定義(同cpp内限定)
@@ -57,9 +60,9 @@ void UpdateGameTackle1()
 	PrintDebugProc("タックル１フェーズ");
 
 	// 次のフェーズに行く
-	if (GetKeyboardTrigger(DIK_RETURN))
+//	if (GetKeyboardTrigger(DIK_RETURN))
 	{	// タックル2
-		GoNextPhase(GetPhaseTitleFunc());
+//		GoNextPhase(GetPhaseTitleFunc());
 	}
 
 	// プレイヤーの位置制御
@@ -225,6 +228,9 @@ void InitGameTackle1(bool isFirst)
 	//カウントダウンの初期化
 	InitCountdown(1);
 
+	// リザルト用プレイヤーの解除
+	SetResultPlayer(false);
+
 	// カメラ更新関数の設定
 	GetCamera()->length = 30.0f;
 	GetCamera()->rotXZ = 0.0f;
@@ -308,7 +314,7 @@ void GameTackle1End()
 	SetPlayerSE(PSE_LOSE);
 	EndFieldGimmick();
 	SetPlayerMoveState(MSTATE_END);
-	GoNextPhase(GetPhaseTitleFunc());
+	GoNextPhase(GetPhaseResultFunc());
 }
 
 /*=====================================================================

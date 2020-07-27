@@ -53,6 +53,10 @@
     <ClCompile Include="GameTackle\Field\turnR.cpp" />
     <ClCompile Include="GameTackle\countdown.cpp" />
     <ClCompile Include="GameTackle\pause.cpp" />
+    <ClCompile Include="Result\meshsky.cpp" />
+    <ClCompile Include="Result\player.cpp" />
+    <ClCompile Include="Result\camera.cpp" />
+    <ClCompile Include="Result\score.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
@@ -107,6 +111,10 @@
     <ClInclude Include="GameTackle\Field\turnR.h" />
     <ClInclude Include="GameTackle\countdown.h" />
     <ClInclude Include="GameTackle\pause.h" />
+    <ClInclude Include="Result\meshsky.h" />
+    <ClInclude Include="Result\player.h" />
+    <ClInclude Include="Result\camera.h" />
+    <ClInclude Include="Result\score.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HEW.exe" />

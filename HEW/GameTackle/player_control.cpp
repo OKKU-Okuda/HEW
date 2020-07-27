@@ -280,7 +280,7 @@ void UpdatePlayerTranslation()
 #ifdef _DEBUG
 		PrintDebugProc(">>>>移動距離 %f M<<<<", g_lengthRun);		// デバッグ
 #endif // _DEBUG
-		ChangeDistance(1);
+		ChangeDistance((int)g_lengthRun);
 	}
 	else if (g_stateMove==MSTATE_READY && countdown_flag==2)
 	{// 開幕はWで移動開始
