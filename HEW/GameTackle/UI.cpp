@@ -691,7 +691,7 @@ void ChangeCoin(int value)
 //=============================================================================
 void ChangeDistance(int value)
 {
-	g_ui.distance += value;
+	g_ui.distance = value;
 
 	if (g_ui.distance < 0)
 	{

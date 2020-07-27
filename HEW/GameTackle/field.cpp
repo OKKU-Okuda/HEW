@@ -28,6 +28,8 @@
 
 #include "../Phase/Phase_GameTackle1.h"
 
+#include "../Result/player.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -307,6 +309,11 @@ bool PlayerCheckHitOnField()
 	if (GetPlayerPos()->y > 0.0f)
 	{// 浮遊中は無条件で判定しない
 		return false;
+	}
+
+	if (IsResultPlayer() == true)
+	{// リザルト中は浮遊以外true
+		return true;
 	}
 
 	if (GetPlayerPos()->y >= FIELD_FAILED_Y)
