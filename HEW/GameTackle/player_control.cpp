@@ -20,13 +20,15 @@
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
-#define CHANGE_METER(len)	(len / 60.0f)
+#define CHANGE_METER(len)	(len / 40.0f)
 
 #define	VALUE_MOVE			(10.0f)							// 移動量
 
 #define ADDROT	(0.1f)				// 回転量
 #define ADDPOS	(8.0f)				// 移動量
 #define ADDXPOS		(3.0f)			// 横移動
+
+#define MAX_SPD		(16.f)
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
@@ -139,6 +141,12 @@ float GetPlayerRunMeter()
 =====================================================================*/
 void SetPlayerSpd(float spd)
 {
+	if (spd > MAX_SPD)
+	{
+		g_Spd = MAX_SPD;
+		return;
+	}
+
 	g_Spd = spd;
 }
 
@@ -278,7 +286,7 @@ void UpdatePlayerTranslation()
 		*GetPlayerPos() += GetFieldVector(g_dirPlayer) * g_Spd;
 		g_lengthRun += CHANGE_METER(g_Spd);							// 総距離計算
 #ifdef _DEBUG
-		PrintDebugProc(">>>>移動距離 %f M<<<<", g_lengthRun);		// デバッグ
+		PrintDebugProc(">>>>移動距離 %f M 速度%f<<<<", g_lengthRun, g_Spd);		// デバッグ
 #endif // _DEBUG
 		ChangeDistance((int)g_lengthRun);
 	}

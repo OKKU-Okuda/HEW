@@ -13,6 +13,8 @@
 #include "../player_control.h"
 #include "turnLR.h"
 #include "../UI.h"
+#include "../bonusscore.h"
+#include "../BonusAdd.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -142,6 +144,11 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 			SetUIGuideActive(UD_LEFT, true);
 			SetUIGuideActive(UD_RIGHT, false);
 			PlayUIGuideSelect();
+			if (pPos->z >= minIptPosZ * 0.25f)
+			{// ジャストインタラクト
+				AddBonusScore(BST_JUSTINTARACT);
+			}
+			AddGimmickPassCount();
 		}
 		else if (GetKeyboardTrigger(DIK_E) || IsButtonTriggered(0, BUTTON_Z))
 		{
@@ -149,6 +156,11 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 			SetUIGuideActive(UD_LEFT, false);
 			SetUIGuideActive(UD_RIGHT, true);
 			PlayUIGuideSelect();
+			if (pPos->z >= minIptPosZ * 0.25f)
+			{// ジャストインタラクト
+				AddBonusScore(BST_JUSTINTARACT);
+			}
+			AddGimmickPassCount();
 		}
 	}
 	else if (g_QTEState != QTE_NOINPUT && pPos->z <= maxRotPosZ && pPos->z >= minRotPosZ)

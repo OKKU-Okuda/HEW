@@ -11,6 +11,8 @@
 //*****************************************************************************
 #define PLAYER_POSX			(FIELDCHIP_WIDTH/2)
 #define PLAYER_POSZ			(FIELDCHIP_HEIGHT/2)
+#define	JUMP_HEIGHT			(6.0f)							// ジャンプの高さ
+#define SLIDING_CNT			(120)
 
 enum PLAYER_STATE {
 	PLAYER_STOP,
@@ -83,3 +85,8 @@ void ResetPlayerPos();	// プレイヤーを初期座標に転送
 
 void SetPlayerSE(PLAYER_SE se);	// プレイヤーサウンド
 void SetPlayerJumpSE();			// ランダムでジャンプ系サウンドを選択
+
+//=============================================================================
+// スニークカウント取得
+//=============================================================================
+int GetSlideCnt();
