@@ -8,6 +8,7 @@
 
 #include "UI.h"
 #include "../Core/sound.h"
+#include "BonusAdd.h"
 
 #define GUIDE_DIVIDE_X			(10u)
 #define GUIDE_CNTNEXTANIM		(5u)
@@ -684,6 +685,8 @@ void ChangeCoin(int value)
 	{
 		g_ui.coin = (int)(powf(10.0f, (float)(g_ui.COIN_PLACE + 1))) - 1;
 	}
+
+	ReferenceCoin();	// コインのアチーブ参照
 }
 
 //=============================================================================
@@ -701,6 +704,8 @@ void ChangeDistance(int value)
 	{
 		g_ui.distance = (int)(powf(10.0f, (float)(g_ui.DISTANCE_PLACE + 1))) - 1;
 	}
+
+	ReferenceDistance();	// 距離のアチーブ系
 }
 
 UI *GetUI(void)
@@ -712,7 +717,41 @@ void ResetUI(void)
 {
 	GetUI()->coin = 0;
 	GetUI()->distance = 0;
+	GetUI()->COIN_PLACE = 1;
+	GetUI()->DISTANCE_PLACE = 1;
+
+	GetUI()->coin_target = 10;
+	GetUI()->distance_target = 10;
 	ZeroMemory(&g_Guide[0], sizeof(g_Guide));
 	MakeVertexGuide();
+
+	g_ui.posCoin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	g_ui.rotCoin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	// スコアの初期化
+	g_ui.coin = 0;
+	g_ui.coin_target = 10;
+
+	g_ui.COIN_SIZE_X = 35.0f;
+	g_ui.COIN_SIZE_Y = 50.0f;
+
+	g_ui.COIN_PLACE = 1;
+
+	g_ui.COIN_POS_X = (SCREEN_WIDTH - (COIN_INTERVAL_X + g_ui.COIN_SIZE_X) * g_ui.COIN_PLACE - 35.0f);
+
+	g_ui.posDistance = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	g_ui.rotDistance = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	// スコアの初期化
+	g_ui.distance = 0;
+	g_ui.distance_target = 10;
+
+	g_ui.DISTANCE_SIZE_X = 35.0f;
+	g_ui.DISTANCE_SIZE_Y = 50.0f;
+
+	g_ui.DISTANCE_PLACE = 1;
+
+	g_ui.DISTANCE_POS_X = (SCREEN_WIDTH - (DISTANCE_INTERVAL_X + g_ui.DISTANCE_SIZE_X) * g_ui.DISTANCE_PLACE - 35.0f);
+
 
 }

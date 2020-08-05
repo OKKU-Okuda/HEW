@@ -13,6 +13,9 @@
 #include "../player_control.h"
 #include "turnR.h"
 #include "../UI.h"
+#include "../bonusscore.h"
+#include "../BonusAdd.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -147,6 +150,12 @@ void UpdateFieldTurnR(FIELD_CHIP* pData, Vec3* pPos)
 		{
 			g_QTEState = QTE_RIGHT;
 			PlayUIGuideSelect();
+
+			if (pPos->z >= minIptPosZ * 0.25f)
+			{// ジャストインタラクト
+				AddBonusScore(BST_JUSTINTARACT);
+			}
+			AddGimmickPassCount();
 		}
 	}
 	else if (g_QTEState != QTE_NOINPUT && pPos->z <= maxRotPosZ && pPos->z >= minRotPosZ)

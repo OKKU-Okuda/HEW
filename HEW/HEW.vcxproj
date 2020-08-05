@@ -139,6 +139,8 @@
     <ClCompile Include="Core\main.cpp" />
     <ClCompile Include="Core\MyList.cpp" />
     <ClCompile Include="GameKick\OrderLogo.cpp" />
+    <ClCompile Include="GameTackle\bonusAdd.cpp" />
+    <ClCompile Include="GameTackle\bonusscore.cpp" />
     <ClCompile Include="GameTackle\camera.cpp" />
     <ClCompile Include="GameTackle\countdown.cpp" />
     <ClCompile Include="GameTackle\effect.cpp" />
@@ -197,6 +199,8 @@
     <ClInclude Include="Core\main.h" />
     <ClInclude Include="Core\MyList.h" />
     <ClInclude Include="GameKick\OrderLogo.h" />
+    <ClInclude Include="GameTackle\BonusAdd.h" />
+    <ClInclude Include="GameTackle\bonusscore.h" />
     <ClInclude Include="GameTackle\camera.h" />
     <ClInclude Include="GameTackle\countdown.h" />
     <ClInclude Include="GameTackle\effect.h" />

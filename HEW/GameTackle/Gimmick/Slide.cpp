@@ -13,6 +13,8 @@
 
 #include "../effect.h"
 #include "../player.h"
+#include "../bonusscore.h"
+#include "../BonusAdd.h"
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -44,6 +46,7 @@ typedef struct {
 	Vec3			Pos;			// 3次元座標(フィールド(chip)座標)
 	Vec3			WldPos;			// 上記ワールド座標
 	//Vec3			Rot;			// 回転
+	bool			isFirstHit;		// 最初にぶつかったかどうか
 
 }GIMMICK_SLIDE;
 
@@ -94,7 +97,7 @@ GIMMICK_HEADER *GetSlideMemory(FIELD_CHIP* pChip, Vec3* pos)
 		g_aGimmick[i].Pos.y = 0.0f;
 		g_aGimmick[i].Pos.x = 0.0f;
 
-		
+		g_aGimmick[i].isFirstHit = false;
 		// 位置からワールド座標を求める
 		D3DXVec3TransformCoord(&g_aGimmick[i].WldPos, &g_aGimmick[i].Pos, &pChip->WldMat);
 		GetMatrix(&g_aGimmick[i].WldMat, &g_aGimmick[i].WldPos, &Vec3(0, Roty, 0));
@@ -113,11 +116,39 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 	var(pData, pHead);
 
 	if (pData->Pos.z - pPos->z < SIZE_YZ / 2 &&
-		pData->Pos.z - pPos->z > -SIZE_YZ / 2 &&
-		GetPlayer()->anim_use != PLAYER_SLIDING&&
-		GetPlayer()->anim_use != PLAYER_JUMPING)
-	{// 丸太にスライディング以外で衝突したらゲームオーバー
-		GameTackle1End();
+		pData->Pos.z - pPos->z > -SIZE_YZ / 2 )
+	{// 丸太とプレイヤーが座標乗衝突
+
+		if (GetPlayer()->anim_use != PLAYER_SLIDING &&
+			GetPlayer()->anim_use != PLAYER_JUMPING)
+		{
+			GameTackle1End();
+			pData->isFirstHit = true;
+			return;
+		}
+
+		if (pData->isFirstHit == false)
+		{
+			if (GetPlayer()->anim_use == PLAYER_SLIDING)
+			{// スライディングで処理の場合はボーナス
+
+				AddBonusScore(BST_SNEAK);
+
+				if (GetSlideCnt() < SLIDING_CNT*0.2f)
+				{
+					AddBonusScore(BST_JUSTINTARACT);
+				}
+			}
+			else if (GetPlayer()->anim_use == PLAYER_JUMPING &&
+				GetPlayer()->jump_spped > JUMP_HEIGHT*0.1f)
+			{// ジャンプのじゃすと　インタラクト判別処理
+				AddBonusScore(BST_JUSTINTARACT);
+			}
+
+			AddGimmickPassCount();
+		}
+		pData->isFirstHit = true;
+
 	}
 }
 

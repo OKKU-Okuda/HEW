@@ -13,6 +13,8 @@
 
 #include "../effect.h"
 #include "../player.h"
+#include "../bonusscore.h"
+#include "../BonusAdd.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -169,6 +171,17 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 				MySoundSetVolume(g_seWalldowm, MIN_DOWNVOLUME);
 				MySoundPlayOnce(g_seWalldowm);
 				SetPlayerSE(PSE_WALLATTACK);
+
+				// ボーナススコア
+				AddBonusScore(BST_GIMMICKWALL);
+
+				// 入力距離が近いとジャストインタラクト
+				if (pData->Pos.z - pPos->z < 200.0f)
+				{
+					AddBonusScore(BST_JUSTINTARACT);
+				}
+
+				AddGimmickPassCount();
 			}
 			else
 			{// 指定ビット以外が押されている

@@ -30,6 +30,8 @@
 #include "../GameTackle/pole.h"
 #include "../GameTackle/ground_mesh.h"
 #include "../GameTackle/countdown.h"
+#include "../GameTackle/bonusscore.h"
+#include "../GameTackle/BonusAdd.h"
 
 #include "../Result/player.h"
 
@@ -103,6 +105,9 @@ void UpdateGameTackle1()
 
 	//カウントダウンの更新
 	UpdateCountdown();
+
+	// ボーナススコアの更新
+	UpdateBonusScore();
 }
 
 /*=====================================================================
@@ -139,6 +144,9 @@ void DrawGameTackle1()
 
 	// UIの描画
 	DrawUI();
+
+	// ボーナススコアの描画
+	DrawBonusScore();
 
 	//カウントダウンの描画
 	DrawCountdown();
@@ -196,6 +204,9 @@ void InitGameTackle1(bool isFirst)
 		// エネミーの読み込み
 		//GetTackleEnemyFunc()->Init(true);
 
+		// ボーナススコアの初期化
+		InitBonusScore(0);
+
 		// 音の読み込み
 		g_bgmRunning = MySoundCreate("data/BGM/Running.wav");
 		MySoundSetVolume(g_bgmRunning, 0.8f);
@@ -230,6 +241,12 @@ void InitGameTackle1(bool isFirst)
 
 	// リザルト用プレイヤーの解除
 	SetResultPlayer(false);
+
+	// 加算処理のリセット
+	ResetBonusAdd();
+
+	// ボーナススコアのリセット
+	InitBonusScore(1);
 
 	// カメラ更新関数の設定
 	GetCamera()->length = 30.0f;
@@ -291,6 +308,9 @@ void UninitGameTackle1(bool isEnd)
 	// UIの終了処理
 	UninitUI();
 
+	// ボーナススコアの終了
+	UninitBonusScore();
+
 }
 
 /*=====================================================================
@@ -304,6 +324,7 @@ void GameTackle1Start()
 	DeleteField(SearchChipID(GetChipID(0, -1)));
 	DeleteField(SearchChipID(GetChipID(0, -2)));
 
+	SetGameStartTime();
 }
 
 /*=====================================================================
