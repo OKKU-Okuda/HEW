@@ -4,12 +4,18 @@
 
 	Logoに関するプログラム
 ***********************************************************************/
+#include "../Core/camera.h"
+
 #include "logo.h"	
+#include "camera.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
 
+#define SIZE_LOGO	Vec2(350, 120)
+#define POS_LOGO	Vec3(SCREEN_CENTER_X, SCREEN_CENTER_Y / 3.0f, 0)
+#define MOVE_X		(-750)
 //---------------------------------------------------------------------
 //	構造体、列挙体、共用体宣言(同cpp内限定)
 //---------------------------------------------------------------------
@@ -39,15 +45,30 @@ Logo更新関数
 =====================================================================*/
 void UpdateLogo()
 {
+	Vec3 pos = POS_LOGO;
+
+	if (GetCameraRate() == 1.f)
+	{
+		return;
+	}
 
 	// ロゴの更新
 	g_col += 0.02f;
-	Set2DVertexColor(g_vtx, Color(g_col, g_col, g_col, g_col));
-
-	if (g_col > 1.0f)
-	{	// 更新をしないように設定
-		g_Func.Update = NoFunction;
+	if (g_col > 1.f)
+	{
+		g_col = 1.f;
 	}
+
+	// カメラ遷移で横移動
+	pos.x += MOVE_X * GetCameraRate();
+
+	Set2DVertexColor(g_vtx, Color(g_col, g_col, g_col, g_col * (1.f - GetCameraRate())));
+	Set2DVerTex(g_vtx, &pos, &SIZE_LOGO);
+
+	//if (g_col > 1.0f)
+	//{	// 更新をしないように設定
+	//	g_Func.Update = NoFunction;
+	//}
 }
 
 /*=====================================================================
@@ -55,6 +76,11 @@ Logo描画関数
 =====================================================================*/
 void DrawLogo()
 {
+	if (GetCameraRate() == 1.f)
+	{
+		return;
+	}
+
 	Draw2DVertex(g_tex, g_vtx);
 }
 
@@ -89,7 +115,7 @@ void InitLogo(bool isFirst)
 	//---------------------------------------------------------------------
 
 	// ロゴ頂点の設置
-	MakeNormal2DVertex(0, g_vtx, &Vec3(SCREEN_CENTER_X, SCREEN_CENTER_Y / 3.0f, 0), &Vec2(350, 120));
+	MakeNormal2DVertex(0, g_vtx, &POS_LOGO, &SIZE_LOGO);
 	Set2DVertexColor(g_vtx, Color(1.0f, 1.0f, 1.0f, 0.0f));
 	g_col = 0.0f;
 

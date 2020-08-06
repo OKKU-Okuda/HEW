@@ -5,6 +5,7 @@
 	タイトルボタン選択プログラム
 ***********************************************************************/
 #include "../Core/fade.h"
+#include "../Core/camera.h"
 
 #include "../Phase/Phase_GameTackle1.h"
 #include "../Phase/Phase_Title.h"
@@ -12,6 +13,7 @@
 #include "select.h"	
 #include "bottons.h"
 #include "effect.h"
+#include "camera.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -62,6 +64,10 @@ Select更新関数
 =====================================================================*/
 void UpdateSelect()
 {
+	if (GetCameraRate() != 0.f)
+	{
+		return;
+	}
 
 	// 上下の選択
 	if (GetKeyboardTrigger(DIK_UP) || IsButtonTriggered(0, BUTTON_UP))
@@ -90,7 +96,8 @@ void UpdateSelect()
 
 		case SELECT_RANKING:
 		case SELECT_CONFIG:
-			GoNextPhase(GetPhaseTitleFunc());
+			SetSelectEffectPassive();
+			SetSubTitleMenu(true);
 			break;
 
 		case SELECT_EXIT:	// ゲームの終了
@@ -114,6 +121,11 @@ Select描画関数
 =====================================================================*/
 void DrawSelectEffect()
 {
+	if (GetCameraRate() != 0.f)
+	{
+		return;
+	}
+
 	// エフェクトの描画
 	Draw2DVertex(g_tex, g_vtx);
 }

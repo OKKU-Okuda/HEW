@@ -13,6 +13,7 @@
 
 #include "Phase_Title.h"
 
+#include "../Title/camera.h"
 #include "../Title/effect.h"				// タイトルエフェクト
 #include "../Title/player.h"				// プレイヤー
 #include "../Title/bottons.h"				// ボタン
@@ -72,7 +73,7 @@ void UpdateTitle()
 	// タイトルロゴの更新
 	GetLogoFunc()->Update();
 
-#ifdef _DEBUG
+#ifdef NANANANA//_DEBUG
 	PrintDebugProc("(ﾃﾞﾊﾞｯｸﾞ)K:キックゲームに直行");
 	// キックに直行処理
 	if (GetKeyboardTrigger(DIK_K))
@@ -165,12 +166,15 @@ void InitTitle(bool isFirst)
 
 	// カメラ
 #if 1
-	GetCamera()->pos	= Vec3(0.0f, 0.0f, -200.0f);	
-	GetCamera()->at		= Vec3(-100.0f, 0.0f, 0);
+	//GetCamera()->pos	= Vec3(0.0f, 0.0f, -200.0f);	
+	//GetCamera()->at		= Vec3(-100.0f, 0.0f, 0);
 #else
 	GetCamera()->pos	= Vec3(0.0f, 0.0f, 200.0f);
 	GetCamera()->at		= Vec3(200.0f, 0.0f, -200.0f);
 #endif
+	// カメラ関数の設定
+	SetCameraFunc(UpdateTitleCameraFunc);
+	ResetTitleCameraParameter();
 
 	// プレイヤー初期化
 	GetPlayerFunc()->Init(false);
