@@ -4,13 +4,16 @@
 
 	Bottonsに関するプログラム
 ***********************************************************************/
+#include "../Core/camera.h"
+
 #include "Bottons.h"	
 #include "select.h"
+#include "camera.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
-
+#define MOVE_FADEOUTX		(-500)		// カメラ遷移で移動するｘ軸
 #define BASE_ALPHA		(0.45f)
 #define ADD_ALPHA		(0.05f)
 
@@ -66,8 +69,14 @@ void UpdateBottons()
 {
 	DWORD cntNoneUpdate = 0ul;	// 更新しなかったボタン数
 
+	if (GetCameraRate() == 1.f)
+	{
+		return;
+	}
+
 	for (int idx = 0; idx < MAX_TITLESELECT; idx++)
 	{
+		Vec3 pos;
 		float scl;	// ボタン拡大倍率
 
 		if (g_Botton[idx].col_argb < BASE_ALPHA)
@@ -98,9 +107,13 @@ void UpdateBottons()
 		// col_argbを参考にサイズを変更
 		scl = (1.0f - BASE_ALPHA / 2) + (g_Botton[idx].col_argb / 2);
 
+		// カメラ遷移状態に合わせてｘ座標を変更
+		pos = g_Botton[idx].pos;
+		pos.x += MOVE_FADEOUTX * GetCameraRate();
+
 		Set2DVertexColor(g_Botton[idx].vtx,
-			Color(g_Botton[idx].col_argb, g_Botton[idx].col_argb, g_Botton[idx].col_argb, g_Botton[idx].col_argb));
-		Set2DVerTex(g_Botton[idx].vtx, &g_Botton[idx].pos, &(g_Botton[idx].size*scl));
+			Color(g_Botton[idx].col_argb, g_Botton[idx].col_argb, g_Botton[idx].col_argb, g_Botton[idx].col_argb * (1.f - GetCameraRate())));
+		Set2DVerTex(g_Botton[idx].vtx, &pos, &(g_Botton[idx].size*scl));
 	}
 
 #ifdef _DEBUG
@@ -109,10 +122,10 @@ void UpdateBottons()
 #endif
 
 
-	if (cntNoneUpdate >= (MAX_TITLESELECT))
-	{	// 全てのボタンの大きさが確定したら、更新関数に入らないようにする
-		g_Func.Update = NoFunction;
-	}
+	//if (cntNoneUpdate >= (MAX_TITLESELECT))
+	//{	// 全てのボタンの大きさが確定したら、更新関数に入らないようにする
+	//	g_Func.Update = NoFunction;
+	//}
 }
 
 /*=====================================================================
@@ -120,6 +133,11 @@ Bottons描画関数
 =====================================================================*/
 void DrawBottons()
 {
+	if (GetCameraRate() == 1.f)
+	{
+		return;
+	}
+
 	for (int i = 0; i < MAX_TITLESELECT; i++)
 	{	// タイトルボタンの描画
 		Draw2DVertex(g_Botton[i].tex, g_Botton[i].vtx);

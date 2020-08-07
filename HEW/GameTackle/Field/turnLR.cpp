@@ -16,6 +16,8 @@
 #include "../bonusscore.h"
 #include "../BonusAdd.h"
 
+#include "../../Title/config.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -132,13 +134,26 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 
 	if (pPos->z <= maxIptPosZ && pPos->z >= minIptPosZ && g_QTEState == QTE_NOINPUT)
 	{// 未入力状態で左右キーを押すとCURVE予約
+		TURNLR_QTETYPE rndType = QTE_NOINPUT;
 #ifdef _DEBUG
 		PrintDebugProc("[debug_TurnLR]Qキー、Eキー:CURVE");
 #endif
 		SetUIGuideActive(UD_LEFT, true);
 		SetUIGuideActive(UD_RIGHT, true);
 
-		if (GetKeyboardTrigger(DIK_Q) || IsButtonTriggered(0, BUTTON_Y))
+		if (IsAssistModeActive() == true)
+		{// アシスト時はランダムで適用
+			if (rand() % 2 == 0)
+			{
+				rndType = QTE_LEFT;
+			}
+			else
+			{
+				rndType = QTE_RIGHT;
+			}
+		}
+
+		if (GetKeyboardTrigger(DIK_Q) || IsButtonTriggered(0, BUTTON_Y) || rndType == QTE_LEFT)
 		{
 			g_QTEState = QTE_LEFT;
 			SetUIGuideActive(UD_LEFT, true);
@@ -150,7 +165,7 @@ void UpdateFieldTurnLR(FIELD_CHIP* pData, Vec3* pPos)
 			}
 			AddGimmickPassCount();
 		}
-		else if (GetKeyboardTrigger(DIK_E) || IsButtonTriggered(0, BUTTON_Z))
+		else if (GetKeyboardTrigger(DIK_E) || IsButtonTriggered(0, BUTTON_Z) || rndType == QTE_RIGHT)
 		{
 			g_QTEState = QTE_RIGHT;
 			SetUIGuideActive(UD_LEFT, false);

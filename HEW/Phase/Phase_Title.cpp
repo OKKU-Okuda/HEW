@@ -13,13 +13,14 @@
 
 #include "Phase_Title.h"
 
+#include "../Title/camera.h"
 #include "../Title/effect.h"				// タイトルエフェクト
 #include "../Title/player.h"				// プレイヤー
 #include "../Title/bottons.h"				// ボタン
 #include "../Title/select.h"				// 選択処理
 #include "../Title/logo.h"					// ロゴ
 #include "../Title/control.h"				// コントロール
-
+#include "../Title/config.h"				// コンフィグ
 #ifdef _DEBUG
 #include "Phase_GameKick.h"
 #endif
@@ -72,7 +73,10 @@ void UpdateTitle()
 	// タイトルロゴの更新
 	GetLogoFunc()->Update();
 
-#ifdef _DEBUG
+	// コンフィグの描画
+	UpdateConfig();
+
+#ifdef NANANANA//_DEBUG
 	PrintDebugProc("(ﾃﾞﾊﾞｯｸﾞ)K:キックゲームに直行");
 	// キックに直行処理
 	if (GetKeyboardTrigger(DIK_K))
@@ -112,6 +116,9 @@ void DrawTitle()
 
 	// ロゴの描画
 	GetLogoFunc()->Draw();
+
+	// コンフィグの描画
+	DrawConfig();
 }
 
 /*=====================================================================
@@ -152,25 +159,19 @@ void InitTitle(bool isFirst)
 
 		// 制御のリソース読み込み
 		GetControlFunc()->Init(true);
+
+		// コンフィグのリソース読み込み
+		InitConfig();
 		return;
 	}
 
 
-	
-
-	MySoundSetMasterVolume(0.1f);
 	//---------------------------------------------------------------------
 	//	グローバル変数等のステータス書き換え処理
 	//---------------------------------------------------------------------
-
-	// カメラ
-#if 1
-	GetCamera()->pos	= Vec3(0.0f, 0.0f, -200.0f);	
-	GetCamera()->at		= Vec3(-100.0f, 0.0f, 0);
-#else
-	GetCamera()->pos	= Vec3(0.0f, 0.0f, 200.0f);
-	GetCamera()->at		= Vec3(200.0f, 0.0f, -200.0f);
-#endif
+	// カメラ関数の設定
+	SetCameraFunc(UpdateTitleCameraFunc);
+	ResetTitleCameraParameter();
 
 	// プレイヤー初期化
 	GetPlayerFunc()->Init(false);
@@ -189,6 +190,9 @@ void InitTitle(bool isFirst)
 
 	// 制御初期化
 	GetControlFunc()->Init(false);
+
+	// コンフィグのリセット
+	ResetConfig();
 
 	MySoundPlayEternal(g_soundBGM);	// 永遠再生
 
@@ -264,6 +268,9 @@ void UninitTitle(bool isEnd)
 
 	// 制御開放
 	GetControlFunc()->Uninit(true);
+
+	// コンフィグの開放
+	UninitConfig();
 
 }
 
