@@ -15,6 +15,8 @@
 #include "../UI.h"
 #include "../bonusscore.h"
 #include "../BonusAdd.h"
+
+#include "../../Title/config.h"
 //---------------------------------------------------------------------
 //	É}ÉNÉçíËã`(ìØcppì‡å¿íË)
 //---------------------------------------------------------------------
@@ -139,7 +141,7 @@ void UpdateFieldTurnL(FIELD_CHIP* pData, Vec3* pPos)
 		SetUIGuideActive(UD_LEFT, true);
 		SetUIGuideActive(UD_RIGHT, false);
 
-		if (GetKeyboardTrigger(DIK_Q) || IsButtonTriggered(0, BUTTON_Y))
+		if (GetKeyboardTrigger(DIK_Q) || IsButtonTriggered(0, BUTTON_Y)||IsAssistModeActive() == true)
 		{
 			g_QTEState = QTE_LEFT;
 			PlayUIGuideSelect();

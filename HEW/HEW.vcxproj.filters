@@ -60,6 +60,7 @@
     <ClCompile Include="GameTackle\bonusscore.cpp" />
     <ClCompile Include="GameTackle\bonusAdd.cpp" />
     <ClCompile Include="Title\camera.cpp" />
+    <ClCompile Include="Title\config.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\camera.h" />
@@ -121,6 +122,7 @@
     <ClInclude Include="GameTackle\bonusscore.h" />
     <ClInclude Include="GameTackle\BonusAdd.h" />
     <ClInclude Include="Title\camera.h" />
+    <ClInclude Include="Title\config.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HEW.exe" />

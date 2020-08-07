@@ -16,6 +16,8 @@
 #include "../bonusscore.h"
 #include "../BonusAdd.h"
 
+#include "../../Title/config.h"
+
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
 //---------------------------------------------------------------------
@@ -157,10 +159,10 @@ void UpdateGimmick(GIMMICK_HEADER* pHead, Vec3* pPos)
 		//}
 
 
-		if (bitIpt)
+		if (bitIpt || IsAssistModeActive() == true)
 		{// いづれかのボタンが押された場合の処理
 
-			if (bitIpt & bitType)
+			if ((bitIpt & bitType) || IsAssistModeActive() == true)
 			{// 指定ビットが押されている
 				pData->State = WSTATE_SUCCESSQTE;
 				pData->lenZSuc = pData->Pos.z - WALLSIZE_Z - pPos->z;

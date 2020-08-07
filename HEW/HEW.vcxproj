@@ -182,6 +182,7 @@
     <ClCompile Include="Result\score.cpp" />
     <ClCompile Include="Title\bottons.cpp" />
     <ClCompile Include="Title\camera.cpp" />
+    <ClCompile Include="Title\config.cpp" />
     <ClCompile Include="Title\control.cpp" />
     <ClCompile Include="Title\effect.cpp" />
     <ClCompile Include="Title\Logo.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="Result\score.h" />
     <ClInclude Include="Title\bottons.h" />
     <ClInclude Include="Title\camera.h" />
+    <ClInclude Include="Title\config.h" />
     <ClInclude Include="Title\control.h" />
     <ClInclude Include="Title\effect.h" />
     <ClInclude Include="Title\Logo.h" />

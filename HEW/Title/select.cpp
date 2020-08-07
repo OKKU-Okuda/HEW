@@ -14,6 +14,7 @@
 #include "bottons.h"
 #include "effect.h"
 #include "camera.h"
+#include "config.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -55,9 +56,14 @@ static MySound		g_soundSelect;		// 選択音
 
 static DWORD		g_Select;			// ボタン
 
-
-
-
+static bool g_isFirstError = false;
+/*=====================================================================
+Select音取得関数
+=====================================================================*/
+MySound GetSoundSelect()
+{
+	return g_soundSelect;
+}
 
 /*=====================================================================
 Select更新関数
@@ -95,7 +101,14 @@ void UpdateSelect()
 			break;
 
 		case SELECT_RANKING:
+			if (g_isFirstError == false)
+			{
+				MessageBox(GetHandle(), "ランキングは今現在、未実装です！", "SORRY!!( ｀ー´)ノ", 0);
+				g_isFirstError = true;
+			}
+			break;
 		case SELECT_CONFIG:
+			ResetConfig();
 			SetSelectEffectPassive();
 			SetSubTitleMenu(true);
 			break;
@@ -169,6 +182,7 @@ void InitSelect(bool isFirst)
 	SetSelectEffectPassive();
 
 	g_Select = SELECT_STRAT;
+	g_isFirstError = false;
 
 	g_Func = { InitSelect,UninitSelect,NoFunction,NoFunction };
 }

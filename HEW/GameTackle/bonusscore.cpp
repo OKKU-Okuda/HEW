@@ -9,6 +9,7 @@
 #include "bonusscore.h"
 
 #include "../Result/player.h"
+#include "../Title/config.h"
 
 //---------------------------------------------------------------------
 //	マクロ定義(同cpp内限定)
@@ -137,6 +138,14 @@ void AddBonusScore(BONUSSCORE_TYPE bst)
 		return;
 	}
 
+	score = (DWORD)(g_scorelist[bst / NUM_TEXDIV_Y][bst % NUM_TEXDIV_Y] * scoreRate);
+	g_BonusScore += score;
+
+	if (IsBonusUIShow() == false)
+	{
+		return;
+	}
+
 	// 描画用のデータ準備
 	for (int i = 0; i < MAX_BONUSUI; i++)
 	{
@@ -152,8 +161,6 @@ void AddBonusScore(BONUSSCORE_TYPE bst)
 		return;
 	}
 
-	score = (DWORD)(g_scorelist[bst / NUM_TEXDIV_Y][bst % NUM_TEXDIV_Y] * scoreRate);
-	g_BonusScore += score;
 
 	work_pt->numShowKeta = GetKeta(score);
 	work_pt->alpha = 1.f;
