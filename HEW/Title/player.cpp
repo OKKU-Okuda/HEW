@@ -28,17 +28,17 @@
 //---------------------------------------------------------------------
 //	プロトタイプ宣言(同cpp内限定)
 //---------------------------------------------------------------------
-static void InitPlayer(bool isFirst);
-static void UninitPlayer(bool isEnd);
-static void UpdatePlayer();
-static void DrawPlayer();
+static void InitTitlePlayer(bool isFirst);
+static void UninitTitlePlayer(bool isEnd);
+static void UpdateTitlePlayer();
+static void DrawTitlePlayer();
 
 //---------------------------------------------------------------------
 //	グローバル変数
 //---------------------------------------------------------------------
 
 // 画面遷移基本関数群をまとめておく
-static OBJ_FUNC g_Func = { InitPlayer,UninitPlayer,NoFunction,DrawPlayer };
+static OBJ_FUNC g_Func = { InitTitlePlayer,UninitTitlePlayer,NoFunction,DrawTitlePlayer };
 
 static Model		g_model;	// プレイヤーモデル
 static float		g_sclYrot;	// 大きくする演出の際の絶対値サイン関数
@@ -47,7 +47,7 @@ static float		g_posZadd;	// 基本値から加算したZ位置
 /*=====================================================================
 player更新関数
 =====================================================================*/
-void UpdatePlayer()
+void UpdateTitlePlayer()
 {
 	float sclY = 1.0f;
 
@@ -67,7 +67,7 @@ void UpdatePlayer()
 /*=====================================================================
 player描画関数
 =====================================================================*/
-void DrawPlayer()
+void DrawTitlePlayer()
 {
 	DrawModel(g_model);
 }
@@ -82,7 +82,7 @@ player初期化関数
 
 						false;リソース開放系以外の初期化処理を行う
 =====================================================================*/
-void InitPlayer(bool isFirst)
+void InitTitlePlayer(bool isFirst)
 {
 	if (isFirst == true)
 	{
@@ -104,7 +104,7 @@ void InitPlayer(bool isFirst)
 	g_posZadd = 0.0f;
 	GetMatrix(&g_model->WldMtx, &Vec3(0.0f, 0.0f, PLAYER_POSFROMZ), PLAYER_ROT);// プレイヤー立ち位置
     
-	g_Func = { InitPlayer,UninitPlayer,NoFunction,DrawPlayer };
+	g_Func = { InitTitlePlayer,UninitTitlePlayer,NoFunction,DrawTitlePlayer };
 
 }
 
@@ -118,7 +118,7 @@ player終了化関数
 
 						false;リソース開放系以外の終了化処理を行う	
 =====================================================================*/
-void UninitPlayer(bool isEnd)
+void UninitTitlePlayer(bool isEnd)
 {
 	//---------------------------------------------------------------------
 	//	その他の終了処理
@@ -156,5 +156,5 @@ player更新関数アクティブ
 =====================================================================*/
 void SetPlayerFuncActive()
 {
-	g_Func.Update = UpdatePlayer;
+	g_Func.Update = UpdateTitlePlayer;
 }
